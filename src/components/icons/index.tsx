@@ -16,3 +16,5 @@ export { XmarkIcon } from "./xmark";
 export type IconProps = {
   className?: string;
 };
+
+export type IconType = React.FC<IconProps>;
