@@ -10,18 +10,7 @@ export const DoubleSlashBrandIcon: FC<IconProps> = ({ className }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <mask
-      id="mask0_147_2492"
-      style="mask-type:alpha"
-      maskUnits="userSpaceOnUse"
-      x="0"
-      y="0"
-      width="16"
-      height="18"
-    >
-      <path d="M0 0H15.4719V17.3832H0V0Z" fill="#3FA1E3" />
-    </mask>
-    <g mask="url(#mask0_147_2492)">
+    <g>
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
@@ -29,18 +18,7 @@ export const DoubleSlashBrandIcon: FC<IconProps> = ({ className }) => (
         fill="#3FA1E3"
       />
     </g>
-    <mask
-      id="mask1_147_2492"
-      style="mask-type:alpha"
-      maskUnits="userSpaceOnUse"
-      x="7"
-      y="0"
-      width="16"
-      height="18"
-    >
-      <path d="M7.30591 0H22.778V17.3832H7.30591V0Z" fill="#3FA1E3" />
-    </mask>
-    <g mask="url(#mask1_147_2492)">
+    <g>
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
@@ -90,21 +68,7 @@ export const FullBrandIcon: FC<IconProps> = ({ className }) => (
       d="M52.9969 10.3557H44.7547C44.8732 11.0655 45.1915 11.6314 45.7058 12.0537C46.2198 12.4724 46.8785 12.6818 47.6757 12.6818C48.6332 12.6818 49.4526 12.3536 50.1404 11.6972L52.2932 12.688C51.7566 13.4323 51.1106 13.9822 50.3619 14.3422C49.6101 14.6987 48.7199 14.8767 47.6884 14.8767C46.0881 14.8767 44.7838 14.3859 43.7778 13.4009C42.7722 12.419 42.2673 11.1875 42.2673 9.70859C42.2673 8.19218 42.7722 6.9324 43.7778 5.93191C44.7838 4.92832 46.0432 4.42786 47.5631 4.42786C49.1729 4.42786 50.4841 4.92832 51.4928 5.92572C52.502 6.92577 53.0064 8.24209 53.0064 9.88395L52.9969 10.3557ZM50.4423 8.40464C50.272 7.86089 49.9379 7.41696 49.4399 7.07595C48.9387 6.73539 48.3598 6.56621 47.6979 6.56621C46.9815 6.56621 46.355 6.75703 45.8116 7.14177C45.4743 7.37941 45.1592 7.80126 44.8705 8.40464H50.4423Z"
       fill="#3C474E"
     />
-    <mask
-      id="mask0_147_2726"
-      style="mask-type:alpha"
-      maskUnits="userSpaceOnUse"
-      x="51"
-      y="0"
-      width="16"
-      height="19"
-    >
-      <path
-        d="M51.1001 0.766479H66.572V18.1497H51.1001V0.766479Z"
-        fill="#3FA1E3"
-      />
-    </mask>
-    <g mask="url(#mask0_147_2726)">
+    <g>
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
@@ -112,21 +76,8 @@ export const FullBrandIcon: FC<IconProps> = ({ className }) => (
         fill="#3FA1E3"
       />
     </g>
-    <mask
-      id="mask1_147_2726"
-      style="mask-type:alpha"
-      maskUnits="userSpaceOnUse"
-      x="58"
-      y="0"
-      width="16"
-      height="19"
-    >
-      <path
-        d="M58.406 0.766479H73.8781V18.1497H58.406V0.766479Z"
-        fill="#3FA1E3"
-      />
-    </mask>
-    <g mask="url(#mask1_147_2726)">
+
+    <g>
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
