@@ -1,6 +1,8 @@
 import cs from "classnames";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { ChevronIcon, DoubleSlashBrandIcon, FullBrandIcon } from "../icons";
-import { NavigationItem, User } from "../layout";
+import { NavigationItem, User } from "../layouts/layout";
 
 type Props = {
   menuCollapsed: boolean;
@@ -15,6 +17,8 @@ const DesktopSidebarNav: React.FC<Props> = ({
   navigation,
   user,
 }) => {
+  const { asPath } = useRouter();
+
   return (
     <>
       {/* If using a mobile view: <div className="hidden lg:flex lg:flex-shrink-0"> */}
@@ -53,14 +57,14 @@ const DesktopSidebarNav: React.FC<Props> = ({
                 })}
               >
                 {navigation.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     className={cs(
                       "flex items-center rounded-lg border-2 border-gray-200 p-[14px] text-sm transition-colors hover:border-gray-300 hover:bg-white",
                       {
                         "border-blue-400 bg-white hover:border-blue-400":
-                          item.isActive,
+                          asPath === item.href,
                         "w-full": !menuCollapsed,
                       }
                     )}
@@ -70,7 +74,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                     {!menuCollapsed && (
                       <span className="pl-2">{item.name}</span>
                     )}
-                  </a>
+                  </Link>
                 ))}
               </nav>
             </div>
@@ -79,7 +83,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                 "flex-shrink-0": menuCollapsed,
               })}
             >
-              <a
+              <Link
                 href="#"
                 className={cs("flex", {
                   "items-center px-6": !menuCollapsed,
@@ -94,7 +98,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                   <p>{user.name}</p>
                   <p>Account settings</p>
                 </div>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

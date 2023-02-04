@@ -17,13 +17,13 @@ export const SearchIcon: FC<IconProps> = ({ className }) => (
       height="11"
       rx="5.5"
       stroke="black"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <path
       d="M11 11L15.5 15.5"
       stroke="black"
-      stroke-width="2"
-      stroke-linecap="round"
+      strokeWidth="2"
+      strokeLinecap="round"
     />
   </svg>
 );

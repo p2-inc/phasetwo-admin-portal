@@ -17,7 +17,7 @@ export const GridIcon: FC<IconProps> = ({ className }) => (
       height="6"
       rx="2"
       stroke="black"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <rect
       x="1"
@@ -26,7 +26,7 @@ export const GridIcon: FC<IconProps> = ({ className }) => (
       height="6"
       rx="2"
       stroke="black"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <rect
       x="11"
@@ -35,7 +35,7 @@ export const GridIcon: FC<IconProps> = ({ className }) => (
       height="6"
       rx="2"
       stroke="black"
-      stroke-width="2"
+      strokeWidth="2"
     />
     <rect
       x="11"
@@ -44,7 +44,7 @@ export const GridIcon: FC<IconProps> = ({ className }) => (
       height="6"
       rx="2"
       stroke="black"
-      stroke-width="2"
+      strokeWidth="2"
     />
   </svg>
 );

@@ -13,15 +13,15 @@ export const XmarkIcon: FC<IconProps> = ({ className }) => (
     <path
       d="M2.25 14.75L15.75 1.25"
       stroke="black"
-      stroke-width="2"
-      stroke-linecap="round"
+      strokeWidth="2"
+      strokeLinecap="round"
       stroke-linejoin="round"
     />
     <path
       d="M15.75 14.75L2.25 1.25"
       stroke="black"
-      stroke-width="2"
-      stroke-linecap="round"
+      strokeWidth="2"
+      strokeLinecap="round"
       stroke-linejoin="round"
     />
   </svg>

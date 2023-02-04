@@ -13,8 +13,8 @@ export const CheckmarkIcon: FC<IconProps> = ({ className }) => (
     <path
       d="M1.75 10.25L6.75 15.25L20.25 1.75"
       stroke="black"
-      stroke-width="2"
-      stroke-linecap="round"
+      strokeWidth="2"
+      strokeLinecap="round"
       stroke-linejoin="round"
     />
   </svg>
