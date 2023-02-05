@@ -1,6 +1,7 @@
 import { FC } from "react";
 import Badge from "../elements/badge";
-import FormTextInput from "../elements/forms/input";
+import FormTextInput from "../elements/forms/text-input";
+import FormTextInputWithIcon from "../elements/forms/text-input-with-icon";
 
 type Props = {
   header: string;
@@ -20,6 +21,7 @@ const TopHeader: FC<Props> = ({ header, badgeVal }) => {
       </div>
       <div className="flex flex-grow items-center justify-end">
         <FormTextInput />
+        <FormTextInputWithIcon />
       </div>
     </div>
   );

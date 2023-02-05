@@ -1,0 +1,16 @@
+export const BasicFormClasses =
+  "block rounded-[4px] border-gray-300 focus:border-gray-400 focus:ring-gray-400 sm:text-sm";
+
+const FormTextInput = () => {
+  return (
+    <input
+      type="text"
+      name="text"
+      id="text"
+      className={BasicFormClasses}
+      placeholder="placeholder"
+    />
+  );
+};
+
+export default FormTextInput;
