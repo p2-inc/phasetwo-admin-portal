@@ -43,7 +43,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                 </div>
               ) : (
                 <div
-                  className="group flex items-center justify-between py-4 px-4 pt-8 hover:cursor-pointer"
+                  className="group flex items-center justify-between py-4 pr-4 pl-8 pt-8 hover:cursor-pointer"
                   onClick={() => setMenuCollapsed(!menuCollapsed)}
                 >
                   <FullBrandIcon />
@@ -52,24 +52,32 @@ const DesktopSidebarNav: React.FC<Props> = ({
               )}
               <nav
                 aria-label="Sidebar"
-                className={cs("flex flex-col items-center space-y-3 py-6", {
-                  "px-4": !menuCollapsed,
-                })}
+                className={cs(
+                  "flex flex-col items-center space-y-3 py-6 font-semibold",
+                  {
+                    "px-4": !menuCollapsed,
+                  }
+                )}
               >
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
                     className={cs(
-                      "flex items-center rounded-lg border-2 border-gray-200 p-[14px] text-sm transition-colors hover:border-gray-300 hover:bg-white",
+                      "group flex items-center rounded-lg border-2 border-gray-200 p-[14px] text-sm transition-colors hover:border-gray-300 hover:bg-white",
                       {
-                        "border-blue-400 bg-white hover:border-blue-400":
+                        "group:text-p2blue-700 bg-white text-p2blue-700":
                           asPath === item.href,
-                        "w-full": !menuCollapsed,
+                        "w-full border-0": !menuCollapsed,
+                        "border-p2blue-700":
+                          menuCollapsed && asPath === item.href,
                       }
                     )}
                   >
-                    <item.icon className="h-[18] w-[18]" aria-hidden="true" />
+                    <item.icon
+                      className={cs("h-[18] w-[18] fill-current")}
+                      aria-hidden="true"
+                    />
                     <span className="sr-only">{item.name}</span>
                     {!menuCollapsed && (
                       <span className="pl-2">{item.name}</span>
@@ -85,7 +93,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
             >
               <Link
                 href="#"
-                className={cs("flex", {
+                className={cs("flex  font-semibold", {
                   "items-center px-6": !menuCollapsed,
                   "w-full flex-shrink-0": menuCollapsed,
                 })}

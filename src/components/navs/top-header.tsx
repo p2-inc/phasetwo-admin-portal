@@ -1,14 +1,14 @@
-import { FC } from "react";
+import { FC, ReactElement } from "react";
 import Badge from "../elements/badge";
-import FormTextInput from "../elements/forms/text-input";
 import FormTextInputWithIcon from "../elements/forms/text-input-with-icon";
 
 type Props = {
   header: string;
   badgeVal?: string;
+  rightAreaItems: ReactElement | ReactElement[];
 };
 
-const TopHeader: FC<Props> = ({ header, badgeVal }) => {
+const TopHeader: FC<Props> = ({ header, badgeVal, rightAreaItems }) => {
   return (
     <div className="flex px-4 pt-6">
       <div className="flex items-center">
@@ -20,8 +20,7 @@ const TopHeader: FC<Props> = ({ header, badgeVal }) => {
         )}
       </div>
       <div className="flex flex-grow items-center justify-end">
-        <FormTextInput />
-        <FormTextInputWithIcon />
+        {rightAreaItems}
       </div>
     </div>
   );

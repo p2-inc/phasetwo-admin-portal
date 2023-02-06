@@ -1,3 +1,4 @@
+import FormTextInputWithIcon from "@/components/elements/forms/text-input-with-icon";
 import MainContentArea from "@/components/layouts/main-content-area";
 import SecondaryMainContentMenu from "@/components/navs/secondary-main-content-menu";
 import TopHeader from "@/components/navs/top-header";
@@ -9,7 +10,15 @@ export default function Organizations() {
       <Head>
         <title>Organizations | Phase Two</title>
       </Head>
-      <TopHeader header="Organizations" badgeVal="2" />
+      <TopHeader
+        header="Organizations"
+        badgeVal="2"
+        rightAreaItems={
+          <FormTextInputWithIcon
+            inputArgs={{ placeholder: "Search Organizations" }}
+          />
+        }
+      />
       <MainContentArea>
         {/* Secondary menu */}
         <SecondaryMainContentMenu>
