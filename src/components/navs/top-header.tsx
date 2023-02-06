@@ -1,6 +1,6 @@
 import { FC, ReactElement } from "react";
 import Badge from "../elements/badge";
-import FormTextInputWithIcon from "../elements/forms/text-input-with-icon";
+import FormTextInputWithIcon from "../elements/forms/inputs/text-input-with-icon";
 
 type Props = {
   header: string;
@@ -19,7 +19,7 @@ const TopHeader: FC<Props> = ({ header, badgeVal, rightAreaItems }) => {
           </div>
         )}
       </div>
-      <div className="flex flex-grow items-center justify-end">
+      <div className="flex flex-grow items-center justify-end gap-2">
         {rightAreaItems}
       </div>
     </div>
