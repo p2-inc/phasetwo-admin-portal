@@ -11,6 +11,10 @@ type Props = {
   user: User;
 };
 
+function ActivePath(asPath: string, currentHref: string) {
+  return asPath.startsWith(currentHref);
+}
+
 const DesktopSidebarNav: React.FC<Props> = ({
   menuCollapsed,
   setMenuCollapsed,
@@ -70,7 +74,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                           asPath === item.href,
                         "w-full border-0": !menuCollapsed,
                         "border-p2blue-700":
-                          menuCollapsed && asPath === item.href,
+                          menuCollapsed && ActivePath(asPath, item.href),
                       }
                     )}
                   >
