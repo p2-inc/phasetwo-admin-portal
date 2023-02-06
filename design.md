@@ -2,25 +2,25 @@
 
 ## Main Area Header Variations
 
-- Title
-- Pill / Badge (count)
-- Search area
-- Layout changer :: grid vs list
-- Button
+[x] Title
+[x] Pill / Badge (count)
+[-] Search area
+[-] Layout changer :: grid vs list
+[-] Button
 
 ## Main Area Layouts
 
-- Full width
-- Left column menu (fixed) with content to the right of that (grows)
-- Centered, fixed for an action "dialog" but is a page
+[x] Full width
+[-] Left column menu (fixed) with content to the right of that (grows)
+[-] Centered, fixed for an action "dialog" but is a page
 
 ## Components
 
-[-] Text input
+[-] Text input (partially done)
 [-] Buttons
 [-] Dropdown / select
 [-] Toggle Button
-[-] Badges
+[-] Badges (one type done)
 [-] Headers
 [-] Tables
 [x] Icons
