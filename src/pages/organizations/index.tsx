@@ -5,7 +5,6 @@ import FormTextInputWithIcon from "components/elements/forms/inputs/text-input-w
 import MainContentArea from "components/layouts/main-content-area";
 import TopHeader from "components/navs/top-header";
 import { PlusIcon } from "components/icons";
-import Table from "components/elements/table/table";
 import PrimaryContentArea from "components/layouts/primary-content-area";
 
 const people = [
@@ -62,11 +61,9 @@ export default function Organizations() {
       <MainContentArea>
         {/* Primary content */}
         <PrimaryContentArea>
-          <Table />
-
           <ul
             role="list"
-            className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           >
             {people.map((person) => (
               <li
