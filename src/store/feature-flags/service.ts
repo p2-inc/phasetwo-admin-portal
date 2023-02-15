@@ -1,7 +1,19 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import config from "config";
-import { FeatureFlagsState } from "./slice";
+
+interface FeatureFlagsState {
+  enableGroupMapping: boolean;
+  apiMode: "cloud" | "onprem" | "";
+  enableLdap: boolean;
+  enableDashboard: boolean;
+  emailAsUsername: boolean;
+  trustEmail: boolean;
+  displayName: string;
+  domain: string;
+  logoUrl: string;
+  name: string;
+}
 
 // Define a service using a base URL and expected endpoints
 export const featureFlagsApi = createApi({
