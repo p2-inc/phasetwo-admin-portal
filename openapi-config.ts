@@ -8,6 +8,7 @@ const config: ConfigFile = {
   outputFile: "./src/store/p2-api/p2-api.ts",
   exportName: "p2Api",
   hooks: true,
+  tag: true,
 };
 
 export default config;

@@ -1,428 +1,499 @@
 import { emptySplitApi as api } from "../empty-api";
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    getOrganizations: build.query<
-      GetOrganizationsApiResponse,
-      GetOrganizationsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs`,
-        params: {
-          search: queryArg.search,
-          first: queryArg.first,
-          max: queryArg.max,
-        },
+export const addTagTypes = [
+  "Organizations",
+  "Organization Memberships",
+  "Organization Domains",
+  "Organization Invitations",
+  "Organization Roles",
+  "Identity Providers",
+  "Users",
+  "Events",
+  "Attributes",
+] as const;
+const injectedRtkApi = api
+  .enhanceEndpoints({
+    addTagTypes,
+  })
+  .injectEndpoints({
+    endpoints: (build) => ({
+      getOrganizations: build.query<
+        GetOrganizationsApiResponse,
+        GetOrganizationsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs`,
+          params: {
+            search: queryArg.search,
+            first: queryArg.first,
+            max: queryArg.max,
+          },
+        }),
+        providesTags: ["Organizations"],
+      }),
+      createOrganization: build.mutation<
+        CreateOrganizationApiResponse,
+        CreateOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs`,
+          method: "POST",
+          body: queryArg.organizationRepresentation,
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
+      getOrganizationById: build.query<
+        GetOrganizationByIdApiResponse,
+        GetOrganizationByIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}`,
+        }),
+        providesTags: ["Organizations"],
+      }),
+      updateOrganization: build.mutation<
+        UpdateOrganizationApiResponse,
+        UpdateOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}`,
+          method: "PUT",
+          body: queryArg.organizationRepresentation,
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
+      deleteOrganization: build.mutation<
+        DeleteOrganizationApiResponse,
+        DeleteOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
+      createPortalLink: build.mutation<
+        CreatePortalLinkApiResponse,
+        CreatePortalLinkApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/portal-link`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
+      getOrganizationMemberships: build.query<
+        GetOrganizationMembershipsApiResponse,
+        GetOrganizationMembershipsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members`,
+          params: { first: queryArg.first, max: queryArg.max },
+        }),
+        providesTags: ["Organization Memberships"],
+      }),
+      getOrganizationDomains: build.query<
+        GetOrganizationDomainsApiResponse,
+        GetOrganizationDomainsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains`,
+        }),
+        providesTags: ["Organization Domains"],
+      }),
+      getOrganizationDomain: build.query<
+        GetOrganizationDomainApiResponse,
+        GetOrganizationDomainApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains/${queryArg.domainName}`,
+        }),
+        providesTags: ["Organization Domains"],
+      }),
+      verifyDomain: build.mutation<VerifyDomainApiResponse, VerifyDomainApiArg>(
+        {
+          query: (queryArg) => ({
+            url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains/${queryArg.domainName}/verify`,
+            method: "POST",
+          }),
+          invalidatesTags: ["Organization Domains"],
+        }
+      ),
+      checkOrganizationMembership: build.query<
+        CheckOrganizationMembershipApiResponse,
+        CheckOrganizationMembershipApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
+        }),
+        providesTags: ["Organization Memberships"],
+      }),
+      addOrganizationMember: build.mutation<
+        AddOrganizationMemberApiResponse,
+        AddOrganizationMemberApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
+          method: "PUT",
+        }),
+        invalidatesTags: ["Organization Memberships"],
+      }),
+      removeOrganizationMember: build.mutation<
+        RemoveOrganizationMemberApiResponse,
+        RemoveOrganizationMemberApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization Memberships"],
+      }),
+      addOrganizationInvitation: build.mutation<
+        AddOrganizationInvitationApiResponse,
+        AddOrganizationInvitationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/invitations`,
+          method: "POST",
+          body: queryArg.invitationRequestRepresentation,
+        }),
+        invalidatesTags: ["Organization Invitations"],
+      }),
+      getOrganizationInvitations: build.query<
+        GetOrganizationInvitationsApiResponse,
+        GetOrganizationInvitationsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/invitations`,
+          params: {
+            search: queryArg.search,
+            first: queryArg.first,
+            max: queryArg.max,
+          },
+        }),
+        providesTags: ["Organization Invitations"],
+      }),
+      removeOrganizationInvitation: build.mutation<
+        RemoveOrganizationInvitationApiResponse,
+        RemoveOrganizationInvitationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/invitations/${queryArg.invitationId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization Invitations"],
+      }),
+      getOrganizationRoles: build.query<
+        GetOrganizationRolesApiResponse,
+        GetOrganizationRolesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles`,
+        }),
+        providesTags: ["Organization Roles"],
+      }),
+      createOrganizationRole: build.mutation<
+        CreateOrganizationRoleApiResponse,
+        CreateOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles`,
+          method: "POST",
+          body: queryArg.organizationRoleRepresentation,
+        }),
+        invalidatesTags: ["Organization Roles"],
+      }),
+      getOrganizationRole: build.query<
+        GetOrganizationRoleApiResponse,
+        GetOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}`,
+        }),
+        providesTags: ["Organization Roles"],
+      }),
+      updateOrganizationRole: build.mutation<
+        UpdateOrganizationRoleApiResponse,
+        UpdateOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}`,
+          method: "PUT",
+          body: queryArg.organizationRoleRepresentation,
+        }),
+        invalidatesTags: ["Organization Roles"],
+      }),
+      deleteOrganizationRole: build.mutation<
+        DeleteOrganizationRoleApiResponse,
+        DeleteOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization Roles"],
+      }),
+      getUserOrganizationRoles: build.query<
+        GetUserOrganizationRolesApiResponse,
+        GetUserOrganizationRolesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users`,
+        }),
+        providesTags: ["Organization Roles"],
+      }),
+      checkUserOrganizationRole: build.query<
+        CheckUserOrganizationRoleApiResponse,
+        CheckUserOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
+        }),
+        providesTags: ["Organization Roles"],
+      }),
+      grantUserOrganizationRole: build.mutation<
+        GrantUserOrganizationRoleApiResponse,
+        GrantUserOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
+          method: "PUT",
+        }),
+        invalidatesTags: ["Organization Roles"],
+      }),
+      revokeUserOrganizationRole: build.mutation<
+        RevokeUserOrganizationRoleApiResponse,
+        RevokeUserOrganizationRoleApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization Roles"],
+      }),
+      importIdpJson: build.mutation<
+        ImportIdpJsonApiResponse,
+        ImportIdpJsonApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/import-config`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Identity Providers"],
+      }),
+      getIdps: build.query<GetIdpsApiResponse, GetIdpsApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps`,
+        }),
+        providesTags: ["Identity Providers"],
+      }),
+      createIdp: build.mutation<CreateIdpApiResponse, CreateIdpApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps`,
+          method: "POST",
+          body: queryArg.identityProviderRepresentation,
+        }),
+        invalidatesTags: ["Identity Providers"],
+      }),
+      getIdp: build.query<GetIdpApiResponse, GetIdpApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}`,
+        }),
+        providesTags: ["Identity Providers"],
+      }),
+      updateIdp: build.mutation<UpdateIdpApiResponse, UpdateIdpApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}`,
+          method: "PUT",
+          body: queryArg.identityProviderRepresentation,
+        }),
+        invalidatesTags: ["Identity Providers"],
+      }),
+      deleteIdp: build.mutation<DeleteIdpApiResponse, DeleteIdpApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Identity Providers"],
+      }),
+      getIdpMappers: build.query<GetIdpMappersApiResponse, GetIdpMappersApiArg>(
+        {
+          query: (queryArg) => ({
+            url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers`,
+          }),
+          providesTags: ["Identity Providers"],
+        }
+      ),
+      addIdpMapper: build.mutation<AddIdpMapperApiResponse, AddIdpMapperApiArg>(
+        {
+          query: (queryArg) => ({
+            url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers`,
+            method: "POST",
+            body: queryArg.identityProviderMapperRepresentation,
+          }),
+          invalidatesTags: ["Identity Providers"],
+        }
+      ),
+      getIdpMapper: build.query<GetIdpMapperApiResponse, GetIdpMapperApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers/${queryArg.id}`,
+        }),
+        providesTags: ["Identity Providers"],
+      }),
+      updateIdpMapper: build.mutation<
+        UpdateIdpMapperApiResponse,
+        UpdateIdpMapperApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers/${queryArg.id}`,
+          method: "PUT",
+          body: queryArg.identityProviderMapperRepresentation,
+        }),
+        invalidatesTags: ["Identity Providers"],
+      }),
+      deleteIdpMapper: build.mutation<
+        DeleteIdpMapperApiResponse,
+        DeleteIdpMapperApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers/${queryArg.id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Identity Providers"],
+      }),
+      getByRealmUsersAndUserIdOrgs: build.query<
+        GetByRealmUsersAndUserIdOrgsApiResponse,
+        GetByRealmUsersAndUserIdOrgsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/users/${queryArg.userId}/orgs`,
+        }),
+        providesTags: ["Users"],
+      }),
+      getByRealmUsersAndUserIdOrgsOrgIdRoles: build.query<
+        GetByRealmUsersAndUserIdOrgsOrgIdRolesApiResponse,
+        GetByRealmUsersAndUserIdOrgsOrgIdRolesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/users/${queryArg.userId}/orgs/${queryArg.orgId}/roles`,
+        }),
+        providesTags: ["Users"],
+      }),
+      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/events`,
+          method: "POST",
+          body: queryArg.eventRepresentation,
+        }),
+        invalidatesTags: ["Events"],
+      }),
+      getRealmAttributes: build.query<
+        GetRealmAttributesApiResponse,
+        GetRealmAttributesApiArg
+      >({
+        query: (queryArg) => ({ url: `/${queryArg.realm}/attributes` }),
+        providesTags: ["Attributes"],
+      }),
+      createRealmAttribute: build.mutation<
+        CreateRealmAttributeApiResponse,
+        CreateRealmAttributeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/attributes`,
+          method: "POST",
+          body: queryArg.realmAttributeRepresentation,
+        }),
+        invalidatesTags: ["Attributes"],
+      }),
+      getRealmAttributeByKey: build.query<
+        GetRealmAttributeByKeyApiResponse,
+        GetRealmAttributeByKeyApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/attributes/${queryArg.attributeKey}`,
+        }),
+        providesTags: ["Attributes"],
+      }),
+      updateRealmAttributeByKey: build.mutation<
+        UpdateRealmAttributeByKeyApiResponse,
+        UpdateRealmAttributeByKeyApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/attributes/${queryArg.attributeKey}`,
+          method: "PUT",
+          body: queryArg.realmAttributeRepresentation,
+        }),
+        invalidatesTags: ["Attributes"],
+      }),
+      deleteRealmAttribute: build.mutation<
+        DeleteRealmAttributeApiResponse,
+        DeleteRealmAttributeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/attributes/${queryArg.attributeKey}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Attributes"],
+      }),
+      getWebhooks: build.query<GetWebhooksApiResponse, GetWebhooksApiArg>({
+        query: (queryArg) => ({ url: `/${queryArg.realm}/webhooks` }),
+        providesTags: ["Events"],
+      }),
+      createWebhook: build.mutation<
+        CreateWebhookApiResponse,
+        CreateWebhookApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks`,
+          method: "POST",
+          body: queryArg.webhookRepresentation,
+        }),
+        invalidatesTags: ["Events"],
+      }),
+      getWebhookById: build.query<
+        GetWebhookByIdApiResponse,
+        GetWebhookByIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}`,
+        }),
+        providesTags: ["Events"],
+      }),
+      updateWebhook: build.mutation<
+        UpdateWebhookApiResponse,
+        UpdateWebhookApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}`,
+          method: "PUT",
+          body: queryArg.webhookRepresentation,
+        }),
+        invalidatesTags: ["Events"],
+      }),
+      deleteWebhook: build.mutation<
+        DeleteWebhookApiResponse,
+        DeleteWebhookApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Events"],
+      }),
+      createMagicLink: build.mutation<
+        CreateMagicLinkApiResponse,
+        CreateMagicLinkApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/magic-link`,
+          method: "POST",
+          body: queryArg.magicLinkRepresentation,
+        }),
+        invalidatesTags: ["Users"],
       }),
     }),
-    createOrganization: build.mutation<
-      CreateOrganizationApiResponse,
-      CreateOrganizationApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs`,
-        method: "POST",
-        body: queryArg.organizationRepresentation,
-      }),
-    }),
-    getOrganizationById: build.query<
-      GetOrganizationByIdApiResponse,
-      GetOrganizationByIdApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}`,
-      }),
-    }),
-    updateOrganization: build.mutation<
-      UpdateOrganizationApiResponse,
-      UpdateOrganizationApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}`,
-        method: "PUT",
-        body: queryArg.organizationRepresentation,
-      }),
-    }),
-    deleteOrganization: build.mutation<
-      DeleteOrganizationApiResponse,
-      DeleteOrganizationApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}`,
-        method: "DELETE",
-      }),
-    }),
-    createPortalLink: build.mutation<
-      CreatePortalLinkApiResponse,
-      CreatePortalLinkApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/portal-link`,
-        method: "POST",
-        body: queryArg.body,
-      }),
-    }),
-    getOrganizationMemberships: build.query<
-      GetOrganizationMembershipsApiResponse,
-      GetOrganizationMembershipsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members`,
-        params: { first: queryArg.first, max: queryArg.max },
-      }),
-    }),
-    getOrganizationDomains: build.query<
-      GetOrganizationDomainsApiResponse,
-      GetOrganizationDomainsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains`,
-      }),
-    }),
-    getOrganizationDomain: build.query<
-      GetOrganizationDomainApiResponse,
-      GetOrganizationDomainApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains/${queryArg.domainName}`,
-      }),
-    }),
-    verifyDomain: build.mutation<VerifyDomainApiResponse, VerifyDomainApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains/${queryArg.domainName}/verify`,
-        method: "POST",
-      }),
-    }),
-    checkOrganizationMembership: build.query<
-      CheckOrganizationMembershipApiResponse,
-      CheckOrganizationMembershipApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
-      }),
-    }),
-    addOrganizationMember: build.mutation<
-      AddOrganizationMemberApiResponse,
-      AddOrganizationMemberApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
-        method: "PUT",
-      }),
-    }),
-    removeOrganizationMember: build.mutation<
-      RemoveOrganizationMemberApiResponse,
-      RemoveOrganizationMemberApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
-        method: "DELETE",
-      }),
-    }),
-    addOrganizationInvitation: build.mutation<
-      AddOrganizationInvitationApiResponse,
-      AddOrganizationInvitationApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/invitations`,
-        method: "POST",
-        body: queryArg.invitationRequestRepresentation,
-      }),
-    }),
-    getOrganizationInvitations: build.query<
-      GetOrganizationInvitationsApiResponse,
-      GetOrganizationInvitationsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/invitations`,
-        params: {
-          search: queryArg.search,
-          first: queryArg.first,
-          max: queryArg.max,
-        },
-      }),
-    }),
-    removeOrganizationInvitation: build.mutation<
-      RemoveOrganizationInvitationApiResponse,
-      RemoveOrganizationInvitationApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/invitations/${queryArg.invitationId}`,
-        method: "DELETE",
-      }),
-    }),
-    getOrganizationRoles: build.query<
-      GetOrganizationRolesApiResponse,
-      GetOrganizationRolesApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles`,
-      }),
-    }),
-    createOrganizationRole: build.mutation<
-      CreateOrganizationRoleApiResponse,
-      CreateOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles`,
-        method: "POST",
-        body: queryArg.organizationRoleRepresentation,
-      }),
-    }),
-    getOrganizationRole: build.query<
-      GetOrganizationRoleApiResponse,
-      GetOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}`,
-      }),
-    }),
-    updateOrganizationRole: build.mutation<
-      UpdateOrganizationRoleApiResponse,
-      UpdateOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}`,
-        method: "PUT",
-        body: queryArg.organizationRoleRepresentation,
-      }),
-    }),
-    deleteOrganizationRole: build.mutation<
-      DeleteOrganizationRoleApiResponse,
-      DeleteOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}`,
-        method: "DELETE",
-      }),
-    }),
-    getUserOrganizationRoles: build.query<
-      GetUserOrganizationRolesApiResponse,
-      GetUserOrganizationRolesApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users`,
-      }),
-    }),
-    checkUserOrganizationRole: build.query<
-      CheckUserOrganizationRoleApiResponse,
-      CheckUserOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
-      }),
-    }),
-    grantUserOrganizationRole: build.mutation<
-      GrantUserOrganizationRoleApiResponse,
-      GrantUserOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
-        method: "PUT",
-      }),
-    }),
-    revokeUserOrganizationRole: build.mutation<
-      RevokeUserOrganizationRoleApiResponse,
-      RevokeUserOrganizationRoleApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
-        method: "DELETE",
-      }),
-    }),
-    importIdpJson: build.mutation<
-      ImportIdpJsonApiResponse,
-      ImportIdpJsonApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/import-config`,
-        method: "POST",
-      }),
-    }),
-    getIdps: build.query<GetIdpsApiResponse, GetIdpsApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps`,
-      }),
-    }),
-    createIdp: build.mutation<CreateIdpApiResponse, CreateIdpApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps`,
-        method: "POST",
-        body: queryArg.identityProviderRepresentation,
-      }),
-    }),
-    getIdp: build.query<GetIdpApiResponse, GetIdpApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}`,
-      }),
-    }),
-    updateIdp: build.mutation<UpdateIdpApiResponse, UpdateIdpApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}`,
-        method: "PUT",
-        body: queryArg.identityProviderRepresentation,
-      }),
-    }),
-    deleteIdp: build.mutation<DeleteIdpApiResponse, DeleteIdpApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}`,
-        method: "DELETE",
-      }),
-    }),
-    getIdpMappers: build.query<GetIdpMappersApiResponse, GetIdpMappersApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers`,
-      }),
-    }),
-    addIdpMapper: build.mutation<AddIdpMapperApiResponse, AddIdpMapperApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers`,
-        method: "POST",
-        body: queryArg.identityProviderMapperRepresentation,
-      }),
-    }),
-    getIdpMapper: build.query<GetIdpMapperApiResponse, GetIdpMapperApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers/${queryArg.id}`,
-      }),
-    }),
-    updateIdpMapper: build.mutation<
-      UpdateIdpMapperApiResponse,
-      UpdateIdpMapperApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers/${queryArg.id}`,
-        method: "PUT",
-        body: queryArg.identityProviderMapperRepresentation,
-      }),
-    }),
-    deleteIdpMapper: build.mutation<
-      DeleteIdpMapperApiResponse,
-      DeleteIdpMapperApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers/${queryArg.id}`,
-        method: "DELETE",
-      }),
-    }),
-    getByRealmUsersAndUserIdOrgs: build.query<
-      GetByRealmUsersAndUserIdOrgsApiResponse,
-      GetByRealmUsersAndUserIdOrgsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/users/${queryArg.userId}/orgs`,
-      }),
-    }),
-    getByRealmUsersAndUserIdOrgsOrgIdRoles: build.query<
-      GetByRealmUsersAndUserIdOrgsOrgIdRolesApiResponse,
-      GetByRealmUsersAndUserIdOrgsOrgIdRolesApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/users/${queryArg.userId}/orgs/${queryArg.orgId}/roles`,
-      }),
-    }),
-    createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/events`,
-        method: "POST",
-        body: queryArg.eventRepresentation,
-      }),
-    }),
-    getRealmAttributes: build.query<
-      GetRealmAttributesApiResponse,
-      GetRealmAttributesApiArg
-    >({
-      query: (queryArg) => ({ url: `/${queryArg.realm}/attributes` }),
-    }),
-    createRealmAttribute: build.mutation<
-      CreateRealmAttributeApiResponse,
-      CreateRealmAttributeApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/attributes`,
-        method: "POST",
-        body: queryArg.realmAttributeRepresentation,
-      }),
-    }),
-    getRealmAttributeByKey: build.query<
-      GetRealmAttributeByKeyApiResponse,
-      GetRealmAttributeByKeyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/attributes/${queryArg.attributeKey}`,
-      }),
-    }),
-    updateRealmAttributeByKey: build.mutation<
-      UpdateRealmAttributeByKeyApiResponse,
-      UpdateRealmAttributeByKeyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/attributes/${queryArg.attributeKey}`,
-        method: "PUT",
-        body: queryArg.realmAttributeRepresentation,
-      }),
-    }),
-    deleteRealmAttribute: build.mutation<
-      DeleteRealmAttributeApiResponse,
-      DeleteRealmAttributeApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/attributes/${queryArg.attributeKey}`,
-        method: "DELETE",
-      }),
-    }),
-    getWebhooks: build.query<GetWebhooksApiResponse, GetWebhooksApiArg>({
-      query: (queryArg) => ({ url: `/${queryArg.realm}/webhooks` }),
-    }),
-    createWebhook: build.mutation<
-      CreateWebhookApiResponse,
-      CreateWebhookApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/webhooks`,
-        method: "POST",
-        body: queryArg.webhookRepresentation,
-      }),
-    }),
-    getWebhookById: build.query<
-      GetWebhookByIdApiResponse,
-      GetWebhookByIdApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}`,
-      }),
-    }),
-    updateWebhook: build.mutation<
-      UpdateWebhookApiResponse,
-      UpdateWebhookApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}`,
-        method: "PUT",
-        body: queryArg.webhookRepresentation,
-      }),
-    }),
-    deleteWebhook: build.mutation<
-      DeleteWebhookApiResponse,
-      DeleteWebhookApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}`,
-        method: "DELETE",
-      }),
-    }),
-    createMagicLink: build.mutation<
-      CreateMagicLinkApiResponse,
-      CreateMagicLinkApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/${queryArg.realm}/magic-link`,
-        method: "POST",
-        body: queryArg.magicLinkRepresentation,
-      }),
-    }),
-  }),
-  overrideExisting: false,
-});
+    overrideExisting: false,
+  });
 export { injectedRtkApi as p2Api };
 export type GetOrganizationsApiResponse =
   /** status 200 success */ OrganizationRepresentation[];
