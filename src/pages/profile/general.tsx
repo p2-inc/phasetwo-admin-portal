@@ -4,6 +4,7 @@ import SectionHeader from "components/navs/section-header";
 import { AIACommand } from "services/aia-command";
 import { KeycloakService } from "services/keycloak.service";
 import { useKeycloak } from "@react-keycloak/web";
+import { useFeatureFlags } from "store/feature-flags/hooks";
 
 interface FormFields {
   readonly username?: string;
@@ -47,7 +48,8 @@ const handleEmailUpdate = (keycloak: KeycloakService): void => {
   new AIACommand(keycloak, "UPDATE_EMAIL").execute();
 }
 
-
+const GeneralProfile = () => {
+  const { featureFlags } = useFeatureFlags();
   return (
     <div>
       <div className="mb-12">
@@ -57,11 +59,13 @@ const handleEmailUpdate = (keycloak: KeycloakService): void => {
         />
       </div>
       <form className="space-y-4">
-        <FormTextInputWithLabel
-          slug="email"
-          label="Email"
-          inputArgs={{ placeholder: "you@email.com" }}
-        />
+        {featureFlags.updateEmailFeatureEnabled && (
+          <FormTextInputWithLabel
+            slug="email"
+            label="Email"
+            inputArgs={{ placeholder: "you@email.com" }}
+          />
+        )}
         <FormTextInputWithLabel
           slug="firstName"
           label="First Name"
