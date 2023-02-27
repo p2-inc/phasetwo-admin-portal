@@ -6,65 +6,39 @@ import MainContentArea from "components/layouts/main-content-area";
 import TopHeader from "components/navs/top-header";
 import { PlusIcon } from "components/icons";
 import PrimaryContentArea from "components/layouts/primary-content-area";
-import { Link } from "react-router-dom";
-import Stat from "components/elements/cards/stat";
 import { useGetOrganizationsQuery } from "store/apis/orgs";
 import { apiRealm } from "store/apis/helpers";
-
-const people = [
-  {
-    name: "Garth Patil",
-    title: "Grand Master",
-    email: "gpatil@phasetwo.com",
-    role: "Master",
-  },
-  {
-    name: "Garth Patil",
-    title: "Grand Master",
-    email: "gpatil@phasetwo.com",
-    role: "Master",
-  },
-  {
-    name: "Garth Patil",
-    title: "Grand Master",
-    email: "gpatil@phasetwo.com",
-    role: "Master",
-  },
-  {
-    name: "Garth Patil",
-    title: "Grand Master",
-    email: "gpatil@phasetwo.com",
-    role: "Master",
-  },
-  {
-    name: "Garth Patil",
-    title: "Grand Master",
-    email: "gpatil@phasetwo.com",
-    role: "Master",
-  },
-];
-
-const Title = ({ children }) => (
-  <div className=" font-semibold">{children}</div>
-);
-const SubTitle = ({ children }) => (
-  <div className=" text-[14px]">{children}</div>
-);
+import OrganizationsLoader from "components/loaders/organizations";
+import OrganizationItem from "components/elements/organizations/item";
+import ViewSwitch, {
+  ViewLayoutOptions,
+} from "components/elements/forms/switches/view-switch";
+import { useState } from "react";
+import cs from "classnames";
+import DomainStat from "./components/domain-stat";
+import MembersStat from "./components/members-stat";
 
 export default function Organizations() {
-  const { data: orgs = [] } = useGetOrganizationsQuery({ realm: apiRealm });
+  const [viewType, setViewType] = useState<ViewLayoutOptions>(
+    ViewLayoutOptions.GRID
+  );
+  const { data: orgs = [], isFetching } = useGetOrganizationsQuery({
+    realm: apiRealm,
+  });
 
   return (
     <>
       <TopHeader
         header="Organizations"
-        badgeVal="2"
+        badgeVal={orgs.length}
         rightAreaItems={
           <>
             <FormTextInputWithIcon
               inputArgs={{ placeholder: "Search Organizations" }}
+              className="w-full md:w-auto"
             />
-            <Button isBlackButton>
+            <ViewSwitch onChange={(value) => setViewType(value)} />
+            <Button isBlackButton className="w-full md:w-auto">
               <PlusIcon className={ButtonIconLeftClasses} aria-hidden="true" />
               Create Organization
             </Button>
@@ -74,22 +48,36 @@ export default function Organizations() {
       <MainContentArea>
         {/* Primary content */}
         <PrimaryContentArea>
-          <ul className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {orgs.map((org) => (
-              <Link to={`/organizations/${org.id}/details`} key={org.id}>
-                <li className="col-span-1 flex flex-col rounded-lg border bg-white p-6">
-                  <div className="mb-7">
-                    <Title>{org.displayName}</Title>
-                    <SubTitle>{org.name}</SubTitle>
-                  </div>
-                  <div className="flex flex-row space-x-8">
-                    <Stat value="4" label="members" />
-                    <Stat percent={50} value="3" label="domains" />
-                  </div>
-                </li>
-              </Link>
-            ))}
-          </ul>
+          <div>
+            {isFetching && (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <OrganizationsLoader />
+              </div>
+            )}
+            {!isFetching && (
+              <div
+                className={cs({
+                  "grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3":
+                    viewType === ViewLayoutOptions.GRID,
+                  "divide-y rounded-md border border-gray-200 bg-gray-50":
+                    viewType === ViewLayoutOptions.LIST,
+                })}
+              >
+                {orgs.map((org) => (
+                  <OrganizationItem
+                    key={org.id}
+                    link={`/organizations/${org.id}/details`}
+                    title={org.displayName}
+                    subTitle={org.name}
+                    viewType={viewType}
+                  >
+                    <MembersStat org={org} realm={apiRealm} />
+                    <DomainStat org={org} realm={apiRealm} />
+                  </OrganizationItem>
+                ))}
+              </div>
+            )}
+          </div>
         </PrimaryContentArea>
       </MainContentArea>
     </>
