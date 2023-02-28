@@ -6,6 +6,7 @@ export interface FeatureFlagsState {
   name: string;
   displayName: string;
   logoUrl: string;
+  appIconUrl: string;
   faviconUrl: string;
   profileEnabled: boolean;
   registrationEmailAsUsername: boolean;

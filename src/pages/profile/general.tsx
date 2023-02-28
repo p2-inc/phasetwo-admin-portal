@@ -1,10 +1,13 @@
+import React, { useState } from 'react';
 import Button from "components/elements/forms/buttons/button";
 import FormTextInputWithLabel from "components/elements/forms/inputs/text-input-with-label";
 import SectionHeader from "components/navs/section-header";
 import { AIACommand } from "services/aia-command";
 import { KeycloakService } from "services/keycloak.service";
+import { apiRealm } from "store/apis/helpers";
 import { useKeycloak } from "@react-keycloak/web";
 import { useFeatureFlags } from "store/feature-flags/hooks";
+import { useGetAccountQuery, useUpdateAccountMutation } from 'store/apis/profile';
 
 interface FormFields {
   readonly username?: string;
@@ -20,7 +23,24 @@ interface AccountPageState {
 }
 
 const GeneralProfile = () => {
-  const { keycloak, initialized } = useKeycloak()
+  const { keycloak, initialized } = useKeycloak();
+  const [ state, setState ] = useState<AccountPageState | undefined>(undefined);
+  const { featureFlags } = useFeatureFlags();
+  const { data, error } = useGetAccountQuery({ userProfileMetadata: true, realm: apiRealm });
+  const [ updateAccount, { isSuccess }] = useUpdateAccountMutation();
+
+  /*
+  export type AccountRepresentation = {
+    id?: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    emailVerified?: boolean;
+    userProfileMetadata?: UserProfileMetadataRepresentation;
+  };
+  */
+
 
   const DEFAULT_STATE: AccountPageState = {
     errors: {
@@ -36,20 +56,21 @@ const GeneralProfile = () => {
         email: '',
         attributes: {}
     }
-};
+  };
 
-const state: AccountPageState = DEFAULT_STATE;
+  //setState(DEFAULT_STATE);
+  console.log(data);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  };
 
-const handleDelete = (keycloak: KeycloakService): void => {
-  new AIACommand(keycloak, "delete_account").execute();
-}
+  const handleDelete = (keycloak: KeycloakService): void => {
+    new AIACommand(keycloak, "delete_account").execute();
+  };
 
-const handleEmailUpdate = (keycloak: KeycloakService): void => {
-  new AIACommand(keycloak, "UPDATE_EMAIL").execute();
-}
+  const handleEmailUpdate = (keycloak: KeycloakService): void => {
+    new AIACommand(keycloak, "UPDATE_EMAIL").execute();
+  };
 
-const GeneralProfile = () => {
-  const { featureFlags } = useFeatureFlags();
   return (
     <div>
       <div className="mb-12">

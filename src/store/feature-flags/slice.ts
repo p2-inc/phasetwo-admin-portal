@@ -7,6 +7,7 @@ const initialState = {
   name: "",
   displayName: "",
   logoUrl: "",
+  appIconUrl: "",
   faviconUrl: "",
   profileEnabled: true,
   registrationEmailAsUsername: false,
