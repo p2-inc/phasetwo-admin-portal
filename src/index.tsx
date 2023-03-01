@@ -32,6 +32,8 @@ import DomainContainer from "pages/organizations/domains";
 import SettingsGeneral from "pages/organizations/settings/general";
 import SettingsDomain from "pages/organizations/settings/domains";
 import SettingsSSO from "pages/organizations/settings/sso";
+import toast, { ToastBar, Toaster } from "react-hot-toast";
+import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 const router = createBrowserRouter([
   {
@@ -156,5 +158,6 @@ root.render(
         <RouterProvider router={router} />
       </React.StrictMode>
     </Provider>
+    <Toaster />
   </ReactKeycloakProvider>
 );

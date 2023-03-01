@@ -20,7 +20,7 @@ const MemberRoles: React.FC<Props> = ({ member, orgId, realm }) => {
   return (
     <div className="space-x-2 space-y-2">
       {roles.map((role) => (
-        <SquareBadge>{role.name}</SquareBadge>
+        <SquareBadge key={role.name}>{role.name}</SquareBadge>
       ))}
     </div>
   );

@@ -68,17 +68,6 @@ export default function OrganizationDetail() {
 
   // const [createPortalLink, { isSuccess }] = useCreatePortalLinkMutation();
 
-  const [user, setUser] = useState<KeycloakProfile>();
-
-  async function loadUser() {
-    const u = await keycloak.loadUserProfile();
-    setUser(u);
-  }
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
   const columns: TableColumns = [
     { key: "name", data: "Name" },
     { key: "email", data: "Email" },
@@ -92,7 +81,6 @@ export default function OrganizationDetail() {
     action: (
       <MembersActionMenu
         member={member}
-        user={user}
         orgId={orgId!}
         realm={apiRealm}
       />
