@@ -24,7 +24,6 @@ import LinkedProfile from "pages/profile/linked";
 import { store } from "./store/";
 import { Provider } from "react-redux";
 import Invitation from "pages/invitation/index";
-import SendingInvitation from "pages/invitation/sending";
 import NewInvitation from "pages/invitation/new";
 import DomainsAdd from "pages/organizations/domains/add";
 import DomainsVerify from "pages/organizations/domains/verify";
