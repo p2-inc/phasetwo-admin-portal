@@ -99,10 +99,6 @@ const router = createBrowserRouter([
             path: "new",
             element: <NewInvitation />,
           },
-          {
-            path: "sending",
-            element: <SendingInvitation />,
-          },
         ],
       },
       {
