@@ -92,7 +92,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/invitation",
+        path: "/organizations/:orgId/invitation",
         element: <Invitation />,
         children: [
           {
@@ -158,6 +158,10 @@ root.render(
         <RouterProvider router={router} />
       </React.StrictMode>
     </Provider>
-    <Toaster />
+    <Toaster
+      toastOptions={{
+        duration: 6000,
+      }}
+    />
   </ReactKeycloakProvider>
 );

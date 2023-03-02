@@ -79,11 +79,7 @@ export default function OrganizationDetail() {
     name: `${member.firstName || ""} ${member.lastName || ""}`.trim(),
     roles: <MemberRoles member={member} orgId={orgId!} realm={apiRealm} />,
     action: (
-      <MembersActionMenu
-        member={member}
-        orgId={orgId!}
-        realm={apiRealm}
-      />
+      <MembersActionMenu member={member} orgId={orgId!} realm={apiRealm} />
     ),
   }));
 
@@ -153,7 +149,7 @@ export default function OrganizationDetail() {
                 Invite new members or remove members from the organization.
               </div>
               <div>
-                <Link to="/invitation/new">
+                <Link to={`/organizations/${orgId}/invitation/new`}>
                   <Button isBlackButton>
                     <PlusIcon
                       className={ButtonIconLeftClasses}
