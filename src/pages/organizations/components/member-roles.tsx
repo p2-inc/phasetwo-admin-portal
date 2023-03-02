@@ -20,10 +20,12 @@ const MemberRoles: React.FC<Props> = ({ member, orgId, realm }) => {
     });
 
   return (
-    <div className="space-x-2 space-y-2">
+    <div className="flex flex-wrap justify-start ">
       {isLoading && <RolesLoader />}
       {roles.map((role) => (
-        <SquareBadge key={role.name}>{role.name}</SquareBadge>
+        <SquareBadge key={role.name} className="mt-1 mr-1">
+          {role.name}
+        </SquareBadge>
       ))}
     </div>
   );
