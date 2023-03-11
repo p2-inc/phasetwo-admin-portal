@@ -11,13 +11,7 @@ import Table, {
   TableColumns,
   TableRows,
 } from "components/elements/table/table";
-import { Github, Key } from "components/icons/providers";
-
-// TODO: Scope this down to a specific set of icons and not import the whole set
-const icons = {
-  Github,
-  Key,
-};
+import * as icons from "components/icons/providers";
 
 const LinkedProfile = () => {
   const { data: accounts = [] } = useGetLinkedAccountsQuery({
