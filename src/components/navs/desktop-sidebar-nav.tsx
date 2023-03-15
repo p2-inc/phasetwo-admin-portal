@@ -1,13 +1,13 @@
 import cs from "classnames";
 import { NavLink, Link } from "react-router-dom";
 import { ChevronIcon, DoubleSlashBrandIcon, FullBrandIcon } from "../icons";
-import { NavigationItem, User } from "../layouts/layout";
+import { NavigationItem, UserInfo } from "../layouts/layout";
 
 type Props = {
   menuCollapsed: boolean;
   setMenuCollapsed: (collapsed: boolean) => void;
   navigation: NavigationItem[];
-  user: User;
+  user: UserInfo;
 };
 
 const DesktopSidebarNav: React.FC<Props> = ({
@@ -75,8 +75,9 @@ const DesktopSidebarNav: React.FC<Props> = ({
                       }
                     >
                       <item.icon
-                        className={cs("h-[18] w-[18]", item.iconClass)}
-                        aria-hidden="true"
+                        className="w-5 h-5"
+                        // className={cs("h-[18] w-[18]", item.iconClass)}
+                        // aria-hidden="true"
                       />
                       <span className="sr-only">{item.name}</span>
                       {!menuCollapsed && (
