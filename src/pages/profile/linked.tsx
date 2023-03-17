@@ -31,51 +31,42 @@ const LinkedProfile = () => {
   };
 
   const linkAccount = (account: LinkedAccountRepresentation) => {
-    /*
-    const { data: accountLinkUri } = useBuildLinkingUriQuery({ 
-      realm: apiRealm,
-      providerId: account.providerAlias ?? "",
-      redirectUri: window.location.href,
-    })
-    console.log("uri", accountLinkUri?.accountLinkUri);
-    */
-   
+    // const { data: accountLinkUri } = useBuildLinkingUriQuery({
+    //   realm: apiRealm,
+    //   providerId: account.providerAlias ?? "",
+    //   redirectUri: window.location.href,
+    // })
+    // console.log("uri", accountLinkUri?.accountLinkUri);
+
     const url = "/linked-accounts/" + account.providerName;
 
-    /*
+    // https://app.phasetwo.io/auth/realms/test/account/linked-accounts/google?providerId=google&redirectUri=https%253A%252F%252Fapp.phasetwo.io%252Fauth%252Frealms%252Ftest%252Faccount%252F%252F%2523%252Fsecurity%252Flinked-accounts
 
-https://app.phasetwo.io/auth/realms/test/account/linked-accounts/google?providerId=google&redirectUri=https%253A%252F%252Fapp.phasetwo.io%252Fauth%252Frealms%252Ftest%252Faccount%252F%252F%2523%252Fsecurity%252Flinked-accounts
+    // const redirectUri: string = createRedirect(this.props.location.pathname);
 
-    const redirectUri: string = createRedirect(this.props.location.pathname);
-
-    this.context!.doGet<{accountLinkUri: string}>(url, { params: {providerId: account.providerName, redirectUri}})
-        .then((response: HttpResponse<{accountLinkUri: string}>) => {
-            console.log({response});
-            window.location.href = response.data!.accountLinkUri;
-        });
-    */
+    // this.context!.doGet<{accountLinkUri: string}>(url, { params: {providerId: account.providerName, redirectUri}})
+    //     .then((response: HttpResponse<{accountLinkUri: string}>) => {
+    //         console.log({response});
+    //         window.location.href = response.data!.accountLinkUri;
+    //     });
   };
 
-  const label = (account: LinkedAccountRepresentation): React.ReactNode => {
+  const label = (account: LinkedAccountRepresentation) => {
     if (account.social) {
       return (
-        <>
-          <label className="inline-block items-center space-x-2 rounded border border-p2blue-700/30 bg-p2blue-700/10 px-3 py-1 text-xs font-medium text-p2blue-700">
-            Social login
-          </label>
-        </>
+        <label className="inline-block items-center space-x-2 rounded border border-p2blue-700/30 bg-p2blue-700/10 px-3 py-1 text-xs font-medium text-p2blue-700">
+          Social login
+        </label>
       );
     }
     return (
-      <>
-        <label className="inline-block items-center space-x-2 rounded border border-green-700/30 bg-green-700/10 px-3 py-1 text-xs font-medium text-green-700">
-          System defined
-        </label>
-      </>
+      <label className="inline-block items-center space-x-2 rounded border border-green-700/30 bg-green-700/10 px-3 py-1 text-xs font-medium text-green-700">
+        System defined
+      </label>
     );
   };
 
-  const icon = (account: LinkedAccountRepresentation): React.ReactNode => {
+  const icon = (account: LinkedAccountRepresentation) => {
     const k = Object.keys(icons);
     const f = k.find(
       (t) => t.toLowerCase() === account.providerAlias?.toLowerCase()
@@ -149,11 +140,19 @@ https://app.phasetwo.io/auth/realms/test/account/linked-accounts/google?provider
       <div className="space-y-8">
         <div className="space-y-4">
           <SectionHeader title="Linked login providers" variant="medium" />
-          <Table columns={linkedColumns} rows={linkedRows} isLoading={isLoading} />
+          <Table
+            columns={linkedColumns}
+            rows={linkedRows}
+            isLoading={isLoading}
+          />
         </div>
         <div className="space-y-4">
           <SectionHeader title="Unlinked login providers" variant="medium" />
-          <Table columns={unlinkedColumns} rows={unlinkedRows} isLoading={isLoading} />
+          <Table
+            columns={unlinkedColumns}
+            rows={unlinkedRows}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </div>
