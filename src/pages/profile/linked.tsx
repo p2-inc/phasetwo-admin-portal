@@ -7,66 +7,83 @@ import {
   useGetLinkedAccountsQuery,
   useDeleteLinkedProviderMutation,
   LinkedAccountRepresentation,
+  BuildLinkingUriApiArg,
 } from "store/apis/profile";
+import { store } from "store";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useState, useEffect } from "react";
 import Table, {
   TableColumns,
   TableRows,
 } from "components/elements/table/table";
 import * as icons from "components/icons/providers";
+import P2Toast from "components/utils/toast";
 
 const LinkedProfile = () => {
   const { data: accounts = [], isLoading } = useGetLinkedAccountsQuery({
     realm: apiRealm,
   });
   const [deleteAccount, { isSuccess }] = useDeleteLinkedProviderMutation();
+  const [buildLinkState, setBuildLinkState] = useState<
+    typeof skipToken | BuildLinkingUriApiArg
+  >(skipToken);
+  const { data: buildLinker } = useBuildLinkingUriQuery(buildLinkState);
 
   const unlinkAccount = (account: LinkedAccountRepresentation): void => {
     deleteAccount({
       realm: apiRealm,
       providerId: account.providerName!,
-    }).then(() => {
-      //refresh accounts? automatic?
-      //ContentAlert.
-    });
+    })
+      .then(() => {
+        P2Toast({
+          success: true,
+          title: `${account.providerName} unlinked.`,
+        });
+      })
+      .catch((e) => {
+        P2Toast({
+          error: true,
+          title: `Error during unlinking from ${account.providerName} . Please try again.`,
+        });
+        console.error(e);
+      });
   };
 
   const linkAccount = (account: LinkedAccountRepresentation) => {
-    // const { data: accountLinkUri } = useBuildLinkingUriQuery({
-    //   realm: apiRealm,
-    //   providerId: account.providerAlias ?? "",
-    //   redirectUri: window.location.href,
-    // })
-    // console.log("uri", accountLinkUri?.accountLinkUri);
-
-    const url = "/linked-accounts/" + account.providerName;
-
-    // https://app.phasetwo.io/auth/realms/test/account/linked-accounts/google?providerId=google&redirectUri=https%253A%252F%252Fapp.phasetwo.io%252Fauth%252Frealms%252Ftest%252Faccount%252F%252F%2523%252Fsecurity%252Flinked-accounts
-
-    // const redirectUri: string = createRedirect(this.props.location.pathname);
-
-    // this.context!.doGet<{accountLinkUri: string}>(url, { params: {providerId: account.providerName, redirectUri}})
-    //     .then((response: HttpResponse<{accountLinkUri: string}>) => {
-    //         console.log({response});
-    //         window.location.href = response.data!.accountLinkUri;
-    //     });
+    setBuildLinkState({
+      realm: apiRealm,
+      providerId: account.providerAlias ?? "",
+      redirectUri: window.location.href,
+    });
   };
 
-  const label = (account: LinkedAccountRepresentation) => {
+  useEffect(() => {
+    if (buildLinker && buildLinker.accountLinkUri) {
+      console.log(buildLinker.accountLinkUri);
+      window.location.href = buildLinker.accountLinkUri;
+    }
+  }, [buildLinker]);
+
+  const label = (account: LinkedAccountRepresentation): React.ReactNode => {
     if (account.social) {
       return (
-        <label className="inline-block items-center space-x-2 rounded border border-p2blue-700/30 bg-p2blue-700/10 px-3 py-1 text-xs font-medium text-p2blue-700">
-          Social login
-        </label>
+        <>
+          <label className="inline-block items-center space-x-2 rounded border border-p2blue-700/30 bg-p2blue-700/10 px-3 py-1 text-xs font-medium text-p2blue-700">
+            Social login
+          </label>
+        </>
       );
     }
     return (
-      <label className="inline-block items-center space-x-2 rounded border border-green-700/30 bg-green-700/10 px-3 py-1 text-xs font-medium text-green-700">
-        System defined
-      </label>
+      <>
+        <label className="inline-block items-center space-x-2 rounded border border-green-700/30 bg-green-700/10 px-3 py-1 text-xs font-medium text-green-700">
+          System defined
+        </label>
+      </>
     );
   };
 
-  const icon = (account: LinkedAccountRepresentation) => {
+  const icon = (account: LinkedAccountRepresentation): React.ReactNode => {
     const k = Object.keys(icons);
     const f = k.find(
       (t) => t.toLowerCase() === account.providerAlias?.toLowerCase()
