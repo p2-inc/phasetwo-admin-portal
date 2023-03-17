@@ -1,34 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Button from "components/elements/forms/buttons/button";
-import FormTextInputWithLabel from "components/elements/forms/inputs/text-input-with-label";
 import SectionHeader from "components/navs/section-header";
-import { AIACommand } from "services/aia-command";
-import { KeycloakService } from "services/keycloak.service";
 import { apiRealm } from "store/apis/helpers";
-import { useKeycloak } from "@react-keycloak/web";
 import { useFeatureFlags } from "store/feature-flags/hooks";
 import {
   useGetAccountQuery,
   useUpdateAccountMutation,
 } from "store/apis/profile";
 import { useTranslation } from "react-i18next";
-import GeneralLoader from "components/loaders/general";
 import { useForm } from "react-hook-form";
 import RHFFormTextInputWithLabel from "components/elements/forms/inputs/rhf-text-input-with-label";
 import P2Toast from "components/utils/toast";
-
-interface FormFields {
-  readonly username?: string;
-  readonly firstName?: string;
-  readonly lastName?: string;
-  readonly email?: string;
-  attributes?: { locale?: [string] };
-}
-
-interface AccountPageState {
-  readonly errors: FormFields;
-  readonly formFields: FormFields;
-}
 
 const GeneralProfile = () => {
   const { t } = useTranslation();
@@ -73,8 +55,6 @@ const GeneralProfile = () => {
         });
       })
       .catch((err) => {
-        console.log("🚀 ~ file: general.tsx:97 ~ onSubmit ~ err:", err);
-
         return P2Toast({
           error: true,
           title: `Error during Profile update. ${err.data.error}`,
