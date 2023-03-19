@@ -32,10 +32,7 @@
       var environment = {};
       try {
         environment = JSON.parse("${environment?no_esc}");
-	console.log("environment is", environment);
-      } catch (e) {
-	console.log("could not parse environment", e);
-      }
+      } catch (e) {}
     </script>
   </head>
   <body>

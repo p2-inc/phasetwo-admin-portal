@@ -1,3 +1,5 @@
+import { isEmpty } from "lodash";
+
 export interface Environment {
   name: string;
   displayName: string;
@@ -84,7 +86,7 @@ const initialEnvironment: Environment = {
   features: initialFeatures,
 }
 
-var env: Environment = environment ?? initialEnvironment;
+var env: Environment = isEmpty(environment) ? initialEnvironment : environment;
 
 export const windowBaseUrl: string =
   window.location.protocol +
