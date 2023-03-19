@@ -90,6 +90,13 @@ public class PortalResourceProvider implements RealmResourceProvider {
   }
 
   @GET
+  @Path("{path: ^(profile|organizations).*}")
+  @Produces(MediaType.TEXT_HTML)
+  public Response forward() {
+    return portal();
+  }
+
+  @GET
   @Produces(MediaType.TEXT_HTML)
   public Response portal() {
     init();
