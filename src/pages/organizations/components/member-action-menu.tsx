@@ -11,6 +11,7 @@ import MemberRemovalConfirmationDialog from "./member-removal-confirmation-dialo
 import P2Toast from "components/utils/toast";
 import useUser from "components/utils/useUser";
 import fullName from "components/utils/fullName";
+import { Link } from "react-router-dom";
 
 type Props = {
   member: UserRepresentation;
@@ -23,6 +24,7 @@ export default function MembersActionMenu({ member, orgId, realm }: Props) {
   // TODO: check roles here
   const { user } = useUser();
   const isRemoveDisabled = !user || member.id === user?.id;
+  const isEditDisabled = false;
   const [isRemoveConfOpen, setRemoveConfOpen] = useState(false);
 
   const [removeOrganizationMember, { isLoading }] =
@@ -99,6 +101,27 @@ export default function MembersActionMenu({ member, orgId, realm }: Props) {
                     >
                       Remove
                     </button>
+                  );
+                }}
+              </Menu.Item>
+              <Menu.Item disabled={isEditDisabled}>
+                {({ active, disabled }) => {
+                  return (
+                    <Link to={`/organizations/${orgId}/members/${member.id}/roles`}>
+                      <button
+                        className={cs(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "block w-full px-4 py-2 text-left text-sm",
+                          {
+                            "opacity-50 hover:cursor-not-allowed": disabled,
+                          }
+                        )}
+                      >
+                        Edit roles
+                      </button>
+                    </Link>
                   );
                 }}
               </Menu.Item>
