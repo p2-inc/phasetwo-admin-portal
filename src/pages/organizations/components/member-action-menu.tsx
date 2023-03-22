@@ -1,7 +1,6 @@
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import cs from "classnames";
 import {
   useRemoveOrganizationMemberMutation,
   UserRepresentation,
@@ -12,6 +11,7 @@ import P2Toast from "components/utils/toast";
 import useUser from "components/utils/useUser";
 import fullName from "components/utils/fullName";
 import { Link } from "react-router-dom";
+import MenuItemButton from "components/elements/menu/button";
 
 type Props = {
   member: UserRepresentation;
@@ -86,42 +86,29 @@ export default function MembersActionMenu({ member, orgId, realm }: Props) {
         >
           <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="py-1">
-              <Menu.Item disabled={isRemoveDisabled}>
-                {({ active, disabled }) => {
-                  return (
-                    <button
-                      onClick={() => setRemoveConfOpen(true)}
-                      className={cs(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "block w-full px-4 py-2 text-left text-sm",
-                        {
-                          "opacity-50 hover:cursor-not-allowed": disabled,
-                        }
-                      )}
-                    >
-                      Remove
-                    </button>
-                  );
-                }}
-              </Menu.Item>
               <Menu.Item disabled={isEditDisabled}>
                 {({ active, disabled }) => {
                   return (
-                    <Link to={`/organizations/${orgId}/members/${member.id}/roles`}>
-                      <button
-                        className={cs(
-                          active
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-700",
-                          "block w-full px-4 py-2 text-left text-sm",
-                          {
-                            "opacity-50 hover:cursor-not-allowed": disabled,
-                          }
-                        )}
-                      >
+                    <Link
+                      to={`/organizations/${orgId}/members/${member.id}/roles`}
+                    >
+                      <MenuItemButton active={active} disabled={disabled}>
                         Edit roles
-                      </button>
+                      </MenuItemButton>
                     </Link>
+                  );
+                }}
+              </Menu.Item>
+              <Menu.Item disabled={isRemoveDisabled}>
+                {({ active, disabled }) => {
+                  return (
+                    <MenuItemButton
+                      onClick={() => setRemoveConfOpen(true)}
+                      active={active}
+                      disabled={disabled}
+                    >
+                      Remove
+                    </MenuItemButton>
                   );
                 }}
               </Menu.Item>
