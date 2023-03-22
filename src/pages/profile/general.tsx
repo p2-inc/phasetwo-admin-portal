@@ -104,7 +104,6 @@ const GeneralProfile = () => {
         />
       </div>
       <form className="max-w-xl space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        {" "}
         <>
           {!featureFlags.registrationEmailAsUsername && (
             <RHFFormTextInputWithLabel
@@ -179,7 +178,7 @@ const GeneralProfile = () => {
               Reset
             </Button>
           </div>
-        </>{" "}
+        </>
       </form>
     </div>
   );
