@@ -2,25 +2,60 @@ import FormTextInputWithIcon from "components/elements/forms/inputs/text-input-w
 import MainContentArea from "components/layouts/main-content-area";
 import TopHeader from "components/navs/top-header";
 import PrimaryContentArea from "components/layouts/primary-content-area";
-import { useGetOrganizationsQuery } from "store/apis/orgs";
+import {
+  injectedRtkApi,
+  useGetByRealmUsersAndUserIdOrgsQuery,
+} from "store/apis/orgs";
 import { config } from "config";
 import OrganizationsLoader from "components/loaders/organizations";
 import OrganizationItem from "components/elements/organizations/item";
 import ViewSwitch, {
   ViewLayoutOptions,
 } from "components/elements/forms/switches/view-switch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import cs from "classnames";
 import DomainStat from "./components/domain-stat";
 import MembersStat from "./components/members-stat";
+import useUser from "components/utils/useUser";
+import { useAppDispatch } from "store/hooks";
+
+const { realm } = config.env;
 
 export default function Organizations() {
+  const { user } = useUser();
+  const dispatch = useAppDispatch();
   const [viewType, setViewType] = useState<ViewLayoutOptions>(
     ViewLayoutOptions.GRID
   );
-  const { data: orgs = [], isFetching } = useGetOrganizationsQuery({
-    realm: config.env.realm,
-  });
+  const { data: orgs = [], isFetching } = useGetByRealmUsersAndUserIdOrgsQuery(
+    {
+      realm,
+      userId: user?.id!,
+    },
+    { skip: !user?.id }
+  );
+
+  useEffect(() => {
+    orgs.map((org) => {
+      dispatch(
+        injectedRtkApi.endpoints.getByRealmUsersAndUserIdOrgsOrgIdRoles.initiate(
+          {
+            orgId: org.id!,
+            realm,
+            userId: user?.id!,
+          }
+        )
+      );
+      dispatch(
+        injectedRtkApi.endpoints.checkUserOrganizationRole.initiate({
+          orgId: org.id!,
+          realm,
+          userId: user?.id!,
+          name: "view-organization",
+        })
+      );
+    });
+  }, [orgs]);
 
   return (
     <>

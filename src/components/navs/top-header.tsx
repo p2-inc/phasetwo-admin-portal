@@ -1,6 +1,7 @@
 import { FC, ReactElement } from "react";
 import RoundBadge from "../elements/badges/round-badge";
 import HeaderLayout from "./components/header-layout";
+import { isNil } from "lodash";
 
 type Props = {
   header: string;
@@ -23,7 +24,7 @@ const TopHeader: FC<Props> = ({
         <>
           {leftAreaItems}
           <h1 className="text-xl font-medium leading-[38px]">{header}</h1>
-          {badgeVal && (
+          {!isNil(badgeVal) && (
             <div className="ml-2">
               <RoundBadge>{badgeVal}</RoundBadge>
             </div>
