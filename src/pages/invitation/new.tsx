@@ -15,22 +15,7 @@ import { Listbox } from "@headlessui/react";
 import { ChevronIcon } from "components/icons";
 import RoleBadge from "components/elements/badges/role-badge";
 import { User } from "lucide-react";
-
-export const defaultRoles = [
-  "view-organization",
-  "manage-organization",
-  "view-members",
-  "manage-members",
-  "view-roles",
-  "manage-roles",
-  "view-invitations",
-  "manage-invitations",
-  "view-identity-providers",
-  "manage-identity-providers",
-] as const;
-
-const adminRoles = [...defaultRoles];
-const memberRoles = defaultRoles.filter((r) => r.includes("view"));
+import { Roles, viewRoles } from "services/role";
 
 const loadingIcon = (
   <div>
@@ -44,8 +29,8 @@ const loadingIcon = (
 );
 
 const roles = [
-  { id: 1, name: "Admin", items: adminRoles },
-  { id: 2, name: "Member", items: memberRoles },
+  { id: 1, name: "Admin", items: Roles },
+  { id: 2, name: "Member", items: viewRoles },
 ];
 
 const NewInvitation = () => {

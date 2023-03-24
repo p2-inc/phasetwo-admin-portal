@@ -1,15 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { emptySplitApi } from "./apis/empty";
+import userSlice from "./users/slice";
 
 export const store = configureStore({
   reducer: {
     [emptySplitApi.reducerPath]: emptySplitApi.reducer,
+    user: userSlice,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      emptySplitApi.middleware
-    ),
+    getDefaultMiddleware().concat(emptySplitApi.middleware),
 });
 
 setupListeners(store.dispatch);

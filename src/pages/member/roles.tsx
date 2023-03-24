@@ -12,11 +12,11 @@ import { Link, useParams } from "react-router-dom";
 import { User } from "lucide-react";
 import RoleBadge from "components/elements/badges/role-badge";
 import { Switch } from "@headlessui/react";
-import { defaultRoles } from "pages/invitation/new";
 import P2Toast from "components/utils/toast";
 import fullName from "components/utils/fullName";
 import useUser from "components/utils/useUser";
 import Alert from "components/elements/alerts/alert";
+import { OrgRoles } from "services/role";
 
 const loadingIcon = (
   <div>
@@ -163,14 +163,12 @@ const Roles = () => {
     }
   };
 
-  const roleData = Array.from(defaultRoles)
-    .sort()
-    .map((item) => {
-      return {
-        name: item,
-        isChecked: roles.findIndex((f) => f.name === item) >= 0,
-      };
-    });
+  const roleData = OrgRoles.sort().map((item) => {
+    return {
+      name: item,
+      isChecked: roles.findIndex((f) => f.name === item) >= 0,
+    };
+  });
 
   const grantAllRoles = () => {
     let grantRoles = roleData.filter((rd) => !rd.isChecked);
@@ -350,7 +348,7 @@ const Roles = () => {
       )}
       <div className="mt-8 divide-y">
         {isLoading
-          ? Array.from(defaultRoles).map((r) => <Loader />)
+          ? OrgRoles.map((r) => <Loader key={r} />)
           : roleData.map((item) => (
               <SwitchItem
                 name={item.name}
@@ -360,6 +358,7 @@ const Roles = () => {
                   (isSameUserAndMember && doesNotHaveManageRole) ||
                   updatingRoles.includes(item.name)
                 }
+                key={item.name}
               />
             ))}
       </div>

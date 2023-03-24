@@ -18,11 +18,12 @@ import DomainStat from "./components/domain-stat";
 import MembersStat from "./components/members-stat";
 import useUser from "components/utils/useUser";
 import { useAppDispatch } from "store/hooks";
+import { Roles } from "services/role";
 
 const { realm } = config.env;
 
 export default function Organizations() {
-  const { user } = useUser();
+  const { user, hasRole } = useUser();
   const dispatch = useAppDispatch();
   const [viewType, setViewType] = useState<ViewLayoutOptions>(
     ViewLayoutOptions.GRID
@@ -37,23 +38,7 @@ export default function Organizations() {
 
   useEffect(() => {
     orgs.map((org) => {
-      dispatch(
-        injectedRtkApi.endpoints.getByRealmUsersAndUserIdOrgsOrgIdRoles.initiate(
-          {
-            orgId: org.id!,
-            realm,
-            userId: user?.id!,
-          }
-        )
-      );
-      dispatch(
-        injectedRtkApi.endpoints.checkUserOrganizationRole.initiate({
-          orgId: org.id!,
-          realm,
-          userId: user?.id!,
-          name: "view-organization",
-        })
-      );
+      const hasViewRole = hasRole(org.id, Roles.ViewOrganization);
     });
   }, [orgs]);
 
