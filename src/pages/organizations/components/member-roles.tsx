@@ -7,6 +7,7 @@ import { roleSettings } from "services/role";
 import RoleBadge from "components/elements/badges/role-badge";
 import cs from "classnames";
 import { Link } from "react-router-dom";
+import Button from "components/elements/forms/buttons/button";
 
 type Props = {
   member: UserRepresentation;
@@ -54,13 +55,9 @@ const FilteredRole: React.FC<FilteredRoleProp> = ({
         ))}
         <Menu.Item>
           <Link to={`/organizations/${orgId}/members/${member.id}/roles`}>
-            <button
-              className={cs(
-                "mt-1 rounded-sm bg-gray-200 px-2 py-1 text-left text-xs text-gray-700"
-              )}
-            >
-              edit
-            </button>
+            <Button isCompact className="w-full mt-4">
+              Edit roles
+            </Button>
           </Link>
         </Menu.Item>
       </Menu.Items>

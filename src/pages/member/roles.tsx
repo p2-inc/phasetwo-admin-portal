@@ -84,7 +84,7 @@ const SwitchItem = ({
 };
 
 const buttonClasses =
-  "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-p2blue-700 shadow-sm hover:bg-indigo-100 disabled:opacity-50";
+  "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-p2blue-700 shadow-sm enabled:hover:bg-indigo-100 disabled:opacity-50";
 
 const Roles = () => {
   let { orgId, memberId } = useParams();
@@ -286,7 +286,8 @@ const Roles = () => {
           </Link>
         }
       />
-      <div className="mt-4 space-x-2">
+      <div className="mt-8 pb-2 space-x-2 border-b flex items-center">
+        <div className="inline-block text-sm text-gray-600">Set roles:</div>
         <button
           className={buttonClasses}
           onClick={grantAllRoles}
@@ -348,7 +349,7 @@ const Roles = () => {
           />
         </div>
       )}
-      <div className="mt-8 divide-y">
+      <div className="divide-y">
         {isLoading
           ? Array.from(defaultRoles).map((r) => <Loader />)
           : roleData.map((item) => (
