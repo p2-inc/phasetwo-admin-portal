@@ -22,7 +22,7 @@ const loadingIcon = (
   <div>
     <div className={cs("relative h-12 w-12 overflow-hidden rounded-md")}>
       <div className="absolute -inset-10 z-10 bg-gradient-to-tr from-[#C7DFF0] to-[#1476B7]"></div>
-      <div className="absolute inset-[2px] z-20 flex items-center justify-center rounded bg-white">
+      <div className="absolute inset-[2px] z-20 flex items-center justify-center rounded bg-white dark:bg-p2dark-1000 dark:text-zinc-200">
         <User />
       </div>
     </div>
@@ -84,7 +84,7 @@ const SwitchItem = ({
 };
 
 const buttonClasses =
-  "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-p2blue-700 shadow-sm hover:bg-indigo-100 disabled:opacity-50";
+  "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-p2blue-700 shadow-sm enabled:hover:bg-indigo-100 disabled:opacity-50";
 
 const Roles = () => {
   let { orgId, memberId } = useParams();
@@ -278,13 +278,14 @@ const Roles = () => {
         rightContent={
           <Link
             to={`/organizations/${orgId}/details`}
-            className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100"
+            className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
           >
             Back
           </Link>
         }
       />
-      <div className="mt-4 space-x-2">
+      <div className="mt-8 flex items-center space-x-2 border-b pb-2">
+        <div className="inline-block text-sm text-gray-600">Set roles:</div>
         <button
           className={buttonClasses}
           onClick={grantAllRoles}
@@ -346,7 +347,7 @@ const Roles = () => {
           />
         </div>
       )}
-      <div className="mt-8 divide-y">
+      <div className="divide-y dark:divide-zinc-600">
         {isLoading
           ? OrgRoles.map((r) => <Loader key={r} />)
           : roleData.map((item) => (

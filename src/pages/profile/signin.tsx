@@ -93,19 +93,23 @@ const SigninProfile = () => {
       name: metadata.credential?.userLabel ?? credentialType,
       created: time(metadata.credential?.createdDate),
       action: (
-        <Button
-          isCompact
-          className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
-          onClick={() => {
-            if (credentialType === "password") {
-              updateAIA("UPDATE_PASSWORD");
-            } else {
-              removeCredential(metadata.credential!);
-            }
-          }}
-        >
-          Remove
-        </Button>
+        <>
+          {featureFlags.passwordUpdateAllowed && (
+            <Button
+              isCompact
+              className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
+              onClick={() => {
+                if (credentialType === "password") {
+                  updateAIA("UPDATE_PASSWORD");
+                } else {
+                  removeCredential(metadata.credential!);
+                }
+              }}
+            >
+              Remove
+            </Button>
+          )}
+        </>
       ),
     }));
   };
@@ -122,7 +126,7 @@ const SigninProfile = () => {
         <div>
           <div className="space-y-5">
             <div className="flex items-center space-x-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700 dark:text-zinc-200">
                 <Lock className="h-5 w-5" />
               </div>
               <SectionHeader
@@ -146,7 +150,7 @@ const SigninProfile = () => {
           <div>
             <div className="space-y-8">
               <div className="flex items-center space-x-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700 dark:text-zinc-200">
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <SectionHeader
@@ -201,7 +205,7 @@ const SigninProfile = () => {
           <div>
             <div className="space-y-5">
               <div className="flex items-center space-x-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700 dark:text-zinc-200">
                   <Key className="h-5 w-5" />
                 </div>
                 <SectionHeader title="Passwordless" variant="medium" />
