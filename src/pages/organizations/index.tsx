@@ -19,22 +19,24 @@ const { realm } = config.env;
 
 export default function Organizations() {
   const { user } = useUser();
+  const [viewOrgs, setViewOrgs] = useState<string[]>([]);
   const [viewType, setViewType] = useState<ViewLayoutOptions>(
     ViewLayoutOptions.GRID
   );
-  const { data: orgs = [], isFetching } = useGetByRealmUsersAndUserIdOrgsQuery(
-    {
-      realm,
-      userId: user?.id!,
-    },
-    { skip: !user?.id }
-  );
+  const { data: userOrgs = [], isFetching } =
+    useGetByRealmUsersAndUserIdOrgsQuery(
+      {
+        realm,
+        userId: user?.id!,
+      },
+      { skip: !user?.id }
+    );
 
   return (
     <>
       <TopHeader
         header="Organizations"
-        badgeVal={orgs.length}
+        badgeVal={viewOrgs.length}
         rightAreaItems={
           <>
             <FormTextInputWithIcon
@@ -65,8 +67,13 @@ export default function Organizations() {
                     viewType === ViewLayoutOptions.LIST,
                 })}
               >
-                {orgs.map((org) => (
-                  <OrganizationItem key={org.id} org={org} viewType={viewType}>
+                {userOrgs.map((org) => (
+                  <OrganizationItem
+                    key={org.id}
+                    org={org}
+                    viewType={viewType}
+                    setVisibility={() => setViewOrgs([...viewOrgs, org.id!])}
+                  >
                     <MembersStat org={org} realm={config.env.realm} />
                     <DomainStat org={org} realm={config.env.realm} />
                   </OrganizationItem>

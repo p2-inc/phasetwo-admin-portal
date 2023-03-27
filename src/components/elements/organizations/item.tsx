@@ -1,5 +1,5 @@
 import cs from "classnames";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ViewLayoutOptions } from "../forms/switches/view-switch";
 import { config } from "config";
@@ -10,12 +10,14 @@ import {
 import useUser from "components/utils/useUser";
 import { Roles } from "services/role";
 import OrganizationsLoader from "components/loaders/organizations";
+import { checkOrgForRole } from "components/utils/check-org-for-role";
 const { features: featureFlags, realm } = config.env;
 
 type Props = {
   children: React.ReactNode;
   viewType: ViewLayoutOptions;
   org: OrganizationRepresentation;
+  setVisibility: () => void;
 };
 
 const Title = ({ children }) => (
@@ -62,8 +64,13 @@ const InnerItem = ({ children, title, subTitle, viewType }) => {
   );
 };
 
-const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
-  const { user, checkOrgForRole } = useUser();
+const OrganizationItem: FC<Props> = ({
+  children,
+  org,
+  viewType,
+  setVisibility,
+}) => {
+  const { user } = useUser();
   const { displayName: title, name: subTitle } = org;
   const link = `/organizations/${org.id}/details`;
 
@@ -79,30 +86,16 @@ const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
 
   const hasViewRole = checkOrgForRole(userRolesForOrg, Roles.ViewOrganization);
 
+  useEffect(() => {
+    if (hasViewRole) setVisibility();
+  }, [hasViewRole]);
+
   if (isFetchingRole) {
     return <OrganizationsLoader />;
   }
 
   if (!hasViewRole) {
-    return (
-      <div
-        className={cs(
-          "block",
-          "focus:outline-none focus:ring-1 focus:ring-neutral-50 focus:ring-offset-1",
-          {
-            "md:pb-3": viewType === ViewLayoutOptions.GRID,
-          }
-        )}
-      >
-        <InnerItem
-          title={title}
-          subTitle={"Insufficient role."}
-          viewType={viewType}
-        >
-          <div>Contact Organization admin for access.</div>
-        </InnerItem>
-      </div>
-    );
+    return <></>;
   }
   return featureFlags.orgDetailsEnabled ? (
     <Link

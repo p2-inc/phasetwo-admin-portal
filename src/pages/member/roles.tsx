@@ -17,6 +17,8 @@ import fullName from "components/utils/fullName";
 import useUser from "components/utils/useUser";
 import Alert from "components/elements/alerts/alert";
 import { OrgRoles } from "services/role";
+import { Roles as RolesEnum } from "services/role";
+import { checkOrgForRole } from "components/utils/check-org-for-role";
 
 const loadingIcon = (
   <div>
@@ -267,8 +269,7 @@ const Roles = () => {
 
   const isSameUserAndMember = currentMember.id === user?.id;
 
-  const doesNotHaveManageRole =
-    roleData.find((rd) => rd.name === "manage-roles")?.isChecked === false;
+  const hasManageRolesRole = checkOrgForRole(roles, RolesEnum.ManageRoles);
 
   return (
     <div className="mt-4 md:mt-16">
@@ -290,6 +291,7 @@ const Roles = () => {
           className={buttonClasses}
           onClick={grantAllRoles}
           disabled={
+            !hasManageRolesRole ||
             roleData.filter((rd) => rd.isChecked).length === roleData.length
           }
         >
@@ -299,6 +301,7 @@ const Roles = () => {
           className={buttonClasses}
           onClick={() => grantFilteredRoles("manage")}
           disabled={
+            !hasManageRolesRole ||
             !(
               roleData.filter(
                 (rd) => rd.name.startsWith("manage") && !rd.isChecked
@@ -312,6 +315,7 @@ const Roles = () => {
           className={buttonClasses}
           onClick={() => grantFilteredRoles("view")}
           disabled={
+            !hasManageRolesRole ||
             !(
               roleData.filter(
                 (rd) => rd.name.startsWith("view") && !rd.isChecked
@@ -324,7 +328,10 @@ const Roles = () => {
         <button
           className={buttonClasses}
           onClick={revokeAllRoles}
-          disabled={roleData.filter((rd) => rd.isChecked).length === 0}
+          disabled={
+            !hasManageRolesRole ||
+            roleData.filter((rd) => rd.isChecked).length === 0
+          }
         >
           none
         </button>
@@ -338,7 +345,7 @@ const Roles = () => {
           />
         </div>
       )}
-      {isSameUserAndMember && doesNotHaveManageRole && (
+      {isSameUserAndMember && !hasManageRolesRole && (
         <div className="mt-4">
           <Alert
             title='You lack the "manage-roles" role.'
@@ -356,7 +363,7 @@ const Roles = () => {
                 isChecked={item.isChecked}
                 onChange={onRoleToggle}
                 isDisabled={
-                  (isSameUserAndMember && doesNotHaveManageRole) ||
+                  (isSameUserAndMember && !hasManageRolesRole) ||
                   updatingRoles.includes(item.name)
                 }
                 key={item.name}

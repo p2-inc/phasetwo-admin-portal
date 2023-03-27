@@ -14,8 +14,12 @@ export enum Roles {
 }
 
 export const OrgRoles = Object.values(Roles);
-export const manageRoles = pickBy(Roles, (val) => val.startsWith("manage"));
-export const viewRoles = pickBy(Roles, (val) => val.startsWith("view"));
+export const manageRoles = pickBy(Roles, (val) =>
+  val.startsWith("manage")
+) as typeof Roles;
+export const viewRoles = pickBy(Roles, (val) =>
+  val.startsWith("view")
+) as typeof Roles;
 
 export const roleSettings = [
   {
