@@ -33,7 +33,6 @@ export default function OrganizationDetail() {
   let { orgId } = useParams();
   const { features: featureFlags, realm } = config.env;
   const {
-    hasViewMembersRole: hasViewMembersRoleCheck,
     hasManageInvitationsRole: hasManageInvitationsRoleCheck,
     hasManageOrganizationRole: hasManageOrganizationRoleCheck,
     hasManageIdentityProvidersRole,
@@ -62,7 +61,6 @@ export default function OrganizationDetail() {
     realm,
   });
 
-  const hasViewMembersRole = hasViewMembersRoleCheck(orgId);
   const hasManageInvitationsRole = hasManageInvitationsRoleCheck(orgId);
   const hasManageOrganizationRole = hasManageOrganizationRoleCheck(orgId);
   const hasManageIDPRole = hasManageIdentityProvidersRole(orgId);
@@ -106,7 +104,7 @@ export default function OrganizationDetail() {
         <PrimaryContentArea>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {/* Invite new members */}
-            {hasViewMembersRole && featureFlags.orgInvitationsEnabled && (
+            {featureFlags.orgInvitationsEnabled && (
               <OrganizationActionCard>
                 <OACTopRow>
                   <RoundedIcon>
@@ -119,46 +117,55 @@ export default function OrganizationDetail() {
                   Invite new members or remove members from the organization.
                 </div>
                 <div>
-                  <Link to={`/organizations/${orgId}/invitation/new`}>
+                  {hasManageInvitationsRole ? (
+                    <Link to={`/organizations/${orgId}/invitation/new`}>
+                      <Button
+                        isBlackButton
+                        disabled={!hasManageInvitationsRole}
+                      >
+                        <Plus className="mr-2 w-5" />
+                        Invite new members
+                      </Button>
+                    </Link>
+                  ) : (
                     <Button isBlackButton disabled={!hasManageInvitationsRole}>
                       <Plus className="mr-2 w-5" />
                       Invite new members
                     </Button>
-                  </Link>
+                  )}
                 </div>
               </OrganizationActionCard>
             )}
 
             {/* Setup SSO */}
-            {hasManageIDPRole &&
-              hasViewIDPRole &&
-              featureFlags.orgSsoEnabled && (
-                <OrganizationActionCard>
-                  <OACTopRow>
-                    <RoundedIcon>
-                      <Network className="h-5 w-5" />
-                    </RoundedIcon>
-                    <Stat
-                      label="active SSO connections"
-                      value={idps.length}
-                    ></Stat>
-                  </OACTopRow>
-                  <div className="text-sm leading-relaxed text-gray-600">
-                    Setup SSO connections as necessary for this organization.
-                  </div>
-                  <div>
-                    <Button
-                      isBlackButton
-                      onClick={() => OpenSSOLink({ orgId: orgId! })}
-                    >
-                      Setup SSO
-                    </Button>
-                  </div>
-                </OrganizationActionCard>
-              )}
+            {featureFlags.orgSsoEnabled && (
+              <OrganizationActionCard>
+                <OACTopRow>
+                  <RoundedIcon>
+                    <Network className="h-5 w-5" />
+                  </RoundedIcon>
+                  <Stat
+                    label="active SSO connections"
+                    value={idps.length}
+                  ></Stat>
+                </OACTopRow>
+                <div className="text-sm leading-relaxed text-gray-600">
+                  Setup SSO connections as necessary for this organization.
+                </div>
+                <div>
+                  <Button
+                    isBlackButton
+                    onClick={() => OpenSSOLink({ orgId: orgId! })}
+                    disabled={!hasManageIDPRole || !hasViewIDPRole}
+                  >
+                    Setup SSO
+                  </Button>
+                </div>
+              </OrganizationActionCard>
+            )}
 
             {/* Setup domains */}
-            {hasManageOrganizationRole && featureFlags.orgDomainsEnabled && (
+            {featureFlags.orgDomainsEnabled && (
               <OrganizationActionCard>
                 <OACTopRow>
                   <RoundedIcon>
@@ -172,9 +179,15 @@ export default function OrganizationDetail() {
                   security.
                 </div>
                 <div>
-                  <Link to={`/organizations/${org?.id}/domains/add`}>
-                    <Button isBlackButton>Setup domains</Button>
-                  </Link>
+                  {hasManageOrganizationRole ? (
+                    <Link to={`/organizations/${org?.id}/domains/add`}>
+                      <Button isBlackButton>Setup domains</Button>
+                    </Link>
+                  ) : (
+                    <Button isBlackButton disabled>
+                      Setup domains
+                    </Button>
+                  )}
                 </div>
               </OrganizationActionCard>
             )}

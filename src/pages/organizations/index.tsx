@@ -18,7 +18,7 @@ import useUser from "components/utils/useUser";
 const { realm } = config.env;
 
 export default function Organizations() {
-  const { user, isFetchingUserOrgs, hasViewOrganizationRole } = useUser();
+  const { user } = useUser();
   const [viewType, setViewType] = useState<ViewLayoutOptions>(
     ViewLayoutOptions.GRID
   );
@@ -31,15 +31,11 @@ export default function Organizations() {
       { skip: !user?.id }
     );
 
-  const filteredOrgs = userOrgs.filter((org) =>
-    hasViewOrganizationRole(org.id!)
-  );
-
   return (
     <>
       <TopHeader
         header="Organizations"
-        badgeVal={filteredOrgs.length}
+        badgeVal={userOrgs.length}
         rightAreaItems={
           <>
             <FormTextInputWithIcon
@@ -54,7 +50,7 @@ export default function Organizations() {
         {/* Primary content */}
         <PrimaryContentArea>
           <div>
-            {(isFetching || isFetchingUserOrgs) && (
+            {isFetching && (
               <div className="grid grid-cols-1 justify-items-stretch gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <OrganizationsLoader />
                 <OrganizationsLoader />
@@ -64,7 +60,7 @@ export default function Organizations() {
                 <OrganizationsLoader />
               </div>
             )}
-            {!isFetching && !isFetchingUserOrgs && (
+            {!isFetching && (
               <div
                 className={cs({
                   "grid grid-cols-1 justify-items-stretch gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3":

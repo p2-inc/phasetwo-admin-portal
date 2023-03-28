@@ -283,6 +283,15 @@ const Roles = () => {
           </Link>
         }
       />
+      {!hasManageRolesRole && (
+        <div className="mt-4">
+          <Alert
+            title='You lack the "manage-roles" role.'
+            body="Speak to an admin in order to be granted this role."
+            type="info"
+          />
+        </div>
+      )}
       <div className="mt-8 flex items-center space-x-2 border-b pb-2">
         <div className="inline-block text-sm text-gray-600">Set roles:</div>
         <button
