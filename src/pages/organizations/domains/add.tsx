@@ -117,14 +117,6 @@ const DomainsAdd = () => {
           </div>
         }
       />
-      {org.domains && org.domains?.length > 0 && (
-        <div className="space-y-2 py-5">
-          <div className="text-md">{t("currentRegisteredDomains")}</div>
-          {org.domains.map((domain) => (
-            <div key={domain}>{domain}</div>
-          ))}
-        </div>
-      )}
 
       <div className="space-y-5 py-10">
         {org.domains && org.domains?.length > 0 && (
