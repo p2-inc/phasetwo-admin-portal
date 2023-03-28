@@ -1,27 +1,16 @@
-import { KeycloakProfile } from "keycloak-js";
-import { useState, useEffect } from "react";
-import { keycloak } from "keycloak";
 import { OrganizationRepresentation, useGetMeQuery } from "store/apis/orgs";
 import { config } from "config";
-import { get, find, chain } from "lodash";
+import { get } from "lodash";
 import { Roles } from "services/role";
+import { useGetAccountQuery } from "store/apis/profile";
 
 export default function useUser() {
   const { realm } = config.env;
-  const [user, setUser] = useState<KeycloakProfile>();
+  const { data: user = {} } = useGetAccountQuery({ realm });
 
   const { data: userOrgs = {}, isFetching: isFetchingUserOrgs } = useGetMeQuery(
     { realm }
   );
-
-  async function loadUser() {
-    const u = await keycloak.loadUserProfile();
-    setUser(u);
-  }
-
-  useEffect(() => {
-    loadUser();
-  }, []);
 
   function fullName() {
     if (!user) return "member";
