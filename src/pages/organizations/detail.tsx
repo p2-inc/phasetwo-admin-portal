@@ -5,7 +5,6 @@ import SectionHeader from "components/navs/section-header";
 import { Link, useParams } from "react-router-dom";
 import { config } from "config";
 import {
-  useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery,
   useGetIdpsQuery,
   useGetOrganizationByIdQuery,
   useGetOrganizationDomainsQuery,
@@ -29,13 +28,17 @@ import OpenSSOLink from "components/utils/ssoLink";
 import MembersTable from "components/elements/table/members-table";
 import { Globe, Network, Plus, User } from "lucide-react";
 import useUser from "components/utils/useUser";
-import { checkOrgForRole } from "components/utils/check-org-for-role";
-import { Roles } from "services/role";
 
 export default function OrganizationDetail() {
   let { orgId } = useParams();
   const { features: featureFlags, realm } = config.env;
-  const { user } = useUser();
+  const {
+    hasViewMembersRole: hasViewMembersRoleCheck,
+    hasManageInvitationsRole: hasManageInvitationsRoleCheck,
+    hasManageOrganizationRole: hasManageOrganizationRoleCheck,
+    hasManageIdentityProvidersRole,
+    hasViewIdentityProvidersRole,
+  } = useUser();
   const { data: org } = useGetOrganizationByIdQuery({
     orgId: orgId!,
     realm,
@@ -58,36 +61,12 @@ export default function OrganizationDetail() {
     orgId: org?.id!,
     realm,
   });
-  const { data: userRolesForOrg = [] } =
-    useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery(
-      {
-        orgId: orgId!,
-        realm,
-        userId: user?.id!,
-      },
-      { skip: !user?.id }
-    );
 
-  const hasViewMembersRole = checkOrgForRole(
-    userRolesForOrg,
-    Roles.ViewMembers
-  );
-  const hasManageInvitationsRole = checkOrgForRole(
-    userRolesForOrg,
-    Roles.ManageInvitations
-  );
-  const hasManageOrganizationRole = checkOrgForRole(
-    userRolesForOrg,
-    Roles.ManageOrganization
-  );
-  const hasManageIDPRole = checkOrgForRole(
-    userRolesForOrg,
-    Roles.ManageIdentityProviders
-  );
-  const hasViewIDPRole = checkOrgForRole(
-    userRolesForOrg,
-    Roles.ViewIdentityProviders
-  );
+  const hasViewMembersRole = hasViewMembersRoleCheck(orgId);
+  const hasManageInvitationsRole = hasManageInvitationsRoleCheck(orgId);
+  const hasManageOrganizationRole = hasManageOrganizationRoleCheck(orgId);
+  const hasManageIDPRole = hasManageIdentityProvidersRole(orgId);
+  const hasViewIDPRole = hasViewIdentityProvidersRole(orgId);
   // const [createPortalLink, { isSuccess }] = useCreatePortalLinkMutation();
 
   const filteredMembers = members.filter(

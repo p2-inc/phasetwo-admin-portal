@@ -17,8 +17,6 @@ import fullName from "components/utils/fullName";
 import useUser from "components/utils/useUser";
 import Alert from "components/elements/alerts/alert";
 import { OrgRoles } from "services/role";
-import { Roles as RolesEnum } from "services/role";
-import { checkOrgForRole } from "components/utils/check-org-for-role";
 
 const loadingIcon = (
   <div>
@@ -90,7 +88,7 @@ const buttonClasses =
 
 const Roles = () => {
   let { orgId, memberId } = useParams();
-  const { user } = useUser();
+  const { user, hasManageRolesRole: hasManageRolesRoleCheck } = useUser();
   const [updatingRoles, setUpdatingRoles] = useState<string[]>([]);
 
   const { data: members = [] } = useGetOrganizationMembershipsQuery({
@@ -269,7 +267,7 @@ const Roles = () => {
 
   const isSameUserAndMember = currentMember.id === user?.id;
 
-  const hasManageRolesRole = checkOrgForRole(roles, RolesEnum.ManageRoles);
+  const hasManageRolesRole = hasManageRolesRoleCheck(orgId);
 
   return (
     <div className="mt-4 md:mt-16">
@@ -363,7 +361,8 @@ const Roles = () => {
                 isChecked={item.isChecked}
                 onChange={onRoleToggle}
                 isDisabled={
-                  (isSameUserAndMember && !hasManageRolesRole) ||
+                  isSameUserAndMember ||
+                  !hasManageRolesRole ||
                   updatingRoles.includes(item.name)
                 }
                 key={item.name}

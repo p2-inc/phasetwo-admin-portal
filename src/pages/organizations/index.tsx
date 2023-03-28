@@ -18,8 +18,7 @@ import useUser from "components/utils/useUser";
 const { realm } = config.env;
 
 export default function Organizations() {
-  const { user } = useUser();
-  const [viewOrgs, setViewOrgs] = useState<string[]>([]);
+  const { user, isFetchingUserOrgs, hasViewOrganizationRole } = useUser();
   const [viewType, setViewType] = useState<ViewLayoutOptions>(
     ViewLayoutOptions.GRID
   );
@@ -32,11 +31,15 @@ export default function Organizations() {
       { skip: !user?.id }
     );
 
+  const filteredOrgs = userOrgs.filter((org) =>
+    hasViewOrganizationRole(org.id!)
+  );
+
   return (
     <>
       <TopHeader
         header="Organizations"
-        badgeVal={viewOrgs.length}
+        badgeVal={filteredOrgs.length}
         rightAreaItems={
           <>
             <FormTextInputWithIcon
@@ -51,14 +54,17 @@ export default function Organizations() {
         {/* Primary content */}
         <PrimaryContentArea>
           <div>
-            {isFetching && (
+            {(isFetching || isFetchingUserOrgs) && (
               <div className="grid grid-cols-1 justify-items-stretch gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <OrganizationsLoader />
+                <OrganizationsLoader />
+                <OrganizationsLoader />
                 <OrganizationsLoader />
                 <OrganizationsLoader />
                 <OrganizationsLoader />
               </div>
             )}
-            {!isFetching && (
+            {!isFetching && !isFetchingUserOrgs && (
               <div
                 className={cs({
                   "grid grid-cols-1 justify-items-stretch gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3":
@@ -67,17 +73,18 @@ export default function Organizations() {
                     viewType === ViewLayoutOptions.LIST,
                 })}
               >
-                {userOrgs.map((org) => (
-                  <OrganizationItem
-                    key={org.id}
-                    org={org}
-                    viewType={viewType}
-                    setVisibility={() => setViewOrgs([...viewOrgs, org.id!])}
-                  >
-                    <MembersStat org={org} realm={config.env.realm} />
-                    <DomainStat org={org} realm={config.env.realm} />
-                  </OrganizationItem>
-                ))}
+                {filteredOrgs.map((org) => {
+                  return (
+                    <OrganizationItem
+                      key={org.id}
+                      org={org}
+                      viewType={viewType}
+                    >
+                      <MembersStat org={org} realm={config.env.realm} />
+                      <DomainStat org={org} realm={config.env.realm} />
+                    </OrganizationItem>
+                  );
+                })}
               </div>
             )}
           </div>
