@@ -73,7 +73,7 @@ export default function Organizations() {
                     viewType === ViewLayoutOptions.LIST,
                 })}
               >
-                {filteredOrgs.map((org) => {
+                {userOrgs.map((org) => {
                   return (
                     <OrganizationItem
                       key={org.id}

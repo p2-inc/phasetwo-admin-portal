@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ViewLayoutOptions } from "../forms/switches/view-switch";
 import { config } from "config";
 import { OrganizationRepresentation } from "store/apis/orgs";
+import useUser from "components/utils/useUser";
 const { features: featureFlags } = config.env;
 
 type Props = {
@@ -59,19 +60,10 @@ const InnerItem = ({ children, title, subTitle, viewType }) => {
 const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
   const { displayName: title, name: subTitle } = org;
   const link = `/organizations/${org.id}/details`;
+  const { hasViewOrganizationRole: hasViewOrganizationRoleCheck } = useUser();
+  const hasViewOrganizationRole = hasViewOrganizationRoleCheck(org.id);
 
-  return featureFlags.orgDetailsEnabled ? (
-    <Link
-      to={link}
-      className={cs("group block", "focus:outline-none focus:ring-0", {
-        "md:pb-3": viewType === ViewLayoutOptions.GRID,
-      })}
-    >
-      <InnerItem title={title} subTitle={subTitle} viewType={viewType}>
-        {children}
-      </InnerItem>
-    </Link>
-  ) : (
+  const ViewCard = () => (
     <div
       className={cs(
         "block",
@@ -86,6 +78,25 @@ const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
       </InnerItem>
     </div>
   );
+
+  const LinkCard = () => (
+    <Link
+      to={link}
+      className={cs("group block", "focus:outline-none focus:ring-0", {
+        "md:pb-3": viewType === ViewLayoutOptions.GRID,
+      })}
+    >
+      <InnerItem title={title} subTitle={subTitle} viewType={viewType}>
+        {children}
+      </InnerItem>
+    </Link>
+  );
+
+  if (hasViewOrganizationRole && featureFlags.orgDetailsEnabled) {
+    return <LinkCard />;
+  } else {
+    return <ViewCard />;
+  }
 };
 
 export default OrganizationItem;
