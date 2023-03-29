@@ -55,7 +55,7 @@ const ProfileDelete = () => {
           <div className="space-y-4">
             <RHFFormTextInputWithLabel
               slug="delete"
-              label="Write `delete` to confirm"
+              label={t("Write `delete` to confirm")}
               register={register}
               inputArgs={{
                 placeholder: "",
@@ -63,7 +63,7 @@ const ProfileDelete = () => {
               }}
             />
             <Button isBlackButton disabled={confirmDelete} type="submit">
-              Confirm profile delete
+              {t("Confirm profile delete")}
             </Button>
           </div>
         </form>
