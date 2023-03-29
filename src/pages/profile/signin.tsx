@@ -117,8 +117,8 @@ const SigninProfile = () => {
     <div className="space-y-10">
       <div>
         <SectionHeader
-          title="Signing in"
-          description="Configure ways to sign in."
+          title={t("Signing in")}
+          description={t("Configure ways to sign in.")}
         />
       </div>
       <div className="space-y-16">
@@ -134,8 +134,8 @@ const SigninProfile = () => {
               />
             </div>
             <SectionHeader
-              title="Password"
-              description="Sign in by entering your password."
+              title={t("Password")}
+              description={t("Sign in by entering your password.")}
               variant="small"
             />
             <Table
@@ -153,15 +153,15 @@ const SigninProfile = () => {
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <SectionHeader
-                  title="Two-factor authentication"
+                  title={t("Two-factor authentication")}
                   variant="medium"
                 />
               </div>
 
               <div className="items-center justify-between space-y-4 md:flex md:space-y-0">
                 <SectionHeader
-                  title="Authenticator application"
-                  description="Enter a verification code from authenticator application."
+                  title={t("Authenticator application")}
+                  description={t("Enter a verification code from authenticator application.")}
                   variant="small"
                 />
 
@@ -181,8 +181,8 @@ const SigninProfile = () => {
 
               <div className="items-center justify-between space-y-4 md:flex md:space-y-0">
                 <SectionHeader
-                  title="Security key"
-                  description="Use your security key to sign in."
+                  title={t("Security key")}
+                  description={t("Use your security key to sign in.")}
                   variant="small"
                 />
                 <Button
@@ -207,12 +207,12 @@ const SigninProfile = () => {
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-p2blue-700 dark:text-zinc-200">
                   <Key className="h-5 w-5" />
                 </div>
-                <SectionHeader title="Passwordless" variant="medium" />
+                <SectionHeader title={t("Passwordless")} variant="medium" />
               </div>
               <div className="items-center justify-between space-y-4 md:flex md:space-y-0">
                 <SectionHeader
-                  title="Security key"
-                  description="Use your security key for passwordless sign in."
+                  title={t("Security key")}
+                  description={t("Use your security key for passwordless sign in.")}
                   variant="small"
                 />
                 <Button

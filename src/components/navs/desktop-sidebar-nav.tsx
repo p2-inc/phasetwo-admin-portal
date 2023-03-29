@@ -9,6 +9,7 @@ import { NavLink, Link } from "react-router-dom";
 import { ChevronIcon, DoubleSlashBrandIcon, FullBrandIcon } from "../icons";
 import { NavigationItem } from "../layouts/layout";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   menuCollapsed: boolean;
@@ -41,6 +42,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
 }) => {
   const { user, fullName } = useUser();
   const [theme, setTheme] = useState(themes[0]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (theme.key === "system") {
@@ -171,12 +173,12 @@ const DesktopSidebarNav: React.FC<Props> = ({
                       to="/"
                       className="group -mx-3 flex items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-zinc-800 dark:hover:text-gray-100"
                     >
-                      <div>Return to homepage</div>
+                      <div>{t("Return to homepage")}</div>
                       <ExternalLink className="h-4 w-4" />
                     </Link>
                   </div>
                   <div className="relative flex items-center justify-between py-2">
-                    <div className="text-sm dark:text-zinc-200">Theme</div>
+                    <div className="text-sm dark:text-zinc-200">{t("Theme")}</div>
                     <Listbox value={theme} onChange={setTheme}>
                       <Listbox.Button className="flex items-center space-x-2 rounded border px-2 py-1 text-sm hover:border-gray-500 dark:border-zinc-600 dark:text-zinc-200 dark:hover:border-zinc-400">
                         <div>{theme.icon}</div>
@@ -201,7 +203,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                       className="w-full"
                       onClick={() => keycloakService.logout()}
                     >
-                      Log Out
+                      {t("Log Out")}
                     </Button>
                   </div>
                 </Popover.Panel>

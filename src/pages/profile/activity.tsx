@@ -16,6 +16,7 @@ import { keycloakService } from "keycloak";
 import TimeUtil from "services/time-util";
 import Button from "components/elements/forms/buttons/button";
 import { Smartphone, Monitor } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type SignOutSessionState = {
   device: DeviceRepresentation;
@@ -23,6 +24,7 @@ type SignOutSessionState = {
 };
 
 const ActivityProfile = () => {
+  const { t } = useTranslation();
   const [showSignOutAllConfModal, setShowSignOutAllConfModal] = useState(false);
   const [showSignOutSession, setShowSignOutSession] = useState<boolean>(false);
   const [signOutSessionData, setSignOutSessionData] =
@@ -127,10 +129,10 @@ const ActivityProfile = () => {
             <ConfirmationModal
               open={showSignOutAllConfModal}
               close={() => setShowSignOutAllConfModal(false)}
-              buttonTitle="Sign out all devices"
+              buttonTitle={t("Sign out all devices")}
               buttonId="sign-out-all"
-              modalTitle="Sign out all devices"
-              modalMessage="This action will sign out all the devices that have signed in to your account, including the current device you are using."
+              modalTitle={t("Sign out all devices")}
+              modalMessage={t("This action will sign out all the devices that have signed in to your account, including the current device you are using.")}
               onContinue={() => signOutAll()}
             />
           )}
@@ -141,8 +143,8 @@ const ActivityProfile = () => {
                 setShowSignOutSession(false);
                 setSignOutSessionData(undefined);
               }}
-              modalTitle="Sign out"
-              modalMessage="Sign out this session?"
+              modalTitle={t("Sign out")}
+              modalMessage={t("Sign out this session?")}
               onContinue={() =>
                 signOutSession(
                   signOutSessionData.device,
@@ -153,13 +155,13 @@ const ActivityProfile = () => {
           )}
           <div className="mb-12">
             <SectionHeader
-              title="Device activity"
-              description="Sign out of any unfamiliar devices."
+              title={t("Device activity")}
+              description={t("Sign out of any unfamiliar devices.")}
             />
             {isShowSignOutAll(devices) && (
               <div className="mt-3">
                 <Button onClick={() => setShowSignOutAllConfModal(true)}>
-                  Sign out all devices
+                  {t("Sign out all devices")}
                 </Button>
               </div>
             )}
@@ -208,7 +210,7 @@ const ActivityProfile = () => {
                                   }}
                                   isCompact
                                 >
-                                  Sign out session
+                                  {t("Sign out session")}
                                 </Button>
                               )}
                               {session.current && (
@@ -220,34 +222,34 @@ const ActivityProfile = () => {
                                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-p2blue-700 opacity-75"></span>
                                     <span className="relative inline-flex h-2 w-2 rounded-full bg-p2blue-700"></span>
                                   </span>
-                                  <span>Current session</span>
+                                  <span>{t("Current session")}</span>
                                 </span>
                               )}
                             </div>
                             <div className="p-4 md:grid md:grid-cols-5">
                               <div className="">
-                                <ActivityItem title="IP address">
+                                <ActivityItem title={t("IP address")}>
                                   {session.ipAddress}
                                 </ActivityItem>
                               </div>
                               <div className="">
-                                <ActivityItem title="Last accessed">
+                                <ActivityItem title={t("Last accessed")}>
                                   {time(session.lastAccess)}
                                 </ActivityItem>
                               </div>
                               <div className="">
-                                <ActivityItem title="Clients">
+                                <ActivityItem title={t("Clients")}>
                                   {session.clients &&
                                     makeClientsString(session.clients)}
                                 </ActivityItem>
                               </div>
                               <div className="">
-                                <ActivityItem title="Started">
+                                <ActivityItem title={t("Started")}>
                                   {time(session.started)}
                                 </ActivityItem>
                               </div>
                               <div className="">
-                                <ActivityItem title="Expires">
+                                <ActivityItem title={t("Expires")}>
                                   {time(session.expires)}
                                 </ActivityItem>
                               </div>

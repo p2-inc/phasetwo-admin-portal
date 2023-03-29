@@ -28,8 +28,10 @@ import OpenSSOLink from "components/utils/ssoLink";
 import MembersTable from "components/elements/table/members-table";
 import { Globe, Network, Plus, User } from "lucide-react";
 import useUser from "components/utils/useUser";
+import { useTranslation } from "react-i18next";
 
 export default function OrganizationDetail() {
+  const { t } = useTranslation();
   let { orgId } = useParams();
   const { features: featureFlags, realm } = config.env;
   const {
@@ -93,7 +95,7 @@ export default function OrganizationDetail() {
           <>
             {hasManageOrganizationRole && (
               <Link to={`/organizations/${org?.id}/settings`}>
-                <Button>Settings</Button>
+                <Button>{t("Settings")}</Button>
               </Link>
             )}
           </>
@@ -114,7 +116,9 @@ export default function OrganizationDetail() {
                   <Stat label="pending" value={invites.length}></Stat>
                 </OACTopRow>
                 <div className="text-sm leading-relaxed text-gray-600">
-                  Invite new members or remove members from the organization.
+                  {t(
+                    "Invite new members or remove members from the organization."
+                  )}
                 </div>
                 <div>
                   {hasManageInvitationsRole ? (
@@ -124,13 +128,13 @@ export default function OrganizationDetail() {
                         disabled={!hasManageInvitationsRole}
                       >
                         <Plus className="mr-2 w-5" />
-                        Invite new members
+                        {t("Invite new members")}
                       </Button>
                     </Link>
                   ) : (
                     <Button isBlackButton disabled={!hasManageInvitationsRole}>
                       <Plus className="mr-2 w-5" />
-                      Invite new members
+                      {t("Invite new members")}
                     </Button>
                   )}
                 </div>
@@ -150,7 +154,9 @@ export default function OrganizationDetail() {
                   ></Stat>
                 </OACTopRow>
                 <div className="text-sm leading-relaxed text-gray-600">
-                  Setup SSO connections as necessary for this organization.
+                  {t(
+                    "Setup SSO connections as necessary for this organization."
+                  )}
                 </div>
                 <div>
                   <Button
@@ -158,7 +164,7 @@ export default function OrganizationDetail() {
                     onClick={() => OpenSSOLink({ orgId: orgId! })}
                     disabled={!hasManageIDPRole || !hasViewIDPRole}
                   >
-                    Setup SSO
+                    {t("Setup SSO")}
                   </Button>
                 </div>
               </OrganizationActionCard>
@@ -175,17 +181,18 @@ export default function OrganizationDetail() {
                   <Stat label="Pending" value={verifiedDomains}></Stat>
                 </OACTopRow>
                 <div className="text-sm leading-relaxed text-gray-600">
-                  Setup associated domains and verify them to ensure full
-                  security.
+                  {t(
+                    "Setup associated domains and verify them to ensure full security."
+                  )}
                 </div>
                 <div>
                   {hasManageOrganizationRole ? (
                     <Link to={`/organizations/${org?.id}/domains/add`}>
-                      <Button isBlackButton>Setup domains</Button>
+                      <Button isBlackButton>{t("Setup domains")}</Button>
                     </Link>
                   ) : (
                     <Button isBlackButton disabled>
-                      Setup domains
+                      {t("Setup domains")}
                     </Button>
                   )}
                 </div>
@@ -204,7 +211,7 @@ export default function OrganizationDetail() {
           <HeaderLayout
             leftAreaItems={
               <>
-                <SectionHeader title="Members" variant="small" />
+                <SectionHeader title={t("Members")} variant="small" />
                 <div className="ml-2">
                   <RoundBadge>{totalMembers}</RoundBadge>
                 </div>

@@ -100,8 +100,8 @@ const GeneralProfile = () => {
     <div>
       <div className="mb-12">
         <SectionHeader
-          title="Personal information"
-          description="Manage your user profile information."
+          title={t("Personal information")}
+          description={t("Manage your user profile information.")}
         />
       </div>
       <form className="max-w-xl space-y-4" onSubmit={handleSubmit(onSubmit)}>
@@ -176,7 +176,7 @@ const GeneralProfile = () => {
               }
               disabled={isUpdatingAccount || !isDirty}
             >
-              Reset
+              {t("Reset")}
             </Button>
           </div>
         </>
@@ -185,12 +185,12 @@ const GeneralProfile = () => {
         <div className="space-y-4 rounded border border-red-500 p-6">
           <SectionHeader
             variant="medium"
-            title="Delete your profile"
-            description="Permanently remove your profile and all of its contents. This action is not reversible, so please continue with caution."
+            title={t("Delete your profile")}
+            description={t("Permanently remove your profile and all of its contents. This action is not reversible, so please continue with caution.")}
           />
           <div>
             <Link to={`/profile-delete`}>
-              <Button isBlackButton>Delete your profile</Button>
+              <Button isBlackButton>{t("Delete your profile")}</Button>
             </Link>
           </div>
         </div>

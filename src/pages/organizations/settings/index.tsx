@@ -10,6 +10,7 @@ import SettingsGeneral from "./general";
 import SettingsDomain from "./domains";
 import SettingsSSO from "./sso";
 import useUser from "components/utils/useUser";
+import { useTranslation } from "react-i18next";
 
 export type SettingsProps = {
   hasManageOrganizationRole?: boolean;
@@ -17,6 +18,7 @@ export type SettingsProps = {
 };
 
 export default function OrganizationSettings() {
+  const { t } = useTranslation();
   let { orgId } = useParams();
   const {
     hasManageOrganizationRole: hasManageOrganizationRoleCheck,
@@ -47,7 +49,7 @@ export default function OrganizationSettings() {
         rightAreaItems={
           <>
             <Link to={`/organizations/${orgId}/details`}>
-              <Button>Back to Org</Button>
+              <Button>{t("Back to Org")}</Button>
             </Link>
           </>
         }

@@ -13,6 +13,7 @@ import {
 import isValidDomain from "is-valid-domain";
 import { Globe } from "lucide-react";
 import useUser from "components/utils/useUser";
+import { useTranslation } from "react-i18next";
 
 const addIcon = (
   <RoundedIcon className="my-4">
@@ -23,6 +24,7 @@ const addIcon = (
 const { realm } = config.env;
 
 const DomainsAdd = () => {
+  const { t } = useTranslation();
   const { hasManageOrganizationRole: hasManageOrganizationRoleCheck } =
     useUser();
   let { orgId } = useParams();
@@ -95,8 +97,8 @@ const DomainsAdd = () => {
   return (
     <div className="md:py-20">
       <SectionHeader
-        title="Add new domain"
-        description="Add a new domain to this organization."
+        title={t("Add new domain")}
+        description={t("Add a new domain to this organization.")}
         icon={addIcon}
         rightContent={
           <div className="space-x-2">
@@ -110,14 +112,14 @@ const DomainsAdd = () => {
               to={`/organizations/${orgId}/settings`}
               className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
             >
-              Settings
+              {t("Settings")}
             </Link>
           </div>
         }
       />
       {org.domains && org.domains?.length > 0 && (
         <div className="space-y-2 py-5">
-          <div className="text-md">Current registered domains</div>
+          <div className="text-md">{t("Current registered domains")}</div>
           {org.domains.map((domain) => (
             <div key={domain}>{domain}</div>
           ))}

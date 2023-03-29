@@ -9,6 +9,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { config } from "config";
 import { useGetOrganizationDomainsQuery } from "store/apis/orgs";
 import { SettingsProps } from ".";
+import { useTranslation } from "react-i18next";
 
 const columns: TableColumns = [
   { key: "domain_name", data: "Domain name" },
@@ -17,6 +18,7 @@ const columns: TableColumns = [
 ];
 
 const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
+  const { t } = useTranslation();
   let { orgId } = useParams();
   const { data: domains = [], isLoading } = useGetOrganizationDomainsQuery({
     realm: config.env.realm,
@@ -26,10 +28,10 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
   const rows: TableRows = domains.map((domain) => ({
     ...domain,
     verifiedC: domain.verified ? (
-      <div className="text-green-600">Verified</div>
+      <div className="text-green-600">{t("Verified")}</div>
     ) : (
       <div>
-        <span className="mr-2 text-orange-600">Verification pending</span>
+        <span className="mr-2 text-orange-600">{t("Verification pending")}</span>
       </div>
     ),
     action:
@@ -40,7 +42,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
           <Link
             to={`/organizations/${orgId}/domains/verify/${domain.record_value}`}
           >
-            <Button>Verify domain</Button>
+            <Button>{t("Verify domain")}</Button>
           </Link>
         </div>
       ),
@@ -50,8 +52,8 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
     <div className="space-y-4">
       <div>
         <SectionHeader
-          title="Domains"
-          description="View linked domains and verify DNS entries."
+          title={t("Domains")}
+          description={t("View linked domains and verify DNS entries.")}
         />
       </div>
       <div>
@@ -62,7 +64,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
                 aria-hidden="true"
                 className="-ml-1 mr-2 h-5 w-5 fill-current"
               />
-              Add new domain
+              {t("Add new domain")}
             </Button>
           </Link>
         )}
