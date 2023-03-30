@@ -75,7 +75,7 @@ const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
           "md:pb-3": viewType === ViewLayoutOptions.GRID,
         }
       )}
-      title={t("Insufficient permissions to view organization.")}
+      title={t("insufficientPermissionsToViewOrganization")}
     >
       <InnerItem title={title} subTitle={subTitle} viewType={viewType}>
         {children}

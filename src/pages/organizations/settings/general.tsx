@@ -70,25 +70,25 @@ const SettingsGeneral = ({ hasManageOrganizationRole }: SettingsProps) => {
     <div className="space-y-4">
       <div>
         <SectionHeader
-          title={t("General")}
-          description={t("View organization information. Change display name.")}
+          title={t("general")}
+          description={t("viewOrganizationInformationChangeDisplayName")}
         />
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-xl space-y-4">
         <RHFFormTextInputWithLabel
-          label={t("Id")}
+          label={t("id")}
           slug="id"
           register={register}
           inputArgs={{ defaultValue: org?.id, disabled: true }}
         />
         <RHFFormTextInputWithLabel
-          label={t("Name")}
+          label={t("name")}
           slug="name"
           register={register}
           inputArgs={{ defaultValue: org?.name, disabled: true }}
         />
         <RHFFormTextInputWithLabel
-          label={t("Display Name")}
+          label={t("displayName")}
           slug="displayName"
           register={register}
           registerArgs={{
@@ -108,7 +108,7 @@ const SettingsGeneral = ({ hasManageOrganizationRole }: SettingsProps) => {
             isLoading || isLoadingOrganization || !hasManageOrganizationRole
           }
         >
-          {t("Update Organization")}
+          {t("updateOrganization")}
         </Button>
       </form>
     </div>

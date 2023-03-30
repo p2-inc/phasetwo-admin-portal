@@ -60,7 +60,7 @@ export default function P2Toast({
                   toast.dismiss(to.id);
                 }}
               >
-                <span className="sr-only">{t("Close")}</span>
+                <span className="sr-only">{t("close")}</span>
                 <XMarkIcon className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>

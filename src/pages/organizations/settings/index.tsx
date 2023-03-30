@@ -33,14 +33,14 @@ export default function OrganizationSettings() {
   return (
     <>
       <TopHeader
-        header="Settings"
+        header={t("settings")}
         collapseOnMobile={true}
         leftAreaItems={
           <Breadcrumbs
             items={[
-              { title: "Organizations", link: `/organizations` },
+              { title: t("organizations"), link: `/organizations` },
               {
-                title: `${org?.displayName || "Organization"}`.trim(),
+                title: `${org?.displayName || t("organization")}`.trim(),
                 link: `/organizations/${orgId}/details`,
               },
             ]}
@@ -49,7 +49,7 @@ export default function OrganizationSettings() {
         rightAreaItems={
           <>
             <Link to={`/organizations/${orgId}/details`}>
-              <Button>{t("Back to Org")}</Button>
+              <Button>{t("backToOrg")}</Button>
             </Link>
           </>
         }

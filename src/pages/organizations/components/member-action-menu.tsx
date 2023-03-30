@@ -80,7 +80,7 @@ export default function MembersActionMenu({ member, orgId, realm }: Props) {
                 className="h-5 w-5 dark:fill-zinc-200"
                 aria-hidden="true"
               />
-              <span className="md:hidden">{t("Open options")}</span>
+              <span className="md:hidden">{t("openOptions")}</span>
             </div>
           </Menu.Button>
         </div>
@@ -100,14 +100,14 @@ export default function MembersActionMenu({ member, orgId, realm }: Props) {
                 {({ active, disabled }) => {
                   return disabled ? (
                     <MenuItemButton active={active} disabled={disabled}>
-                      {t("Edit roles")}
+                      {t("editRoles")}
                     </MenuItemButton>
                   ) : (
                     <Link
                       to={`/organizations/${orgId}/members/${member.id}/roles`}
                     >
                       <MenuItemButton active={active} disabled={disabled}>
-                        {t("Edit roles")}
+                        {t("editRoles")}
                       </MenuItemButton>
                     </Link>
                   );
@@ -121,7 +121,7 @@ export default function MembersActionMenu({ member, orgId, realm }: Props) {
                       active={active}
                       disabled={disabled}
                     >
-                      {t("Remove")}
+                      {t("remove")}
                     </MenuItemButton>
                   );
                 }}

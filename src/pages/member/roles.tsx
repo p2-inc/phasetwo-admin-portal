@@ -348,8 +348,8 @@ const Roles = () => {
       {isSameUserAndMember && (
         <div className="mt-4">
           <Alert
-            title={t("You are the same user as this user.")}
-            body={t("Any changes you make will have immediate effect.")}
+            title={t("youAreTheSameUserAsThisUser")}
+            body={t("anyChangesYouMakeWillHaveImmediateEffect")}
             type="danger"
           />
         </div>
@@ -357,8 +357,8 @@ const Roles = () => {
       {isSameUserAndMember && !hasManageRolesRole && (
         <div className="mt-4">
           <Alert
-            title={t("You lack the `manage-roles` role.")}
-            body={t("Speak to an admin in order to be granted this role.")}
+            title={t("youLackTheManageRolesRole")}
+            body={t("speakToAnAdminInOrderToBeGrantedThisRole")}
             type="info"
           />
         </div>

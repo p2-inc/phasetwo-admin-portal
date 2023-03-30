@@ -12,14 +12,14 @@ const SettingsSSO = ({ hasManageIDPRole }: SettingsProps) => {
   return (
     <div className="space-y-4">
       <div>
-        <SectionHeader title={t("SSO")} description={t("Add an SSO provider.")} />
+        <SectionHeader title={t("sso")} description={t("addAnSsoProvider")} />
         <div className="mt-4">
           <Button
             isBlackButton
             onClick={() => OpenSSOLink({ orgId })}
             disabled={!hasManageIDPRole}
           >
-            {t("Setup SSO")}
+            {t("setupSso")}
           </Button>
         </div>
       </div>

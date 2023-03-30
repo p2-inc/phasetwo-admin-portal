@@ -97,8 +97,8 @@ const DomainsAdd = () => {
   return (
     <div className="md:py-20">
       <SectionHeader
-        title={t("Add new domain")}
-        description={t("Add a new domain to this organization.")}
+        title={t("addNewDomain")}
+        description={t("addANewDomainToThisOrganization")}
         icon={addIcon}
         rightContent={
           <div className="space-x-2">
@@ -112,14 +112,14 @@ const DomainsAdd = () => {
               to={`/organizations/${orgId}/settings`}
               className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
             >
-              {t("Settings")}
+              {t("settings")}
             </Link>
           </div>
         }
       />
       {org.domains && org.domains?.length > 0 && (
         <div className="space-y-2 py-5">
-          <div className="text-md">{t("Current registered domains")}</div>
+          <div className="text-md">{t("currentRegisteredDomains")}</div>
           {org.domains.map((domain) => (
             <div key={domain}>{domain}</div>
           ))}
@@ -146,7 +146,7 @@ const DomainsAdd = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <RHFFormTextInputWithLabel
               slug="domain"
-              label="Domain name"
+              label={t("domainName")}
               register={register}
               registerArgs={{
                 pattern:
@@ -166,7 +166,7 @@ const DomainsAdd = () => {
                 type="submit"
                 disabled={!hasManageOrganizationRole}
               >
-                Add domain
+                {t("addDomain")}
               </Button>
             </div>
           </form>

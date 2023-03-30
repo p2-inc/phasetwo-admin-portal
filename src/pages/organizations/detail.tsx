@@ -95,7 +95,7 @@ export default function OrganizationDetail() {
           <>
             {hasManageOrganizationRole && (
               <Link to={`/organizations/${org?.id}/settings`}>
-                <Button>{t("Settings")}</Button>
+                <Button>{t("settings")}</Button>
               </Link>
             )}
           </>
@@ -117,7 +117,7 @@ export default function OrganizationDetail() {
                 </OACTopRow>
                 <div className="text-sm leading-relaxed text-gray-600">
                   {t(
-                    "Invite new members or remove members from the organization."
+                    "inviteNewMembersOrRemoveMembersFromTheOrganization"
                   )}
                 </div>
                 <div>
@@ -128,13 +128,13 @@ export default function OrganizationDetail() {
                         disabled={!hasManageInvitationsRole}
                       >
                         <Plus className="mr-2 w-5" />
-                        {t("Invite new members")}
+                        {t("inviteNewMembers")}
                       </Button>
                     </Link>
                   ) : (
                     <Button isBlackButton disabled={!hasManageInvitationsRole}>
                       <Plus className="mr-2 w-5" />
-                      {t("Invite new members")}
+                      {t("inviteNewMembers")}
                     </Button>
                   )}
                 </div>
@@ -155,7 +155,7 @@ export default function OrganizationDetail() {
                 </OACTopRow>
                 <div className="text-sm leading-relaxed text-gray-600">
                   {t(
-                    "Setup SSO connections as necessary for this organization."
+                    "setupSsoConnectionsAsNecessaryForThisOrganization"
                   )}
                 </div>
                 <div>
@@ -164,7 +164,7 @@ export default function OrganizationDetail() {
                     onClick={() => OpenSSOLink({ orgId: orgId! })}
                     disabled={!hasManageIDPRole || !hasViewIDPRole}
                   >
-                    {t("Setup SSO")}
+                    {t("setupSso")}
                   </Button>
                 </div>
               </OrganizationActionCard>
@@ -182,17 +182,17 @@ export default function OrganizationDetail() {
                 </OACTopRow>
                 <div className="text-sm leading-relaxed text-gray-600">
                   {t(
-                    "Setup associated domains and verify them to ensure full security."
+                    "setupAssociatedDomainsAndVerifyThemToEnsureFullSecurity"
                   )}
                 </div>
                 <div>
                   {hasManageOrganizationRole ? (
                     <Link to={`/organizations/${org?.id}/domains/add`}>
-                      <Button isBlackButton>{t("Setup domains")}</Button>
+                      <Button isBlackButton>{t("setupDomains")}</Button>
                     </Link>
                   ) : (
                     <Button isBlackButton disabled>
-                      {t("Setup domains")}
+                      {t("setupDomains")}
                     </Button>
                   )}
                 </div>
@@ -211,7 +211,7 @@ export default function OrganizationDetail() {
           <HeaderLayout
             leftAreaItems={
               <>
-                <SectionHeader title={t("Members")} variant="small" />
+                <SectionHeader title={t("members")} variant="small" />
                 <div className="ml-2">
                   <RoundBadge>{totalMembers}</RoundBadge>
                 </div>
@@ -221,7 +221,7 @@ export default function OrganizationDetail() {
           <div className="space-y-2 px-4 pb-4 md:px-10 md:pb-40">
             <div>
               <FormTextInputWithIcon
-                inputArgs={{ placeholder: "Search Members" }}
+                inputArgs={{ placeholder: "searchMembers" }}
                 className="w-full md:w-auto"
               />
             </div>

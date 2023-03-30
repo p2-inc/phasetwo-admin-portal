@@ -70,13 +70,13 @@ const LinkedProfile = () => {
     if (account.social) {
       return (
         <label className="inline-block items-center space-x-2 rounded border border-p2blue-700/30 bg-p2blue-700/10 px-3 py-1 text-xs font-medium text-p2blue-700">
-          {t("Social login")}
+          {t("socialLogin")}
         </label>
       );
     }
     return (
       <label className="inline-block items-center space-x-2 rounded border border-green-700/30 bg-green-700/10 px-3 py-1 text-xs font-medium text-green-700">
-        {t("System defined")}
+        {t("systemDefined")}
       </label>
     );
   };
@@ -113,7 +113,7 @@ const LinkedProfile = () => {
           className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
           onClick={() => unlinkAccount(account)}
         >
-          {t("Unlink account")}
+          {t("unlinkAccount")}
         </Button>
       ),
     }));
@@ -139,7 +139,7 @@ const LinkedProfile = () => {
           className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
           onClick={() => linkAccount(account)}
         >
-          {t("Link account")}
+          {t("linkAccount")}
         </Button>
       ),
     }));
@@ -150,13 +150,13 @@ const LinkedProfile = () => {
         <div>
           <div className="mb-12">
             <SectionHeader
-              title={t("Linked accounts")}
-              description={t("Manage logins through third-party accounts.")}
+              title={t("linkedAccounts")}
+              description={t("manageLoginsThroughThirdPartyAccounts")}
             />
           </div>
           <div className="space-y-8">
             <div className="space-y-4">
-              <SectionHeader title={t("Linked login providers")} variant="medium" />
+              <SectionHeader title={t("linkedLoginProviders")} variant="medium" />
               <Table
                 columns={linkedColumns}
                 rows={linkedRows}
@@ -165,7 +165,7 @@ const LinkedProfile = () => {
             </div>
             <div className="space-y-4">
               <SectionHeader
-                title={t("Unlinked login providers")}
+                title={t("unlinkedLoginProviders")}
                 variant="medium"
               />
               <Table

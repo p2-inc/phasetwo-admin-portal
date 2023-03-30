@@ -31,28 +31,28 @@ const ProfileDelete = () => {
     <div className="my-16 rounded-md border border-red-500 p-6 md:mx-auto md:max-w-prose">
       <div className="space-y-4">
         <SectionHeader
-          title={t("Delete your profile")}
-          description={t("Permanently remove your profile and all of its contents. This action is not reversible, so please continue with caution.")}
+          title={t("deleteYourProfile")}
+          description={t("permanentlyRemoveYourProfileAndAllOfItsContentsThisActionIsNotReversibleSoPleaseContinueWithCaution")}
           icon={loadingIcon}
           rightContent={
             <Link
               to={`/profile/general`}
               className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100"
             >
-              {t("Cancel")}
+              {t("cancel")}
             </Link>
           }
         />
         <RHFFormTextInputWithLabel
           slug="delete"
-          label={t("Write `delete` to confirm")}
+          label={t("writeDeleteToConfirm")}
           register={register}
           inputArgs={{
             placeholder: "",
             autoFocus: true,
           }}
         />
-        <Button isBlackButton>{t("Confirm profile delete")}</Button>
+        <Button isBlackButton>{t("confirmProfileDelete")}</Button>
       </div>
     </div>
   );

@@ -11,12 +11,6 @@ import { useGetOrganizationDomainsQuery } from "store/apis/orgs";
 import { SettingsProps } from ".";
 import { useTranslation } from "react-i18next";
 
-const columns: TableColumns = [
-  { key: "domain_name", data: "Domain name" },
-  { key: "verifiedC", data: "Validated" },
-  { key: "action", data: "", columnClasses: "flex justify-end" },
-];
-
 const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
   const { t } = useTranslation();
   let { orgId } = useParams();
@@ -25,13 +19,19 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
     orgId: orgId!,
   });
 
+  const columns: TableColumns = [
+    { key: "domain_name", data: t("domainName") },
+    { key: "verifiedC", data: t("validated") },
+    { key: "action", data: "", columnClasses: "flex justify-end" },
+  ];
+
   const rows: TableRows = domains.map((domain) => ({
     ...domain,
     verifiedC: domain.verified ? (
-      <div className="text-green-600">{t("Verified")}</div>
+      <div className="text-green-600">{t("verified")}</div>
     ) : (
       <div>
-        <span className="mr-2 text-orange-600">{t("Verification pending")}</span>
+        <span className="mr-2 text-orange-600">{t("verificationPending")}</span>
       </div>
     ),
     action:
@@ -42,7 +42,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
           <Link
             to={`/organizations/${orgId}/domains/verify/${domain.record_value}`}
           >
-            <Button>{t("Verify domain")}</Button>
+            <Button>{t("verifyDomain")}</Button>
           </Link>
         </div>
       ),
@@ -52,8 +52,8 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
     <div className="space-y-4">
       <div>
         <SectionHeader
-          title={t("Domains")}
-          description={t("View linked domains and verify DNS entries.")}
+          title={t("domains")}
+          description={t("viewLinkedDomainsAndVerifyDnsEntries")}
         />
       </div>
       <div>
@@ -64,7 +64,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
                 aria-hidden="true"
                 className="-ml-1 mr-2 h-5 w-5 fill-current"
               />
-              {t("Add new domain")}
+              {t("addNewDomain")}
             </Button>
           </Link>
         )}
