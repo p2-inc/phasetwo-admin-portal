@@ -48,15 +48,15 @@ const SigninProfile = () => {
       .then(() => {
         P2Toast({
           success: true,
-          title: `${credential.userLabel ?? ""} removed.`,
+          title: t(`credentialsSuccessfullyRemoved`, [
+            credential.userLabel ?? "",
+          ]),
         });
       })
       .catch((e) => {
         P2Toast({
           error: true,
-          title: `Error removing ${
-            credential.userLabel ?? ""
-          } . Please try again.`,
+          title: t(`credentialsRemovingError`, [credential.userLabel ?? ""]),
         });
         console.error(e);
       });
@@ -71,8 +71,8 @@ const SigninProfile = () => {
   };
 
   const cols: TableColumns = [
-    { key: "name", data: "Name" },
-    { key: "created", data: "Created" },
+    { key: "name", data: t("name") },
+    { key: "created", data: t("created") },
     { key: "action", data: "", columnClasses: "flex justify-end" },
   ];
 
@@ -105,7 +105,7 @@ const SigninProfile = () => {
                 }
               }}
             >
-              Remove
+              {t("remove")}
             </Button>
           )}
         </>
@@ -161,7 +161,9 @@ const SigninProfile = () => {
               <div className="items-center justify-between space-y-4 md:flex md:space-y-0">
                 <SectionHeader
                   title={t("authenticatorApplication")}
-                  description={t("enterAVerificationCodeFromAuthenticatorApplication")}
+                  description={t(
+                    "enterAVerificationCodeFromAuthenticatorApplication"
+                  )}
                   variant="small"
                 />
 
@@ -169,7 +171,7 @@ const SigninProfile = () => {
                   isBlackButton
                   onClick={() => setUpCredential("CONFIGURE_TOTP")}
                 >
-                  Set up authenticator
+                  {t("setUpAuthenticator")}
                 </Button>
               </div>
 
@@ -189,7 +191,7 @@ const SigninProfile = () => {
                   isBlackButton
                   onClick={() => setUpCredential("webauthn-register")}
                 >
-                  Set up security key
+                  {t("setUpSecurityKey")}
                 </Button>
               </div>
               <Table
@@ -221,7 +223,7 @@ const SigninProfile = () => {
                     setUpCredential("webauthn-register-passwordless")
                   }
                 >
-                  Set up security key
+                  {t("setUpSecurityKey")}
                 </Button>
               </div>
               <Table

@@ -92,10 +92,10 @@ const LinkedProfile = () => {
 
   const linkedColumns: TableColumns = [
     { key: "icon", data: "" },
-    { key: "providerAlias", data: "Provider" },
-    { key: "displayName", data: "Name" },
-    { key: "label", data: "Label" },
-    { key: "username", data: "Username" },
+    { key: "providerAlias", data: t("provider") },
+    { key: "displayName", data: t("name") },
+    { key: "label", data: t("label") },
+    { key: "username", data: t("username") },
     { key: "action", data: "", columnClasses: "flex justify-end" },
   ];
 
@@ -120,9 +120,9 @@ const LinkedProfile = () => {
 
   const unlinkedColumns: TableColumns = [
     { key: "icon", data: "" },
-    { key: "providerAlias", data: "Provider" },
-    { key: "displayName", data: "Name" },
-    { key: "label", data: "Label" },
+    { key: "providerAlias", data: t("provider") },
+    { key: "displayName", data: t("name") },
+    { key: "label", data: t("label") },
     { key: "action", data: "", columnClasses: "flex justify-end" },
   ];
 
