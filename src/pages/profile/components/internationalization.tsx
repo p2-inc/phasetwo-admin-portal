@@ -12,18 +12,19 @@ import RHFFormTextInputWithLabel from "components/elements/forms/inputs/rhf-text
 import P2Toast from "components/utils/toast";
 import Dropdown from "components/elements/forms/dropdown/hui-dropdown";
 
-const localeOptions = [
-  { id: "english", name: "English" },
-  { id: "spanish", name: "Spanish" },
-];
+const { realm, supportedLocales } = config.env;
+const localeOptions = Object.keys(supportedLocales).map((key) => ({
+  id: key,
+  name: supportedLocales[key],
+}));
 
 const Internationalization = () => {
   const { t } = useTranslation();
-  const { realm } = config.env;
   const { data: account, isLoading: isLoadingAccount } = useGetAccountQuery({
     userProfileMetadata: true,
     realm,
   });
+
   const [selectedLocale, setSelectedLocale] = useState(localeOptions[0]);
 
   const [updateAccount, { isLoading: isUpdatingAccount }] =
