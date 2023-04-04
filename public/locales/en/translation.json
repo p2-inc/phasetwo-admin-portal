@@ -243,6 +243,6 @@
   "viewOrganizationInformationChangeDisplayName": "View organization information change display name",
   "welcomeMessage": "Welcome to keycloak account management",
   "writeDeleteToConfirm": "Write delete to confirm",
-  "youAreTheSameUserAsThisUser": "You are the same user as this user",
+  "youAreTheSameUserAsThisUser": "This is your account! This is you!",
   "youLackTheManageRolesRole": "You lack the manage roles role"
 }
