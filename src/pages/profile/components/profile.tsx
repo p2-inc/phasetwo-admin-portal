@@ -87,23 +87,21 @@ const ProfileData = () => {
               error={errors.username}
             />
           )}
-          {featureFlags.updateEmailFeatureEnabled && (
-            <RHFFormTextInputWithLabel
-              slug="email"
-              label={t("email")}
-              register={register}
-              registerArgs={{
-                required: true,
-                pattern: /\S+@\S+\.\S+/,
-              }}
-              inputArgs={{
-                disabled: isLoadingAccount,
-                placeholder: "your@email.com",
-                type: "email",
-              }}
-              error={errors.email}
-            />
-          )}
+          <RHFFormTextInputWithLabel
+            slug="email"
+            label={t("email")}
+            register={register}
+            registerArgs={{
+              required: true,
+              pattern: /\S+@\S+\.\S+/,
+            }}
+            inputArgs={{
+              disabled: isLoadingAccount,
+              placeholder: "your@email.com",
+              type: "email",
+            }}
+            error={errors.email}
+          />
           <RHFFormTextInputWithLabel
             slug="firstName"
             label="First Name"
