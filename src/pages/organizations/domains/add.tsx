@@ -8,11 +8,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { config } from "config";
 import {
   useGetOrganizationByIdQuery,
+  useGetOrganizationDomainsQuery,
   useUpdateOrganizationMutation,
 } from "store/apis/orgs";
 import isValidDomain from "is-valid-domain";
 import { Globe } from "lucide-react";
 import useUser from "components/utils/useUser";
+import { useTranslation } from "react-i18next";
 
 const addIcon = (
   <RoundedIcon className="my-4">
@@ -23,6 +25,7 @@ const addIcon = (
 const { realm } = config.env;
 
 const DomainsAdd = () => {
+  const { t } = useTranslation();
   const { hasManageOrganizationRole: hasManageOrganizationRoleCheck } =
     useUser();
   let { orgId } = useParams();
@@ -32,6 +35,11 @@ const DomainsAdd = () => {
     orgId: orgId!,
     realm,
   });
+  const { data: domains = [], refetch: refetchDomains } =
+    useGetOrganizationDomainsQuery({
+      realm,
+      orgId: orgId!,
+    });
   const hasManageOrganizationRole = hasManageOrganizationRoleCheck(orgId);
 
   const [updateOrg] = useUpdateOrganizationMutation();
@@ -81,6 +89,7 @@ const DomainsAdd = () => {
             success: true,
             title: `${domain} has been added to organization. Please verify domain.`,
           });
+          refetchDomains();
           return navigate(`/organizations/${orgId}/settings`);
         })
         .catch((e) => {
@@ -95,8 +104,8 @@ const DomainsAdd = () => {
   return (
     <div className="md:py-20">
       <SectionHeader
-        title="Add new domain"
-        description="Add a new domain to this organization."
+        title={t("addNewDomain")}
+        description={t("addANewDomainToThisOrganization")}
         icon={addIcon}
         rightContent={
           <div className="space-x-2">
@@ -110,20 +119,23 @@ const DomainsAdd = () => {
               to={`/organizations/${orgId}/settings`}
               className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
             >
-              Settings
+              {t("settings")}
             </Link>
           </div>
         }
       />
       <div className="space-y-5 py-10">
         {org.domains && org.domains?.length > 0 && (
-          <div className="divide-y rounded-md border border-gray-200 dark:border-zinc-600 dark:divide-zinc-600">
+          <div className="divide-y rounded-md border border-gray-200 dark:divide-zinc-600 dark:border-zinc-600">
             <div className="rounded-t-md bg-gray-50 px-3 py-2 text-sm font-semibold dark:bg-zinc-900 dark:text-zinc-200">
               Current registered domains
             </div>
             <div className="divide-y dark:divide-zinc-600">
               {org.domains.map((domain) => (
-                <div key={domain} className="px-3 py-2 text-sm flex items-center space-x-2 dark:text-zinc-200">
+                <div
+                  key={domain}
+                  className="flex items-center space-x-2 px-3 py-2 text-sm dark:text-zinc-200"
+                >
                   <div>{domain}</div>
                 </div>
               ))}
@@ -135,7 +147,7 @@ const DomainsAdd = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <RHFFormTextInputWithLabel
               slug="domain"
-              label="Domain name"
+              label={t("domainName")}
               register={register}
               registerArgs={{
                 pattern:
@@ -155,7 +167,7 @@ const DomainsAdd = () => {
                 type="submit"
                 disabled={!hasManageOrganizationRole}
               >
-                Add domain
+                {t("addDomain")}
               </Button>
             </div>
           </form>
