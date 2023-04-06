@@ -44,11 +44,6 @@ const DesktopSidebarNav: React.FC<Props> = ({
   const [theme, setTheme] = useState(themes[0]);
   const { t } = useTranslation();
   const { appiconUrl, logoUrl } = config.env;
-  console.log(
-    "🚀 ~ file: desktop-sidebar-nav.tsx:47 ~ appiconUrl, logoUrl:",
-    appiconUrl,
-    logoUrl
-  );
 
   useEffect(() => {
     if (theme.key === "system") {
