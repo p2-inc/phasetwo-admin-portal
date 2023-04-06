@@ -34,6 +34,7 @@ const ProfileData = () => {
     setValue("firstName", account?.firstName);
     setValue("lastName", account?.lastName);
     setValue("email", account?.email);
+    setValue("username", account?.username);
   }, [account, setValue]);
 
   const onSubmit = async (formData) => {
@@ -60,6 +61,7 @@ const ProfileData = () => {
         });
       });
   };
+
   return (
     <>
       <div className="mb-12">
@@ -96,7 +98,8 @@ const ProfileData = () => {
               pattern: /\S+@\S+\.\S+/,
             }}
             inputArgs={{
-              disabled: isLoadingAccount,
+              disabled:
+                isLoadingAccount || !featureFlags.updateEmailFeatureEnabled,
               placeholder: "your@email.com",
               type: "email",
             }}
@@ -104,19 +107,22 @@ const ProfileData = () => {
           />
           <RHFFormTextInputWithLabel
             slug="firstName"
-            label="First Name"
+            label={t("firstName")}
             register={register}
             inputArgs={{
               disabled: isLoadingAccount,
-              placeholder: "First name",
+              placeholder: t("firstName"),
             }}
             error={errors.firstName}
           />
           <RHFFormTextInputWithLabel
             slug="lastName"
-            label="Last Name"
+            label={t("lastName")}
             register={register}
-            inputArgs={{ disabled: isLoadingAccount, placeholder: "Last name" }}
+            inputArgs={{
+              disabled: isLoadingAccount,
+              placeholder: t("lastName"),
+            }}
             error={errors.lastName}
           />
           <div className="space-x-2">
@@ -125,20 +131,20 @@ const ProfileData = () => {
               type="submit"
               disabled={isUpdatingAccount || isLoadingAccount || !isDirty}
             >
-              Save
+              {t("save")}
             </Button>
             <Button
               type="button"
               onClick={() =>
                 reset({
-                  email: account?.username,
+                  email: account?.email,
                   firstName: account?.firstName,
                   lastName: account?.lastName,
                 })
               }
               disabled={isUpdatingAccount || !isDirty}
             >
-              Reset
+              {t("reset")}
             </Button>
           </div>
         </>
