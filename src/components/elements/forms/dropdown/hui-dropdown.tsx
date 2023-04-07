@@ -11,16 +11,28 @@ type DDItem = {
 type Props = {
   name: string;
   items: DDItem[];
-  selectedItem: DDItem;
+  selectedItem: DDItem | undefined;
   onChange: (DDItem) => void;
+  listBoxProps?: any;
 };
 
-const DropDown: React.FC<Props> = ({ items, selectedItem, onChange, name }) => {
+const DropDown: React.FC<Props> = ({
+  items,
+  selectedItem,
+  onChange,
+  name,
+  listBoxProps = {},
+}) => {
   return (
-    <Listbox value={selectedItem} onChange={onChange} name={name}>
+    <Listbox
+      value={selectedItem}
+      onChange={onChange}
+      name={name}
+      {...listBoxProps}
+    >
       <div className="relative mt-1">
         <Listbox.Button className="relative w-full cursor-default rounded border  bg-white py-2 pl-3 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-p2blue-100 sm:text-sm">
-          <span className="block truncate">{selectedItem.name}</span>
+          <span className="block truncate">{selectedItem?.name}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
               className="h-5 w-5 text-gray-400"
@@ -38,12 +50,13 @@ const DropDown: React.FC<Props> = ({ items, selectedItem, onChange, name }) => {
             {items.map((item, itemIdx) => (
               <Listbox.Option
                 key={itemIdx}
-                className={({ active }) =>
+                className={({ active, disabled }) =>
                   `relative cursor-default select-none py-2 pl-10 pr-4 ${
                     active ? "bg-p2blue-200 text-p2blue-700" : "text-gray-900"
-                  }`
+                  } ${disabled && "bg-gray-100 opacity-50"}`
                 }
                 value={item}
+                disabled={item.disabled}
               >
                 {({ selected }) => (
                   <>

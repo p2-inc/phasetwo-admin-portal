@@ -7,25 +7,47 @@ import {
   useUpdateAccountMutation,
 } from "store/apis/profile";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
-import RHFFormTextInputWithLabel from "components/elements/forms/inputs/rhf-text-input-with-label";
 import P2Toast from "components/utils/toast";
 import Dropdown from "components/elements/forms/dropdown/hui-dropdown";
+import { first } from "lodash";
 
 const { realm, supportedLocales } = config.env;
-const localeOptions = Object.keys(supportedLocales).map((key) => ({
-  id: key,
-  name: supportedLocales[key],
-}));
 
 const Internationalization = () => {
   const { t } = useTranslation();
+
+  const noSelection = { id: "none", name: t("selectLocale"), disabled: true };
+  const localeOptions = [
+    noSelection,
+    ...Object.keys(supportedLocales).map((key) => ({
+      id: key,
+      name: supportedLocales[key],
+    })),
+  ];
+
+  const [selectedLocale, setSelectedLocale] = useState<{
+    id: string;
+    name: string;
+  }>(localeOptions[0]);
   const { data: account, isLoading: isLoadingAccount } = useGetAccountQuery({
     userProfileMetadata: true,
     realm,
   });
 
-  const [selectedLocale, setSelectedLocale] = useState(localeOptions[0]);
+  useEffect(() => {
+    const hasLocale = localeOptions.find(
+      (l) => l.id === first(account?.attributes?.locale)
+    );
+    if (hasLocale) {
+      setSelectedLocale(
+        localeOptions[
+          localeOptions.findIndex(
+            (l) => l.id === first(account?.attributes?.locale)
+          )
+        ]
+      );
+    }
+  }, [account]);
 
   const [updateAccount, { isLoading: isUpdatingAccount }] =
     useUpdateAccountMutation();
@@ -33,35 +55,45 @@ const Internationalization = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    // const updatedAccount = {
-    //   ...account,
-    //   ...formData,
-    // };
-    // updateAccount({
-    //   accountRepresentation: updatedAccount,
-    //   realm,
-    // })
-    //   .unwrap()
-    //   .then(() => {
-    //     P2Toast({
-    //       success: true,
-    //       title: `Locale updated successfully.`,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     return P2Toast({
-    //       error: true,
-    //       title: `Error during Locale update. ${err.data.error}`,
-    //     });
-    //   });
+    if (selectedLocale.id !== "none") {
+      const updatedAccount = {
+        ...account,
+        attributes: { ...account?.attributes, locale: [selectedLocale.id] },
+      };
+      updateAccount({
+        accountRepresentation: updatedAccount,
+        realm,
+      })
+        .unwrap()
+        .then(() => {
+          P2Toast({
+            success: true,
+            title: t("localeUpdatedSuccessfully"),
+          });
+        })
+        .catch((err) => {
+          return P2Toast({
+            error: true,
+            title: `${t("localeUpdateFailed")} ${err.data.error}`,
+          });
+        });
+    }
   };
 
+  const reset = () => {
+    setSelectedLocale(
+      localeOptions.find((l) => l.id === first(account?.attributes?.locale)) ||
+        noSelection
+    );
+  };
+
+  const isSameLocale = first(account?.attributes?.locale) === selectedLocale.id;
   return (
     <>
       <div className="mb-6 mt-12">
         <SectionHeader
-          title="Localization"
-          description="Manage your user profile information."
+          title={t("localization")}
+          description={t("manageYourUserProfileInformation")}
         />
       </div>
       <form className="mb-6 max-w-xl space-y-4" onSubmit={onSubmit}>
@@ -71,29 +103,30 @@ const Internationalization = () => {
             selectedItem={selectedLocale}
             name="locale"
             onChange={setSelectedLocale}
+            listBoxProps={{
+              disabled: isLoadingAccount,
+            }}
           />
 
           <div className="space-x-2">
             <Button
               isBlackButton
               type="submit"
-              disabled={isUpdatingAccount || isLoadingAccount}
+              disabled={
+                isUpdatingAccount ||
+                isLoadingAccount ||
+                selectedLocale.id === "none" ||
+                isSameLocale
+              }
             >
-              Update Locale
+              {t("updateLocale")}
             </Button>
             <Button
               type="button"
-              onClick={
-                () => null
-                // reset({
-                //   email: account?.username,
-                //   firstName: account?.firstName,
-                //   lastName: account?.lastName,
-                // })
-              }
-              disabled={isUpdatingAccount}
+              onClick={reset}
+              disabled={isUpdatingAccount || isSameLocale}
             >
-              Reset
+              {t("reset")}
             </Button>
           </div>
         </>
