@@ -6,11 +6,13 @@ export enum Roles {
   ManageMembers = "manage-members",
   ManageOrganization = "manage-organization",
   ManageRoles = "manage-roles",
+  ManageClusters = "manage-clusters",
   ViewIdentityProviders = "view-identity-providers",
   ViewInvitations = "view-invitations",
   ViewMembers = "view-members",
   ViewOrganization = "view-organization",
   ViewRoles = "view-roles",
+  ViewClusters = "view-clusters",
 }
 
 export const OrgRoles = Object.values(Roles);
