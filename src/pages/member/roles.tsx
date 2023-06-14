@@ -3,6 +3,7 @@ import cs from "classnames";
 import {
   useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery,
   useGetOrganizationMembershipsQuery,
+  useGetOrganizationRolesQuery,
   useGrantUserOrganizationRoleMutation,
   useRevokeUserOrganizationRoleMutation,
 } from "store/apis/orgs";
@@ -11,13 +12,15 @@ import { config } from "config";
 import { Link, useParams } from "react-router-dom";
 import { User } from "lucide-react";
 import RoleBadge from "components/elements/badges/role-badge";
+import SquareBadge from "components/elements/badges/square-badge";
 import { Switch } from "@headlessui/react";
 import P2Toast from "components/utils/toast";
 import fullName from "components/utils/fullName";
 import useUser from "components/utils/useUser";
 import Alert from "components/elements/alerts/alert";
-import { OrgRoles } from "services/role";
+import { OrgRoles as StandardOrgRoles } from "services/role";
 import { useTranslation } from "react-i18next";
+import { union } from "lodash";
 
 const loadingIcon = (
   <div>
@@ -53,17 +56,22 @@ const SwitchItem = ({
   isChecked,
   onChange,
   isDisabled,
+  roleType,
 }: {
   name: string;
   isChecked: boolean;
   onChange: (roleName, checked) => void;
   isDisabled: boolean;
+  roleType: "organization" | "application";
 }) => {
   return (
     <Switch.Group>
       <div className="flex items-center justify-between py-2">
-        <Switch.Label className="mr-4">
-          <RoleBadge name={name} />
+        <Switch.Label className="mr-4 flex-1">
+          <div className="flex items-center justify-between">
+            <RoleBadge name={name} />
+            <SquareBadge className="ml-2">{roleType.toLowerCase()}</SquareBadge>
+          </div>
         </Switch.Label>
         <Switch
           checked={isChecked}
@@ -89,13 +97,16 @@ const buttonClasses =
 
 const Roles = () => {
   const { t } = useTranslation();
+  const {
+    env: { realm },
+  } = config;
   let { orgId, memberId } = useParams();
   const { user, hasManageRolesRole: hasManageRolesRoleCheck } = useUser();
   const [updatingRoles, setUpdatingRoles] = useState<string[]>([]);
 
   const { data: members = [] } = useGetOrganizationMembershipsQuery({
     orgId: orgId!,
-    realm: config.env.realm,
+    realm,
   });
   const currentMember = members.find((member) => member.id === memberId) || {};
 
@@ -105,12 +116,29 @@ const Roles = () => {
     refetch: refetchRoles,
   } = useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery({
     orgId: orgId!,
-    realm: config.env.realm,
+    realm,
     userId: memberId!,
   });
 
+  const { data: OrgRoles = [] } = useGetOrganizationRolesQuery({
+    orgId: orgId!,
+    realm,
+  });
+
+  const allRoles = union(
+    StandardOrgRoles,
+    OrgRoles?.map((or) => or.name)
+  );
+
   const [grantUserOrganizationRole] = useGrantUserOrganizationRoleMutation();
   const [revokeUserOrganizationRole] = useRevokeUserOrganizationRoleMutation();
+
+  const roleData = allRoles.sort().map((item) => {
+    return {
+      name: item,
+      isChecked: roles.findIndex((f) => f.name === item) >= 0,
+    };
+  });
 
   const onRoleToggle = (roleName: string, checked: boolean) => {
     setUpdatingRoles([...updatingRoles, roleName]);
@@ -119,7 +147,7 @@ const Roles = () => {
         name: roleName,
         orgId: orgId!,
         userId: memberId!,
-        realm: config.env.realm,
+        realm,
       })
         .unwrap()
         .then(() => {
@@ -143,7 +171,7 @@ const Roles = () => {
         name: roleName,
         orgId: orgId!,
         userId: memberId!,
-        realm: config.env.realm,
+        realm,
       })
         .unwrap()
         .then(() => {
@@ -165,13 +193,6 @@ const Roles = () => {
     }
   };
 
-  const roleData = OrgRoles.sort().map((item) => {
-    return {
-      name: item,
-      isChecked: roles.findIndex((f) => f.name === item) >= 0,
-    };
-  });
-
   const grantAllRoles = () => {
     let grantRoles = roleData.filter((rd) => !rd.isChecked);
     setUpdatingRoles([...grantRoles.map((gr) => gr.name)]);
@@ -181,7 +202,7 @@ const Roles = () => {
           name: ir.name,
           orgId: orgId!,
           userId: memberId!,
-          realm: config.env.realm,
+          realm,
         })
       )
     )
@@ -212,7 +233,7 @@ const Roles = () => {
           name: ir.name,
           orgId: orgId!,
           userId: memberId!,
-          realm: config.env.realm,
+          realm,
         })
       )
     )
@@ -245,7 +266,7 @@ const Roles = () => {
           name: ir.name,
           orgId: orgId!,
           userId: memberId!,
-          realm: config.env.realm,
+          realm,
         })
       )
     )
@@ -365,7 +386,7 @@ const Roles = () => {
       )}
       <div className="divide-y dark:divide-zinc-600">
         {isLoading
-          ? OrgRoles.map((r) => <Loader key={r} />)
+          ? allRoles.map((r) => <Loader key={r} />)
           : roleData.map((item) => (
               <SwitchItem
                 name={item.name}
@@ -377,6 +398,11 @@ const Roles = () => {
                   updatingRoles.includes(item.name)
                 }
                 key={item.name}
+                roleType={
+                  StandardOrgRoles.includes(item.name)
+                    ? t("organization")
+                    : t("application")
+                }
               />
             ))}
       </div>
