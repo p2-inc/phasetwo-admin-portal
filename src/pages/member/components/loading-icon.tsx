@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 
-const LoadingIcon = (
+export const LoadingIcon = (
   <div>
     <div className="relative h-12 w-12 overflow-hidden rounded-md">
       <div className="absolute -inset-10 z-10 bg-gradient-to-tr from-[#C7DFF0] to-[#1476B7]"></div>
@@ -10,5 +10,3 @@ const LoadingIcon = (
     </div>
   </div>
 );
-
-export default LoadingIcon;

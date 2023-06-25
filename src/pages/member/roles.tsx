@@ -19,9 +19,7 @@ import {
 } from "services/role";
 import { useTranslation } from "react-i18next";
 import { union } from "lodash";
-import Loader from "./components/loader";
-import loadingIcon from "./components/loading-icon";
-import SwitchItem from "./components/switch";
+import { Loader, LoadingIcon, SwitchItem } from "./components";
 
 const buttonClasses =
   "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-p2blue-700 shadow-sm enabled:hover:bg-indigo-100 disabled:opacity-50 lowercase";
@@ -236,7 +234,7 @@ const Roles = () => {
         title={`Edit ${
           fullName(currentMember) || currentMember.email || "member"
         }'s roles`}
-        icon={loadingIcon}
+        icon={LoadingIcon}
         rightContent={
           <Link
             to={`/organizations/${orgId}/details`}

@@ -1,4 +1,4 @@
-const Loader = () => {
+export const Loader = () => {
   return (
     <div className="flex justify-between space-x-2 py-3">
       <div className="flex space-x-2">
@@ -15,5 +15,3 @@ const Loader = () => {
     </div>
   );
 };
-
-export default Loader;

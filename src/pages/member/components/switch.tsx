@@ -2,7 +2,7 @@ import RoleBadge from "components/elements/badges/role-badge";
 import SquareBadge from "components/elements/badges/square-badge";
 import { Switch } from "@headlessui/react";
 
-const SwitchItem = ({
+export const SwitchItem = ({
   name,
   isChecked,
   onChange,
@@ -42,5 +42,3 @@ const SwitchItem = ({
     </Switch.Group>
   );
 };
-
-export default SwitchItem;
