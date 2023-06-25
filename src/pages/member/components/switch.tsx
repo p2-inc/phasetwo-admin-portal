@@ -12,7 +12,7 @@ export const SwitchItem = ({
   name: string;
   isChecked: boolean;
   onChange: (roleName, checked) => void;
-  isDisabled: boolean;
+  isDisabled?: boolean;
   roleType: "organization" | "application";
 }) => {
   return (

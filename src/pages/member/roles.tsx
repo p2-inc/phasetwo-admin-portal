@@ -19,10 +19,7 @@ import {
 } from "services/role";
 import { useTranslation } from "react-i18next";
 import { union } from "lodash";
-import { Loader, LoadingIcon, SwitchItem } from "./components";
-
-const buttonClasses =
-  "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-p2blue-700 shadow-sm enabled:hover:bg-indigo-100 disabled:opacity-50 lowercase";
+import { Loader, LoadingIcon, SwitchItem, Button } from "./components";
 
 const Roles = () => {
   const { t } = useTranslation();
@@ -255,18 +252,15 @@ const Roles = () => {
       )}
       <div className="mt-8 flex items-center space-x-2 border-b pb-2">
         <div className="inline-block text-sm text-gray-600">Set roles:</div>
-        <button
-          className={buttonClasses}
+        <Button
           onClick={grantAllRoles}
           disabled={
             !hasManageRolesRole ||
             roleData.filter((rd) => rd.isChecked).length === roleData.length
           }
-        >
-          {t("all")}
-        </button>
-        <button
-          className={buttonClasses}
+          text={t("all")}
+        />
+        <Button
           onClick={() => grantFilteredRoles("manage")}
           disabled={
             !hasManageRolesRole ||
@@ -276,11 +270,9 @@ const Roles = () => {
               ).length > 0
             )
           }
-        >
-          {t("allManage")}
-        </button>
-        <button
-          className={buttonClasses}
+          text={t("allManage")}
+        />
+        <Button
           onClick={() => grantFilteredRoles("view")}
           disabled={
             !hasManageRolesRole ||
@@ -290,37 +282,29 @@ const Roles = () => {
               ).length > 0
             )
           }
-        >
-          {t("allView")}
-        </button>
+          text={t("allView")}
+        />
         {hasApplicationRoles && (
-          <button
-            className={buttonClasses}
+          <Button
             onClick={() => grantFilteredRoles("application")}
             disabled={
               !hasManageRolesRole ||
               !(
-                roleData.filter(
-                  (rd) =>
-                    !StandardOrgRoles.includes(rd.name as StandardRoles) &&
-                    !rd.isChecked
-                ).length > 0
+                roleData.filter((rd) => rd.isApplicationRole && !rd.isChecked)
+                  .length > 0
               )
             }
-          >
-            {t("allApplication")}
-          </button>
+            text={t("allApplication")}
+          />
         )}
-        <button
-          className={buttonClasses}
+        <Button
           onClick={revokeAllRoles}
           disabled={
             !hasManageRolesRole ||
             roleData.filter((rd) => rd.isChecked).length === 0
           }
-        >
-          {t("none")}
-        </button>
+          text={t("none")}
+        />
       </div>
       {isSameUserAndMember && (
         <div className="mt-4">
@@ -355,9 +339,7 @@ const Roles = () => {
                 }
                 key={item.name}
                 roleType={
-                  StandardOrgRoles.includes(item.name as StandardRoles)
-                    ? t("organization")
-                    : t("application")
+                  !item.isApplicationRole ? t("organization") : t("application")
                 }
               />
             ))}
