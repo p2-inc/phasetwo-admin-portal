@@ -18,6 +18,7 @@ import { User, ChevronDown } from "lucide-react";
 import { Roles, viewRoles } from "services/role";
 import useUser from "components/utils/useUser";
 import Alert from "components/elements/alerts/alert";
+import { useTranslation } from "react-i18next";
 
 const { realm } = config.env;
 
@@ -41,6 +42,7 @@ const NewInvitation = () => {
   const { keycloak } = useKeycloak();
   const navigate = useNavigate();
   let { orgId } = useParams();
+  const { t } = useTranslation();
 
   const { hasManageInvitationsRole: hasManageInvitationsRoleCheck } = useUser();
   const { data: org } = useGetOrganizationByIdQuery({
@@ -98,15 +100,15 @@ const NewInvitation = () => {
   return (
     <div className="mt-4 md:mt-16">
       <SectionHeader
-        title={`Invite new member to ${org?.displayName || "Organization"}`}
-        description="Add a new member to the organization by entering their email and assigning them a role within the organization. An email will be sent to them with instructions on how to join."
+        title={t("invitationTitle", [org?.displayName || "Organization"])}
+        description={t("invitationInstructionsDescription")}
         icon={loadingIcon}
         rightContent={
           <Link
             to={`/organizations/${orgId}/details`}
             className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
           >
-            Cancel
+            {t("cancel")}
           </Link>
         }
       />
@@ -181,7 +183,7 @@ const NewInvitation = () => {
 
           <div className="mt-4">
             <Button isBlackButton disabled={isSendButtonDisabled} type="submit">
-              Send invitation
+              {t("sendInvitation")}
             </Button>
           </div>
         </div>
