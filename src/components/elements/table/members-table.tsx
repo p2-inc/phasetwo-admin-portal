@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { TableRows } from "./table";
+import { Lock } from "lucide-react";
 
 type Props = {
   rows: TableRows;
@@ -15,6 +16,13 @@ const loading = (
 
 const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
   const { t } = useTranslation();
+
+  const disabledInfo = (
+    <span className="mt-1 inline-flex text-sm text-orange-600 md:mt-0">
+      {t("disabled")} <Lock className="ml-2 h-5 w-5" />
+    </span>
+  );
+
   return (
     <div className="rounded border border-gray-200 dark:border-zinc-600">
       {isLoading && loading}
@@ -29,6 +37,7 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
                 <div className="text-sm text-gray-500 dark:text-zinc-500">
                   {item["email"]}
                 </div>
+                {item["enabled"] === false && disabledInfo}
                 <div className="space-y-1 py-2">{item["roles"]}</div>
                 <div>{item["action"]}</div>
               </div>
@@ -46,8 +55,10 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
                           {t("admin")}
                         </div>
                       </td>
-                      <td className="space-x-2 px-5 py-4 text-right align-middle"></td>
-                      <td className="px-1 py-4 text-right align-middle"></td>
+                      <td
+                        colSpan={2}
+                        className="space-x-2 px-5 py-4 text-right align-middle"
+                      ></td>
                       <td className="px-1 py-4 text-right align-middle">
                         <div className="h-[40px]"></div>
                       </td>
@@ -65,10 +76,13 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
                         {item["email"]}
                       </div>
                     </td>
+                    <td className="w-1/4 space-x-2 px-5 py-4 text-right align-middle">
+                      {item["enabled"] === false && disabledInfo}
+                    </td>
                     <td className="space-x-2 px-5 py-4 text-right align-middle">
                       {item["roles"]}
                     </td>
-                    <td className="px-1 py-4 text-right align-middle">
+                    <td className="px-1 py-4 pr-4 text-right align-middle">
                       {item["action"]}
                     </td>
                   </tr>

@@ -96,6 +96,7 @@ export default function OrganizationDetail() {
   const rows: TableRows = members.map((member) => ({
     email: member.email,
     name: `${member.firstName || ""} ${member.lastName || ""}`.trim(),
+    enabled: member.enabled,
     roles: <MemberRoles member={member} orgId={orgId!} realm={realm} />,
     action: <MembersActionMenu member={member} orgId={orgId!} realm={realm} />,
   }));
