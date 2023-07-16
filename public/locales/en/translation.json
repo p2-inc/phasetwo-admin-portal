@@ -250,6 +250,7 @@
   "user": "User",
   "username": "Username",
   "usernamePlaceholder": "Username or email",
+  "usernameEmailSame": "Username is the same as email.",
   "useTheFollowingDetailsToVerifyYourDomain": "Use the following details to verify your domain",
   "useThisCodeForTheValueOfTheTxtRecord": "Use this code for the value of the txt record",
   "useYourSecurityKeyForPasswordlessSignIn": "Use your security key for password-less sign in",
