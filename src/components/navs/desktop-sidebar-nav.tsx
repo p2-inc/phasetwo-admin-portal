@@ -41,7 +41,9 @@ const DesktopSidebarNav: React.FC<Props> = ({
   navigation,
 }) => {
   const { user, fullName } = useUser();
-  const [theme, setTheme] = useState(("theme" in localStorage)? localStorage.theme : themes[0]);
+  const [theme, setTheme] = useState(
+    "theme" in localStorage ? localStorage.theme : themes[0]
+  );
   const { t } = useTranslation();
   const { appiconUrl, logoUrl } = config.env;
 
@@ -128,10 +130,10 @@ const DesktopSidebarNav: React.FC<Props> = ({
                           "group flex items-center rounded-lg border-2 border-gray-200 p-[14px] text-sm transition-colors hover:border-gray-300 hover:bg-white dark:hover:border-zinc-600 dark:hover:bg-p2dark-900",
                           {
                             "dark:border-zinc-600 dark:text-white": !isActive,
-                            "group:text-p2blue-700 border-p2blue-700 bg-white text-p2blue-700 dark:bg-p2dark-900":
+                            "group:text-p2primary-700 border-p2primary-700 bg-white text-p2primary-700 dark:bg-p2dark-900":
                               isActive,
                             "w-full border-0": !menuCollapsed,
-                            "border-p2blue-700 text-p2blue-700 hover:border-p2blue-700 dark:hover:border-p2blue-700 dark:hover:bg-p2dark-900":
+                            "border-p2primary-700 text-p2primary-700 hover:border-p2primary-700 dark:hover:border-p2primary-700 dark:hover:bg-p2dark-900":
                               menuCollapsed && isActive,
                           }
                         )

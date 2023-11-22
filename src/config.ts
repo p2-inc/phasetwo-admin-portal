@@ -15,6 +15,17 @@ export interface Environment {
   isRunningAsTheme: boolean;
   supportedLocales: {};
   features: Features;
+  styles: {
+    primaryColor100?: string;
+    primaryColor200?: string;
+    primaryColor400?: string;
+    primaryColor500?: string;
+    primaryColor600?: string;
+    primaryColor700?: string;
+    primaryColor900?: string;
+    secondaryColor800?: string;
+    secondaryColor900?: string;
+  };
 }
 
 export interface Features {
@@ -84,10 +95,10 @@ const initialEnvironment: Environment = {
   resourceUrl: ".",
   refererUrl: "",
   isRunningAsTheme: false,
-  supportedLocales: { "en": "English" },
+  supportedLocales: { en: "English" },
   features: initialFeatures,
+  styles: {},
 };
-
 
 var env: Environment = isEmpty(environment) ? initialEnvironment : environment;
 
