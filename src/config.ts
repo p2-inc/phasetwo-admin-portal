@@ -25,6 +25,7 @@ export interface Environment {
     primaryColor900?: string;
     secondaryColor800?: string;
     secondaryColor900?: string;
+    customCSS?: string;
   };
 }
 
@@ -90,7 +91,7 @@ const initialEnvironment: Environment = {
   appiconUrl: "",
   realm: "test",
   locale: "en",
-  authServerUrl: "https://app.phasetwo.io/auth/",
+  authServerUrl: "https://localhost:8080/auth/",
   baseUrl: "http://localhost:3000/",
   resourceUrl: ".",
   refererUrl: "",

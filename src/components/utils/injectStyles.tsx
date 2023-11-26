@@ -24,13 +24,14 @@ const InjectStyles = () => {
     `;
 
     const secondaryColor = `
-      ${generateColorStyles("primary-800", styles.secondaryColor800)}
-      ${generateColorStyles("primary-900", styles.secondaryColor900)}
+      ${generateColorStyles("secondary-800", styles.secondaryColor800)}
+      ${generateColorStyles("secondary-900", styles.secondaryColor900)}
     `;
 
     const customStyles = `
       ${primaryColor}
       ${secondaryColor}
+      ${styles.customCSS}
     `;
 
     styleElement.innerHTML = customStyles;
