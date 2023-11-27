@@ -16,15 +16,15 @@ export interface Environment {
   supportedLocales: {};
   features: Features;
   styles: {
-    primaryColor100?: string;
-    primaryColor200?: string;
-    primaryColor400?: string;
-    primaryColor500?: string;
-    primaryColor600?: string;
-    primaryColor700?: string;
-    primaryColor900?: string;
-    secondaryColor800?: string;
-    secondaryColor900?: string;
+    primary100?: string;
+    primary200?: string;
+    primary400?: string;
+    primary500?: string;
+    primary600?: string;
+    primary700?: string;
+    primary900?: string;
+    secondary800?: string;
+    secondary900?: string;
     customCSS?: string;
   };
 }

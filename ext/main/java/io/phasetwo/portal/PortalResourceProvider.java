@@ -160,23 +160,23 @@ public class PortalResourceProvider implements RealmResourceProvider {
           .ifPresent(a -> env.faviconUrl(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.appicon.url")))
           .ifPresent(a -> env.appiconUrl(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary100")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor100")))
           .ifPresent(a -> env.getStyles().setPrimary100(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary200")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor200")))
           .ifPresent(a -> env.getStyles().setPrimary200(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary400")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor400")))
           .ifPresent(a -> env.getStyles().setPrimary400(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary500")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor500")))
           .ifPresent(a -> env.getStyles().setPrimary500(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary600")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor600")))
           .ifPresent(a -> env.getStyles().setPrimary600(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary700")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor700")))
           .ifPresent(a -> env.getStyles().setPrimary700(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary900")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor900")))
           .ifPresent(a -> env.getStyles().setPrimary900(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.secondary800")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.secondaryColor800")))
           .ifPresent(a -> env.getStyles().setSecondary800(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.secondary900")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.secondaryColor900")))
           .ifPresent(a -> env.getStyles().setSecondary900(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.css")))
           .ifPresent(a -> env.getStyles().setCustomCSS(a));
