@@ -3,6 +3,7 @@ package io.phasetwo.portal;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import jakarta.annotation.Generated;
 import java.util.Map;
 
@@ -290,6 +291,12 @@ public class PortalEnvironment {
     this.styles = styles;
   }
 
+  public PortalEnvironment styles(CustomTheme styles) {
+    this.styles = styles;
+    return this;
+  }
+
+  @JsonInclude(Include.NON_NULL)
   public static class CustomTheme {
     @JsonProperty("primary100")
     private String primary100;

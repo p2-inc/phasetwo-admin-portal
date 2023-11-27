@@ -150,7 +150,8 @@ public class PortalResourceProvider implements RealmResourceProvider {
           .resourceUrl(portalResources)
           .refererUrl(referer)
           .isRunningAsTheme(true)
-          .supportedLocales(getSupportedLocales(realm, locale));
+          .supportedLocales(getSupportedLocales(realm, locale))
+          .styles(new PortalEnvironment.CustomTheme());
       Optional.ofNullable(realm.getName()).ifPresent(a -> env.name(a));
       Optional.ofNullable(realm.getDisplayName()).ifPresent(a -> env.displayName(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.logo.url")))
