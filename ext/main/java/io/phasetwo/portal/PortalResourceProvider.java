@@ -164,8 +164,12 @@ public class PortalResourceProvider implements RealmResourceProvider {
           .ifPresent(a -> env.getStyles().setPrimary100(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary200")))
           .ifPresent(a -> env.getStyles().setPrimary200(a));
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary400")))
+          .ifPresent(a -> env.getStyles().setPrimary400(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary500")))
           .ifPresent(a -> env.getStyles().setPrimary500(a));
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary600")))
+          .ifPresent(a -> env.getStyles().setPrimary600(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary700")))
           .ifPresent(a -> env.getStyles().setPrimary700(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.primary900")))
@@ -174,7 +178,7 @@ public class PortalResourceProvider implements RealmResourceProvider {
           .ifPresent(a -> env.getStyles().setSecondary800(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.secondary900")))
           .ifPresent(a -> env.getStyles().setSecondary900(a));
-      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.customCSS")))
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.css")))
           .ifPresent(a -> env.getStyles().setCustomCSS(a));
       env.setFeatures(PortalFeatures.fromSession(session, auth));
 

@@ -304,8 +304,14 @@ public class PortalEnvironment {
     @JsonProperty("primary200")
     private String primary200;
 
+    @JsonProperty("primary400")
+    private String primary400;
+
     @JsonProperty("primary500")
     private String primary500;
+
+    @JsonProperty("primary600")
+    private String primary600;
 
     @JsonProperty("primary700")
     private String primary700;
@@ -340,12 +346,28 @@ public class PortalEnvironment {
       this.primary200 = primary200;
     }
 
+    public String getPrimary400() {
+      return primary400;
+    }
+
+    public void setPrimary400(String primary400) {
+      this.primary400 = primary400;
+    }
+
     public String getPrimary500() {
       return primary500;
     }
 
     public void setPrimary500(String primary500) {
       this.primary500 = primary500;
+    }
+
+    public String getPrimary600() {
+      return primary600;
+    }
+
+    public void setPrimary600(String primary600) {
+      this.primary600 = primary600;
     }
 
     public String getPrimary700() {
