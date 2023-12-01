@@ -6,7 +6,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import jakarta.activation.MimetypesFileTypeMap;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.PathSegment;
 import jakarta.ws.rs.core.Response;
@@ -156,7 +155,8 @@ public class PortalResourceProvider implements RealmResourceProvider {
               .resourceUrl(portalResources)
               .refererUrl(referer)
               .isRunningAsTheme(true)
-              .supportedLocales(getSupportedLocales(realm, locale));
+              .supportedLocales(getSupportedLocales(realm, locale))
+              .styles(new PortalEnvironment.CustomTheme());
       Optional.ofNullable(realm.getName()).ifPresent(a -> env.name(a));
       Optional.ofNullable(realm.getDisplayName()).ifPresent(a -> env.displayName(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.logo.url")))
@@ -165,6 +165,35 @@ public class PortalResourceProvider implements RealmResourceProvider {
           .ifPresent(a -> env.faviconUrl(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.appicon.url")))
           .ifPresent(a -> env.appiconUrl(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor100")))
+          .ifPresent(a -> env.getStyles().setPrimary100(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor200")))
+          .ifPresent(a -> env.getStyles().setPrimary200(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor400")))
+          .ifPresent(a -> env.getStyles().setPrimary400(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor500")))
+          .ifPresent(a -> env.getStyles().setPrimary500(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor600")))
+          .ifPresent(a -> env.getStyles().setPrimary600(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor700")))
+          .ifPresent(a -> env.getStyles().setPrimary700(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.primaryColor900")))
+          .ifPresent(a -> env.getStyles().setPrimary900(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.secondaryColor800")))
+          .ifPresent(a -> env.getStyles().setSecondary800(a));
+      Optional.ofNullable(
+              realm.getAttribute(String.format("_providerConfig.assets.portal.secondaryColor900")))
+          .ifPresent(a -> env.getStyles().setSecondary900(a));
+      Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.css")))
+          .ifPresent(a -> env.getStyles().setCustomCSS(a));
       env.setFeatures(PortalFeatures.fromSession(session, auth));
 
       String envStr =

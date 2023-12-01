@@ -33,6 +33,9 @@ import { Toaster } from "react-hot-toast";
 import Roles from "pages/member/roles";
 import Member from "pages/member";
 import ProfileDelete from "pages/profile-delete";
+import InjectStyles from "components/utils/injectStyles";
+import NotAuthorized from "pages/not-authorized";
+const { features: featureFlags } = config.env;
 
 export type P2Params = {
   orgId: string;
@@ -43,7 +46,15 @@ const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <Navigate to="organizations" />,
+      loader: () => {
+        if (featureFlags.organizationsEnabled) {
+          return redirect("organizations");
+        } else if (featureFlags.profileEnabled) {
+          return redirect("profile");
+        } else {
+          return redirect("not-allowed");
+        }
+      },
     },
     {
       path: "/",
@@ -52,69 +63,83 @@ const router = createBrowserRouter(
       children: [
         {
           path: "/organizations",
-          element: <Organizations />,
-        },
-        {
-          path: "/organizations/:orgId/details",
-          element: <OrganizationDetail />,
-        },
-        {
-          path: "/organizations/:orgId/settings",
-          element: <OrganizationSettings />,
-        },
-
-        {
-          path: "/organizations/:orgId/domains",
-          index: true,
-          loader: () => redirect("add"),
-        },
-        {
-          path: "/organizations/:orgId/domains/*",
-          element: <DomainContainer />,
+          loader: () => {
+            return featureFlags.organizationsEnabled
+              ? null
+              : redirect("/not-allowed");
+          },
           children: [
             {
-              path: "add",
-              element: <DomainsAdd />,
+              index: true,
+              element: <Organizations />,
             },
             {
-              path: "verify/:domainRecord",
-              element: <DomainsVerify />,
+              path: ":orgId/details",
+              element: <OrganizationDetail />,
+            },
+            {
+              path: ":orgId/settings",
+              element: <OrganizationSettings />,
+            },
+            {
+              path: ":orgId/domains",
+              index: true,
+              loader: () => redirect("add"),
+            },
+            {
+              path: ":orgId/domains/*",
+              element: <DomainContainer />,
+              children: [
+                {
+                  path: "add",
+                  element: <DomainsAdd />,
+                },
+                {
+                  path: "verify/:domainRecord",
+                  element: <DomainsVerify />,
+                },
+              ],
+            },
+            {
+              path: ":orgId/invitation",
+              index: true,
+              loader: () => redirect("new"),
+            },
+            {
+              path: ":orgId/invitation",
+              element: <Invitation />,
+              children: [
+                {
+                  path: "new",
+                  element: <NewInvitation />,
+                },
+              ],
+            },
+            {
+              path: ":orgId/members/:memberId",
+              element: <Member />,
+              children: [
+                {
+                  path: "roles",
+                  element: <Roles />,
+                },
+              ],
             },
           ],
         },
         {
-          path: "/organizations/:orgId/invitation",
-          element: <Invitation />,
-          children: [
-            {
-              path: "new",
-              element: <NewInvitation />,
-            },
-          ],
-        },
-        {
-          path: "/organizations/:orgId/members/:memberId",
-          element: <Member />,
-          children: [
-            {
-              path: "roles",
-              element: <Roles />,
-            },
-          ],
-        },
-        {
-          path: "/profile",
-          index: true,
-          loader: () => redirect("general"),
-        },
-        {
-          path: "/profile-delete",
+          path: "/profile/delete",
+          loader: () =>
+            featureFlags.profileEnabled ? null : redirect("/not-allowed"),
           element: <ProfileDelete />,
         },
         {
-          path: "/profile/*",
+          path: "/profile",
           element: <Profile />,
+          loader: () =>
+            featureFlags.profileEnabled ? null : redirect("/not-allowed"),
           children: [
+            { index: true, element: <Navigate to="general" /> },
             {
               path: "general",
               element: <GeneralProfile />,
@@ -133,11 +158,15 @@ const router = createBrowserRouter(
             },
           ],
         },
+        {
+          path: "/not-allowed",
+          element: <NotAuthorized />,
+        },
       ],
     },
     {
       path: "*",
-      element: <Navigate to="organizations" />,
+      element: <Navigate to="/" />,
     },
   ],
   {
@@ -154,6 +183,7 @@ root.render(
     initOptions={{ onLoad: "login-required", checkLoginIframe: false }}
     LoadingComponent={<Loading />}
   >
+    <InjectStyles />
     <Provider store={store}>
       <React.StrictMode>
         <RouterProvider router={router} />
