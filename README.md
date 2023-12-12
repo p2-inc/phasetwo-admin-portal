@@ -58,7 +58,6 @@ These style keys are built off of the [Tailwind color](https://tailwindcss.com/d
 The keys specific to the Portal are:
 | Key | Description | Default |
 |---|---|---|
-| `_providerConfig.assets.portal.primaryColor` | Primary color | `[empty]` |
 | `_providerConfig.assets.portal.primary100` | Primary color - 100 | `[empty]` |
 | `_providerConfig.assets.portal.primary200` | Primary color - 200 | `[empty]` |
 | `_providerConfig.assets.portal.primary400` | Primary color - 400 | `[empty]` |
