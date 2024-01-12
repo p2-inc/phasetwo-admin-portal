@@ -74,7 +74,6 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
           <table className="hidden w-full table-auto md:table">
             <tbody className="divide-y dark:divide-zinc-600">
               {rows.map((item) => {
-                console.log("🚀 ~ {rows.map ~ item:", item);
                 const isOrgAdmin =
                   item.email?.startsWith("org-admin") ||
                   item.username?.startsWith("org-admin");
