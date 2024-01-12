@@ -18,10 +18,27 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
   const { t } = useTranslation();
 
   const disabledInfo = (
-    <span className="mt-1 inline-flex text-sm text-orange-600 md:mt-0">
-      {t("disabled")} <Lock className="ml-2 h-5 w-5" />
+    <span
+      className="inline-flex text-sm text-primary-500"
+      title={t("disabled")}
+    >
+      <Lock className="ml-2 h-5 w-5" />
     </span>
   );
+
+  function getNameOrUsername(item: {
+    name?: string;
+    username?: string;
+  }): string {
+    return item.name || item.username || "";
+  }
+
+  function isOrgAdmin(item: { email?: string; username?: string }) {
+    return (
+      item.email?.startsWith("org-admin") ||
+      item.username?.startsWith("org-admin")
+    );
+  }
 
   return (
     <div className="rounded border border-gray-200 dark:border-zinc-600">
@@ -29,24 +46,38 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
       {!isLoading && (
         <>
           <div className="divide-y md:hidden">
-            {rows.map((item) => (
-              <div className="p-4" key={item["email"]}>
-                <div className="text-sm font-semibold dark:text-zinc-200">
-                  {item["name"]}
+            {rows.map((item) => {
+              if (isOrgAdmin(item)) {
+                return (
+                  <div className="p-4" key={item["email"]}>
+                    <div className="text-sm font-semibold dark:text-zinc-200">
+                      {t("admin")}
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div className="p-4" key={item["email"]}>
+                  <div className="text-sm font-semibold dark:text-zinc-200">
+                    {getNameOrUsername(item)}
+                  </div>
+                  <div className="flex align-middle text-sm text-gray-500 dark:text-zinc-500">
+                    {item["email"]}
+                    {item["enabled"] === false && disabledInfo}
+                  </div>
+                  <div className="space-y-1 py-2">{item["roles"]}</div>
+                  <div>{item["action"]}</div>
                 </div>
-                <div className="text-sm text-gray-500 dark:text-zinc-500">
-                  {item["email"]}
-                </div>
-                {item["enabled"] === false && disabledInfo}
-                <div className="space-y-1 py-2">{item["roles"]}</div>
-                <div>{item["action"]}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <table className="hidden w-full table-auto md:table">
             <tbody className="divide-y dark:divide-zinc-600">
               {rows.map((item) => {
-                const isOrgAdmin = item.email?.startsWith("org-admin");
+                console.log("🚀 ~ {rows.map ~ item:", item);
+                const isOrgAdmin =
+                  item.email?.startsWith("org-admin") ||
+                  item.username?.startsWith("org-admin");
                 if (isOrgAdmin) {
                   return (
                     <tr key={item["email"]}>
@@ -69,20 +100,18 @@ const MembersTable: React.FC<Props> = ({ rows, isLoading }) => {
                 return (
                   <tr key={item["email"]}>
                     <td className="px-5 py-4 align-middle">
-                      <div className="text-sm font-semibold dark:text-zinc-200">
-                        {item["name"]}
+                      <div className=" text-sm font-semibold dark:text-zinc-200">
+                        {getNameOrUsername(item)}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-zinc-500">
+                      <div className="flex align-middle text-sm text-gray-500 dark:text-zinc-500">
                         {item["email"]}
+                        {item["enabled"] === false && disabledInfo}
                       </div>
-                    </td>
-                    <td className="w-1/4 space-x-2 px-5 py-4 text-right align-middle">
-                      {item["enabled"] === false && disabledInfo}
                     </td>
                     <td className="space-x-2 px-5 py-4 text-right align-middle">
                       {item["roles"]}
                     </td>
-                    <td className="px-1 py-4 pr-4 text-right align-middle">
+                    <td className="px-1 py-4  text-right align-middle">
                       {item["action"]}
                     </td>
                   </tr>
