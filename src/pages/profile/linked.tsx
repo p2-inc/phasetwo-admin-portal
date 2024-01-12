@@ -69,7 +69,7 @@ const LinkedProfile = () => {
   const label = (account: LinkedAccountRepresentation): React.ReactNode => {
     if (account.social) {
       return (
-        <label className="inline-block items-center space-x-2 rounded border border-p2blue-700/30 bg-p2blue-700/10 px-3 py-1 text-xs font-medium text-p2blue-700">
+        <label className="inline-block items-center space-x-2 rounded border border-primary-700/30 bg-primary-700/10 px-3 py-1 text-xs font-medium text-primary-700">
           {t("socialLogin")}
         </label>
       );
@@ -156,11 +156,15 @@ const LinkedProfile = () => {
           </div>
           <div className="space-y-8">
             <div className="space-y-4">
-              <SectionHeader title={t("linkedLoginProviders")} variant="medium" />
+              <SectionHeader
+                title={t("linkedLoginProviders")}
+                variant="medium"
+              />
               <Table
                 columns={linkedColumns}
                 rows={linkedRows}
                 isLoading={isLoading}
+                emptyState={t("linkedEmpty")}
               />
             </div>
             <div className="space-y-4">
@@ -172,6 +176,7 @@ const LinkedProfile = () => {
                 columns={unlinkedColumns}
                 rows={unlinkedRows}
                 isLoading={isLoading}
+                emptyState={t("unlinkedEmpty")}
               />
             </div>
           </div>

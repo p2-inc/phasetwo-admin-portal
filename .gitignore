@@ -30,3 +30,9 @@ yarn-error.log*
 /.idea
 /phasetwo-admin-portal.iml
 /package-lock.json
+
+.classpath
+.factorypath
+.project
+.settings/
+.vscode/settings.json
