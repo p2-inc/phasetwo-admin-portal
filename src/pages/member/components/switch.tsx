@@ -21,7 +21,9 @@ export const SwitchItem = ({
         <Switch.Label className="mr-4 flex-1">
           <div className="flex items-center justify-between">
             <RoleBadge name={name} />
-            <SquareBadge className="ml-2">{roleType.toLowerCase()}</SquareBadge>
+            <SquareBadge className="ml-2 ">
+              {roleType.toLowerCase()}
+            </SquareBadge>
           </div>
         </Switch.Label>
         <Switch
@@ -29,8 +31,9 @@ export const SwitchItem = ({
           disabled={isDisabled}
           onChange={(checked) => onChange(name, checked)}
           className={`${
-            isChecked ? "bg-primary-500" : "bg-gray-200"
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
+            isChecked ? "bg-primary-500" : "bg-gray-200 dark:bg-secondary-900"
+          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2
+            focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
         >
           <span
             className={`${
