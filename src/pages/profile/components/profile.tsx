@@ -34,15 +34,8 @@ const ProfileData = () => {
   useEffect(() => {
     setValue("firstName", account?.firstName);
     setValue("lastName", account?.lastName);
-    // when email is username, email value isn't present, so set it to the username,
-    // form below is disable to edit the email for this
-    if (featureFlags.registrationEmailAsUsername) {
-      setValue("email", account?.email);
-      setValue("username", account?.username);
-    } else {
-      setValue("email", account?.email);
-      setValue("username", account?.username);
-    }
+    setValue("email", account?.email);
+    setValue("username", account?.username);
   }, [account, setValue, featureFlags.registrationEmailAsUsername]);
 
   const onSubmit = async (formData) => {
