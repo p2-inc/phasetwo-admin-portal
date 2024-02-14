@@ -37,7 +37,7 @@ const ProfileData = () => {
     // when email is username, email value isn't present, so set it to the username,
     // form below is disable to edit the email for this
     if (featureFlags.registrationEmailAsUsername) {
-      // setValue("email", account?.username);
+      setValue("email", account?.email);
       setValue("username", account?.username);
     } else {
       setValue("email", account?.email);
@@ -83,7 +83,7 @@ const ProfileData = () => {
           {featureFlags.registrationEmailAsUsername ? (
             // Username is email, can edit username but must be a valid email
             <RHFFormTextInputWithLabel
-              slug="username"
+              slug="email"
               label={`${t("username")} / ${t("email")}`}
               register={register}
               registerArgs={{
@@ -113,7 +113,7 @@ const ProfileData = () => {
                   disabled:
                     isLoadingAccount || !featureFlags.editUsernameAllowed,
                   placeholder: "you",
-                  type: "username",
+                  type: "text",
                 }}
                 error={errors.username}
               />
