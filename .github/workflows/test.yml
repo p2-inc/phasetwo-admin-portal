@@ -1,0 +1,20 @@
+name: test
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build and Test
+        uses: qcastel/github-actions-maven-cmd@master
+        env:
+          CI: ""
+        with:
+          maven-args: "clean install -Dmaven.test.skip=true -Ddockerfile.skip -DdockerCompose.skip -Djib.skip"
