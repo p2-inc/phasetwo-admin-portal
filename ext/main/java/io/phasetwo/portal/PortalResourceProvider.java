@@ -74,7 +74,6 @@ public class PortalResourceProvider implements AccountResourceProvider, RealmRes
   }
 
   private void setupCors() {
-    UriInfo uriInfo = session.getContext().getUri();
     Cors.builder().allowAllOrigins().allowedMethods(METHODS).auth().add();
   }
 
