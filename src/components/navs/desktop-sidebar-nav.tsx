@@ -3,7 +3,7 @@ import cs from "classnames";
 import Button from "components/elements/forms/buttons/button";
 import { config } from "config";
 import useUser from "components/utils/useUser";
-import { keycloakService } from "keycloak";
+import { keycloak, keycloakService } from "keycloak";
 import { ExternalLink } from "lucide-react";
 import { NavLink, Link } from "react-router-dom";
 import { ChevronIcon, DoubleSlashBrandIcon, FullBrandIcon } from "../icons";
@@ -155,12 +155,15 @@ const DesktopSidebarNav: React.FC<Props> = ({
                     <ThemePicker theme={theme} changeTheme={changeTheme} />
                   </div>
                   <div className="py-5">
-                    <Button
-                      className="w-full"
-                      onClick={() => keycloakService.logout()}
-                    >
-                      {t("logOut")}
-                    </Button>
+                    <a href={keycloak.createLogoutUrl()}>
+                      <Button
+                        className="w-full"
+                        onClick={() => keycloakService.logout()}
+                        title={t("logOut")}
+                      >
+                        {t("logOut")}
+                      </Button>
+                    </a>
                   </div>
                 </Popover.Panel>
               </Popover>
