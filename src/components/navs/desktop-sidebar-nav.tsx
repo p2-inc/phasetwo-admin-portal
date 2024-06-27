@@ -11,6 +11,7 @@ import { NavigationItem } from "../layouts/layout";
 
 import { useTranslation } from "react-i18next";
 import ThemePicker from "./components/theme-picker";
+import { useTheme } from "components/utils/useTheme";
 
 type Props = {
   menuCollapsed: boolean;
@@ -24,6 +25,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
   navigation,
 }) => {
   const { user, fullName } = useUser();
+  const { theme, changeTheme } = useTheme();
 
   const { t } = useTranslation();
   const { appiconUrl, logoUrl } = config.env;
@@ -150,7 +152,7 @@ const DesktopSidebarNav: React.FC<Props> = ({
                     </Link>
                   </div>
                   <div className="relative flex items-center justify-between py-2">
-                    <ThemePicker />
+                    <ThemePicker theme={theme} changeTheme={changeTheme} />
                   </div>
                   <div className="py-5">
                     <Button
