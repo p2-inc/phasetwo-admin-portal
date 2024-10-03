@@ -71,8 +71,12 @@ export default function OrganizationSettings() {
               />
             </>
           )}
-          <hr className="my-10 dark:border-zinc-600" />
-          <SettingsSSO hasManageIDPRole={hasManageIDPRole} />
+          {featureFlags.orgSsoEnabled && (
+            <>
+              <hr className="my-10 dark:border-zinc-600" />
+              <SettingsSSO hasManageIDPRole={hasManageIDPRole} />
+            </>
+          )}
         </PrimaryContentArea>
       </FixedWidthMainContent>
     </>
