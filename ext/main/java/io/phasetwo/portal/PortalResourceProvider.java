@@ -163,12 +163,12 @@ public class PortalResourceProvider implements AccountResourceProvider, RealmRes
     String portalResources =
         Urls.themeRoot(authUrl).getPath() + "/" + "admin-portal" + "/" + theme.getName();
 
-    Locale locale = new Locale("en");
+    Locale locale = Locale.of("en");
     try {
       if (auth != null && auth.getUser() != null) {
         locale = session.getContext().resolveLocale(auth.getUser());
       } else {
-        locale = new Locale(realm.getDefaultLocale() != null ? realm.getDefaultLocale() : "en");
+        locale = Locale.of(realm.getDefaultLocale() != null ? realm.getDefaultLocale() : "en");
       }
     } catch (Exception e) {
       log.warn("Unable to determine locale.");
@@ -235,7 +235,7 @@ public class PortalResourceProvider implements AccountResourceProvider, RealmRes
 
       String envStr =
           new String(JsonStringEncoder.getInstance().quoteAsString(mapper.writeValueAsString(env)));
-      log.infof("set environment string to %s", envStr);
+      log.debugf("set environment string to %s", envStr);
       String authUrlAttribute =
           authUrl.getPath().endsWith("/")
               ? authUrl.toString().substring(0, authUrl.toString().length() - 1)
