@@ -3,7 +3,7 @@
   <groupId>io.phasetwo</groupId>
   <artifactId>phasetwo-admin-portal</artifactId>
   <packaging>jar</packaging>
-  <version>0.35-SNAPSHOT</version>
+  <version>0.34-kc25</version>
 
   <parent>
     <groupId>com.github.xgp</groupId>
@@ -29,7 +29,7 @@
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.java.package>io.phasetwo.portal</main.java.package>
-    <keycloak.version>26.0.2</keycloak.version>
+    <keycloak.version>25.0.6</keycloak.version>
     <guava.version>33.0.0-jre</guava.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <lombok.version>1.18.34</lombok.version>
