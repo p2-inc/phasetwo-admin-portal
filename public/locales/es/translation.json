@@ -55,7 +55,7 @@
   "currentSession": "Sesión actual",
   "dark": "Oscuro",
   "deleteSSOProvider": "¿Eliminar el proveedor SSO {{0}}?",
-  "deleteSSOProviderQuestion": "¿Estás seguro de que deseas eliminar este proveedor SSO? Esta acción no se puede deshacer."
+  "deleteSSOProviderQuestion": "¿Estás seguro de que deseas eliminar este proveedor SSO? Esta acción no se puede deshacer.",
   "description": "Descripción",
   "details": "Detalles",
   "device-activity": "Actividad del dispositivo",
@@ -321,6 +321,7 @@
   "unShareSuccess": "Recurso dejado de compartir con éxito.",
   "update": "Actualizar",
   "updateCredAriaLabel": "Actualizar credencial",
+  "updateEmail": "Actualizar correo electrónico",
   "updateError": "No se pudo actualizar el recurso debido a: {{error}}",
   "updateLocale": "Actualizar localización",
   "updateOrganization": "Actualizar organización",
@@ -344,5 +345,5 @@
   "viewRecords": "Ver registros",
   "welcomeMessage": "Bienvenido a la gestión de cuentas de keycloak",
   "youAreTheSameUserAsThisUser": "¡Esta es tu cuenta! ¡Eres tú!",
-  "youLackTheManageRolesRole": "No tienes el rol de gestionar roles",
+  "youLackTheManageRolesRole": "No tienes el rol de gestionar roles"
 }
