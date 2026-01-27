@@ -323,6 +323,7 @@
   "unShareSuccess": "Resource successfully un-shared.",
   "update": "Update",
   "updateCredAriaLabel": "Update credential",
+  "updateEmail": "Update Email",
   "updateError": "Could not update the resource due to: {{error}}",
   "updateLocale": "Update Locale",
   "updateOrganization": "Update organization",
