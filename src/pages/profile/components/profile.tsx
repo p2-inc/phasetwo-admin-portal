@@ -10,6 +10,17 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import RHFFormTextInputWithLabel from "@/components/elements/forms/inputs/rhf-text-input-with-label";
 import P2Toast from "@/components/utils/toast";
+import { keycloakService } from "@/keycloak";
+import { AIACommand } from "@/services/aia-command";
+import { ExternalLink } from "lucide-react";
+
+ const executeAction = (action: string): void => {
+    updateAIA(action);
+  };
+
+  const updateAIA = (action: string): void => {
+    new AIACommand(keycloakService, action).execute();
+  };
 
 const ProfileData = () => {
   const { t } = useTranslation();
@@ -84,7 +95,7 @@ const ProfileData = () => {
                 pattern: /\S+@\S+\.\S+/,
               }}
               inputArgs={{
-                disabled: isLoadingAccount || !featureFlags.editUsernameAllowed,
+                disabled: isLoadingAccount || !featureFlags.editUsernameAllowed || featureFlags.updateEmailFeatureEnabled,
                 placeholder: t("profile-email-placeholder"),
                 type: "email",
                 title: t("usernameEmailSame"),
@@ -120,7 +131,7 @@ const ProfileData = () => {
                 }}
                 inputArgs={{
                   disabled:
-                    isLoadingAccount || !featureFlags.updateEmailFeatureEnabled,
+                    isLoadingAccount || featureFlags.updateEmailFeatureEnabled,
                   placeholder: t("profile-email-placeholder"),
                   type: "email",
                 }}
@@ -128,6 +139,18 @@ const ProfileData = () => {
               />
             </>
           )}
+
+          {featureFlags.updateEmailFeatureEnabled ? (
+            <div className="pb-4">
+              <Button
+                onClick={() => executeAction("UPDATE_EMAIL")}
+                isBlackButton
+              >
+                <div>{t("updateEmail")}</div>
+                <ExternalLink className="ml-3 h-4 w-4" />
+              </Button>
+            </div>
+          ) : null}
 
           <RHFFormTextInputWithLabel
             slug="firstName"

@@ -319,6 +319,7 @@
   "unShareSuccess": "Partage supprimé avec succès.",
   "update": "Mettre à jour",
   "updateCredAriaLabel": "Mettre à jour les informations d'identification",
+  "updateEmail": "Modifier email",
   "updateError": "Impossible de mettre à jour la ressource en raison de : {{error}}",
   "updateLocale": "Modifier",
   "updateOrganization": "Modifier l'organisation",

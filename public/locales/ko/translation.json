@@ -318,6 +318,7 @@
   "unShareSuccess": "리소스 공유가 성공적으로 해제되었습니다.",
   "update": "업데이트",
   "updateCredAriaLabel": "자격 증명 업데이트",
+  "updateEmail": "이메일 업데이트",
   "updateError": "다음과 같은 이유로 리소스를 업데이트할 수 없습니다: {{error}}",
   "updateLocale": "로캘 업데이트",
   "updateOrganization": "조직 업데이트",
