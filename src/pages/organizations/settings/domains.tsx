@@ -154,7 +154,11 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
                 label={t(
                   "createATxtRecordInYourDnsConfigurationForTheFollowingHostname"
                 )}
-                value={`${domain.record_key}=${domain.record_value}`}
+                value={`${domain.record_key}.${domain.domain_name}`}
+              />
+              <CopyInline
+                label={""}
+                value={domain.record_value}
               />
             </div>
           </div>
