@@ -84,7 +84,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
   const removeDomain = async (domain: OrganizationDomainRepresentation) => {
     const updateOrg = {
       ...org,
-      domains: org?.domains?.filter((d) => d !== domain),
+      domains: org?.domains?.filter((d) => d !== domain.domain_name),
     };
     await updateDomain({
       organizationRepresentation: updateOrg,
@@ -95,14 +95,14 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
       .then((r) => {
         P2Toast({
           success: true,
-          title: t("removeDomainSuccess", [domain]),
+          title: t("removeDomainSuccess", [domain.domain_name]),
         });
         refetchDomains();
       })
       .catch((e) => {
         P2Toast({
           error: true,
-          title: t("removeDomainError", [domain, e.data.error]),
+          title: t("removeDomainError", [domain.domain_name, e.data.error]),
         });
       })
       .finally(() => setShowRemoveConfirmModal(null));
