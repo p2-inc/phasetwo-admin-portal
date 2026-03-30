@@ -77,14 +77,14 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
 
   const columns: TableColumns = [
     { key: "domain_name", data: t("domainName") },
-    { key: "verifiedC", data: t("validated") },
+    { key: "verifiedC", data: t("validationState") },
     { key: "action", data: "", columnClasses: "flex justify-end" },
   ];
 
   const removeDomain = async (domain: OrganizationDomainRepresentation) => {
     const updateOrg = {
       ...org,
-      domains: org?.domains?.filter((d) => d !== domain),
+      domains: org?.domains?.filter((d) => d !== domain.domain_name),
     };
     await updateDomain({
       organizationRepresentation: updateOrg,
@@ -95,7 +95,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
       .then((r) => {
         P2Toast({
           success: true,
-          title: t("removeDomainSuccess", [domain]),
+          title: t("removeDomainSuccess", [domain.domain_name]),
         });
         refetchDomains();
       })
@@ -152,14 +152,11 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
               <CopyInline
                 labelNumber={1}
                 label={t(
-                  "createATxtRecordInYourDnsConfigurationForTheFollowingHostname"
+                  "createATxtRecordInYourDnsConfigurationForTheFollowingHostname",
                 )}
                 value={`${domain.record_key}.${domain.domain_name}`}
               />
-              <CopyInline
-                label={""}
-                value={domain.record_value}
-              />
+              <CopyInline label={""} value={domain.record_value} />
             </div>
           </div>
         ),
@@ -189,7 +186,12 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
         )}
       </div>
       <div>
-        <Table columns={columns} rows={rows} isLoading={isLoading} />
+        <Table
+          columns={columns}
+          rows={rows}
+          isLoading={isLoading}
+          emptyState={t("noLinkedDomains")}
+        />
       </div>
       {showRemoveConfirmModal && (
         <ConfirmationModal
@@ -203,7 +205,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
           modalMessage={t("removeDomainQuestion")}
           onContinue={() =>
             removeDomain(
-              showRemoveConfirmModal as OrganizationDomainRepresentation
+              showRemoveConfirmModal as OrganizationDomainRepresentation,
             )
           }
         />
