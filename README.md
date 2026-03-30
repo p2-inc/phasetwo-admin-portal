@@ -90,6 +90,8 @@ yarn
 
 Then, start a Keycloak server (use hosted [Phase Two](https://phasetwo.io/dashboard/) for easy testing), create a public OIDC client with `http://localhost:3000` Root URL, and update the `public/keycloak.json` file with the client config.
 
+Also update the `initialEnvironment` object in [src/config.ts](/Users/pnzr/workspace/phase-two/admin-portal/src/config.ts) to reflect your local configuration. This fallback config is used when a runtime `environment` object is not injected, so values such as `realm`, `authServerUrl`, `baseUrl`, and `supportedLocales` should match your setup.
+
 Finally, run the development server:
 
 ```bash
