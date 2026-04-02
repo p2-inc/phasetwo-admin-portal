@@ -6,6 +6,7 @@
   "inviteNewMembersOrRemoveMembersFromTheOrganization": "Invite new members or remove members from the organisation",
   "localization": "Localisation",
   "member-toast-remove-success": "{{0}} removed from organisation.",
+  "noLinkedDomains": "No linked domains",
   "organization": "Organisation",
   "organizations": "Organisations",
   "profile-localization-description": "Manage your localisation (language).",
@@ -25,5 +26,6 @@
   "toggleSSOQuestion": "Enabling this SSO provider will disable any other SSO provider currently enabled for this organisation. Only one can be enabled at a time. Are you sure you want to continue?",
   "tooltipMembersTableAdmin": "Admin accounts are needed for Organisations to function. They cannot be edited.",
   "updateOrganization": "Update organisation",
+  "validationState": "Validation state",
   "viewOrganizationInformationChangeDisplayName": "View organisation information change display name"
 }

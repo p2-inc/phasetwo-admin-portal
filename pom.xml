@@ -3,7 +3,7 @@
   <groupId>io.phasetwo</groupId>
   <artifactId>phasetwo-admin-portal</artifactId>
   <packaging>jar</packaging>
-  <version>0.52-SNAPSHOT</version>
+  <version>0.53-SNAPSHOT</version>
 
   <name>Phase Two Admin Portal</name>
   <description>Allows users to self-manage as much of their account and organization functionality as is possible.</description>

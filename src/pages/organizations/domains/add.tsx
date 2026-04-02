@@ -38,7 +38,6 @@ const DomainsAdd = () => {
     orgId: orgId!,
     realm,
   });
-  console.log("🚀 ~ DomainsAdd ~ org:", org);
   const { refetch: refetchDomains } = useGetOrganizationDomainsQuery({
     realm,
     orgId: orgId!,
@@ -66,7 +65,7 @@ const DomainsAdd = () => {
       setError(
         "domain",
         { message: t("error-domain-invalid") },
-        { shouldFocus: true }
+        { shouldFocus: true },
       );
       P2Toast({
         error: true,
@@ -94,7 +93,7 @@ const DomainsAdd = () => {
           });
           refetchDomains();
           return navigate(
-            `/organizations/${orgId}/settings?verifyDomain=${domain}`
+            `/organizations/${orgId}/settings?verifyDomain=${domain}`,
           );
         })
         .catch((e) => {
