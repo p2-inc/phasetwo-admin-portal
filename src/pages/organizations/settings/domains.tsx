@@ -102,7 +102,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
       .catch((e) => {
         P2Toast({
           error: true,
-          title: t("removeDomainError", [domain, e.data.error]),
+          title: t("removeDomainError", [domain.domain_name, e.data.error]),
         });
       })
       .finally(() => setShowRemoveConfirmModal(null));

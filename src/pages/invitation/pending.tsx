@@ -197,7 +197,7 @@ const PendingInvitations = () => {
               email: invite.email,
               createdAt: time(invite.createdAt),
               resend: (
-                <>
+                <div className="flex gap-2 justify-end">
                   <Button
                     isCompact
                     isBlackButton
@@ -215,7 +215,7 @@ const PendingInvitations = () => {
                   >
                     {t("remove")}
                   </Button>
-                </>
+                </div>
               ),
             }))}
           />
