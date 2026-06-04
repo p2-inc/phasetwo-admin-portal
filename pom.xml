@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.phasetwo</groupId>
   <artifactId>phasetwo-admin-portal</artifactId>
@@ -6,13 +7,14 @@
   <version>0.59-SNAPSHOT</version>
 
   <name>Phase Two Admin Portal</name>
-  <description>Allows users to self-manage as much of their account and organization functionality as is possible.</description>
+  <description>Allows users to self-manage as much of their account and organization functionality as is possible.
+  </description>
   <url>https://github.com/p2-inc/phasetwo-admin-portal</url>
 
   <parent>
-    <groupId>com.github.xgp</groupId>
+    <groupId>io.phasetwo</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>0.7</version>
+    <version>0.13</version>
   </parent>
 
   <developers>
@@ -51,7 +53,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -75,7 +76,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>com.github.eirslett</groupId>
@@ -178,11 +178,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin> <!-- pretty up the code using google java standards `mvn fmt:format` -->
-        <groupId>com.spotify.fmt</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>2.25</version>
       </plugin>
     </plugins>
     <sourceDirectory>ext/main/java</sourceDirectory>
