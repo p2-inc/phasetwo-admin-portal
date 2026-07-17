@@ -15,7 +15,6 @@ import OrganizationSettings from "@/pages/organizations/settings";
 import Profile from "@/pages/profile";
 import { config } from "@/config";
 import { keycloak } from "@/keycloak";
-import { ReactKeycloakProvider } from "@react-keycloak/web";
 import Loading from "@/components/elements/loading";
 import SigninProfile from "@/pages/profile/signin";
 import GeneralProfile from "@/pages/profile/general";
@@ -27,13 +26,12 @@ import Invitation from "@/pages/invitation/index";
 import NewInvitation from "@/pages/invitation/new";
 import DomainsAdd from "@/pages/organizations/domains/add";
 import DomainContainer from "@/pages/organizations/domains";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/sonner";
 import Roles from "@/pages/member/roles";
 import Member from "@/pages/member";
 import ProfileDelete from "@/pages/profile-delete";
-import InjectStyles from "@/components/utils/injectStyles";
+import { applyTheme } from "@/lib/applyTheme";
 import NotAuthorized from "@/pages/not-authorized";
-import { Tooltip } from "react-tooltip";
 import PendingInvitations from "@/pages/invitation/pending";
 import "./index.css";
 
@@ -176,31 +174,29 @@ const router = createBrowserRouter(
   }
 );
 
+// Before the first paint: realm branding is already in config.env at module
+// load, so the loading screen and the Keycloak round-trip are branded too.
+applyTheme();
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-root.render(
-  <ReactKeycloakProvider
-    authClient={keycloak}
-    initOptions={{ onLoad: "login-required", checkLoginIframe: false }}
-    LoadingComponent={<Loading />}
-  >
-    <InjectStyles />
-    <Provider store={store}>
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
-    </Provider>
-    <Toaster
-      position="top-right"
-      toastOptions={{
-        duration: 6000,
-      }}
-    />
-    <Tooltip
-      id="tooltip"
-      positionStrategy="fixed"
-      style={{ maxWidth: "300px", zIndex: 1999 }}
-    />
-  </ReactKeycloakProvider>
-);
+root.render(<Loading />);
+
+keycloak
+  .init({ onLoad: "login-required", checkLoginIframe: false })
+  .then(() => {
+    root.render(
+      <>
+        <Provider store={store}>
+          <React.StrictMode>
+            <RouterProvider router={router} />
+          </React.StrictMode>
+        </Provider>
+        <Toaster position="top-right" duration={6000} closeButton />
+      </>
+    );
+  })
+  .catch((error) => {
+    console.error("Keycloak initialization failed", error);
+  });

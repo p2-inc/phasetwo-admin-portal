@@ -17,7 +17,8 @@ import TimeUtil from "@/services/time-util";
 import Button from "@/components/elements/forms/buttons/button";
 import { Smartphone, Monitor } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { TFuncKey } from "i18next";
+
+type TFuncKey = string;
 
 type SignOutSessionState = {
   device: DeviceRepresentation;
@@ -171,14 +172,14 @@ const ActivityProfile = () => {
               </div>
             )}
           </div>
-          <div className="w-full rounded border border-gray-200 bg-gray-50 dark:border-zinc-600 dark:bg-p2dark-1000">
+          <div className="w-full rounded-sm border border-border bg-muted">
             {isFetching ? (
               <ActivityLoader />
             ) : (
               devices.map(
                 (device: DeviceRepresentation, deviceIndex: number) => (
                   <div
-                    className="divide-y dark:divide-zinc-600"
+                    className="divide-y divide-border"
                     key={device.lastAccess}
                   >
                     {device.sessions!.map(
@@ -194,10 +195,10 @@ const ActivityProfile = () => {
                           <div>
                             <div className="items-center space-y-2 px-4 pt-3 md:flex md:justify-between md:space-y-0">
                               <div className="md:flex md:items-center">
-                                <div className="py-2 dark:text-zinc-200 md:py-0">
+                                <div className="py-2 text-foreground md:py-0">
                                   {findDeviceTypeIcon(session, device)}
                                 </div>
-                                <div className="space-y-2 text-sm font-semibold text-secondary-900 dark:text-zinc-200 md:pl-2">
+                                <div className="space-y-2 text-sm font-semibold text-foreground md:pl-2">
                                   <span
                                     id={elementId("browser", session)}
                                     className="pf-u-mr-md session-title"
@@ -224,11 +225,11 @@ const ActivityProfile = () => {
                               {session.current && (
                                 <span
                                   id={elementId("current-badge", session)}
-                                  className="flex items-center space-x-2 rounded border border-primary-700/30 bg-primary-700/10 px-3 py-1 text-xs font-medium text-primary-700 dark:text-zinc-200"
+                                  className="flex items-center space-x-2 rounded-sm border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
                                 >
                                   <span className="relative flex h-2 w-2">
-                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-700 opacity-75"></span>
-                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-700"></span>
+                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
                                   </span>
                                   <span>{t("currentSession")}</span>
                                 </span>

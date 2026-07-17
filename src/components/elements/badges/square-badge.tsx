@@ -1,5 +1,5 @@
 import { FC } from "react";
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children: React.ReactNode;
@@ -9,9 +9,8 @@ type Props = {
 const SquareBadge: FC<Props> = ({ children, className }) => {
   return (
     <span
-      className={cs(
-        "rounded border border-secondary-900 px-1 py-px font-mono text-xs font-medium",
-        "dark:border-primary-500 dark:text-zinc-200",
+      className={cn(
+        "rounded-sm border border-border px-1 py-px font-mono text-xs font-medium text-foreground",
         className
       )}
     >

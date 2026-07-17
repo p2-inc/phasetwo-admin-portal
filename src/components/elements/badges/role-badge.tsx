@@ -11,11 +11,11 @@ const RoleBadge: FC<Props> = ({ name }) => {
   return (
     <span className="flex items-center space-x-2 px-1 py-1">
       <span
-        className={`inline-block h-2.5 w-2.5 flex-shrink-0 rounded-full  ${
-          settings?.className || "bg-gray-600"
+        className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full  ${
+          settings?.className || "bg-muted-foreground"
         }`}
       ></span>
-      <span className="inline-block text-sm dark:text-zinc-200">{name}</span>
+      <span className="inline-block text-sm text-foreground">{name}</span>
     </span>
   );
 };

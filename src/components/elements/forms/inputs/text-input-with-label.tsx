@@ -1,6 +1,6 @@
-import cs from "classnames";
 import { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
-import { BasicFormClasses } from "./text-input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Props = {
   slug: string;
@@ -18,21 +18,12 @@ const FormTextInputWithLabel: FC<Props> = ({
 }) => {
   return (
     <div className="sm:col-span-3">
-      <label
-        htmlFor={slug}
-        className="block text-sm font-medium text-gray-700 dark:text-zinc-200"
-      >
-        {label}
-      </label>
+      <Label htmlFor={slug}>{label}</Label>
       <div className="mt-1">
-        <input
+        <Input
           type="text"
           name={slug}
           id={slug}
-          className={cs(
-            BasicFormClasses,
-            "block w-full rounded-md border-gray-300 focus:border-transparent focus:ring-primary-700 sm:text-sm"
-          )}
           placeholder="placeholder"
           {...inputArgs}
         />

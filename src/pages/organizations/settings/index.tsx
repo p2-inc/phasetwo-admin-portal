@@ -7,11 +7,13 @@ import { Link, useParams } from "react-router-dom";
 import Breadcrumbs from "@/components/navs/breadcrumbs";
 import { useGetOrganizationByIdQuery } from "@/store/apis/orgs";
 import SettingsGeneral from "./general";
+import SettingsAttributes from "./attributes";
 import SettingsDomain from "./domains";
 import SettingsSSO from "./sso";
 import useUser from "@/components/utils/useUser";
 import { useTranslation } from "react-i18next";
 import useOrgDisplayName from "@/components/utils/org-display-name";
+import { Separator } from "@/components/ui/separator";
 const { features: featureFlags } = config.env;
 
 export type SettingsProps = {
@@ -25,6 +27,7 @@ export default function OrganizationSettings() {
   const {
     hasManageOrganizationRole: hasManageOrganizationRoleCheck,
     hasManageIdentityProvidersRole,
+    hasViewOrganizationRole,
   } = useUser();
   const { data: org } = useGetOrganizationByIdQuery({
     orgId: orgId!,
@@ -33,6 +36,7 @@ export default function OrganizationSettings() {
   const { orgName } = useOrgDisplayName(org);
   const hasManageOrganizationRole = hasManageOrganizationRoleCheck(orgId);
   const hasManageIDPRole = hasManageIdentityProvidersRole(orgId);
+  const hasViewOrgRole = hasViewOrganizationRole(orgId);
 
   return (
     <>
@@ -63,9 +67,17 @@ export default function OrganizationSettings() {
           <SettingsGeneral
             hasManageOrganizationRole={hasManageOrganizationRole}
           />
+          {featureFlags.orgAttributesEnabled && hasViewOrgRole && (
+            <>
+              <Separator className="my-10" />
+              <SettingsAttributes
+                hasManageOrganizationRole={hasManageOrganizationRole}
+              />
+            </>
+          )}
           {featureFlags.orgDomainsEnabled && (
             <>
-              <hr className="my-10 dark:border-zinc-600" />
+              <Separator className="my-10" />
               <SettingsDomain
                 hasManageOrganizationRole={hasManageOrganizationRole}
               />
@@ -73,7 +85,7 @@ export default function OrganizationSettings() {
           )}
           {featureFlags.orgSsoEnabled && (
             <>
-              <hr className="my-10 dark:border-zinc-600" />
+              <Separator className="my-10" />
               <SettingsSSO hasManageIDPRole={hasManageIDPRole} />
             </>
           )}

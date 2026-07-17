@@ -1,6 +1,7 @@
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 import { FC } from "react";
 import { Link } from "react-router-dom";
+import { Card } from "@/components/ui/card";
 import { ViewLayoutOptions } from "../forms/switches/view-switch";
 import { config } from "@/config";
 import { OrganizationRepresentation } from "@/store/apis/orgs";
@@ -14,13 +15,11 @@ type Props = {
   org: OrganizationRepresentation;
 };
 
-const Title = ({ children }) => (
-  <div className="font-semibold text-secondary-900 dark:text-zinc-200">
-    {children}
-  </div>
+const Title = ({ children }: { children: React.ReactNode }) => (
+  <div className="font-semibold text-foreground">{children}</div>
 );
-const SubTitle = ({ children }) => (
-  <div className="text-[14px] dark:text-zinc-400">{children}</div>
+const SubTitle = ({ children }: { children: React.ReactNode }) => (
+  <div className="text-[14px] text-muted-foreground">{children}</div>
 );
 
 const InnerItem = ({
@@ -39,18 +38,17 @@ const InnerItem = ({
   return (
     <div className="relative h-full">
       <div className="relative z-20 h-full">
-        <div
-          className={cs(
-            "col-span-1 flex h-full",
-            "group-hover:border-primary-400 group-hover:bg-white dark:group-hover:border-zinc-500 dark:group-hover:bg-p2dark-900",
+        <Card
+          className={cn(
+            "h-full shadow-none",
+            "group-hover:border-primary group-hover:bg-card",
             {
-              "flex-col space-y-5 rounded-md border  bg-gray-50 px-10 py-9 dark:border-zinc-600 dark:bg-p2dark-1000":
+              "flex-col gap-5 rounded-md border bg-muted px-10 py-9":
                 viewType === ViewLayoutOptions.GRID,
-              "flex-row justify-between px-5 py-4":
+              "flex-row justify-between gap-0 rounded-none border-0 bg-transparent px-5 py-4":
                 viewType === ViewLayoutOptions.LIST,
-              "border-gray-100 dark:border-zinc-800":
-                viewType === ViewLayoutOptions.GRID && isViewCard,
-              " border-primary-600":
+              "border-border": viewType === ViewLayoutOptions.GRID && isViewCard,
+              "border-primary":
                 viewType === ViewLayoutOptions.GRID && !isViewCard,
             }
           )}
@@ -60,12 +58,12 @@ const InnerItem = ({
             <SubTitle>{subTitle}</SubTitle>
           </div>
           <div className="flex flex-row flex-wrap gap-4">{children}</div>
-        </div>
+        </Card>
       </div>
       {viewType === ViewLayoutOptions.GRID && (
         <div
-          className={cs(
-            "absolute inset-x-3 bottom-0 z-10 h-1/2 rounded-full bg-white opacity-0",
+          className={cn(
+            "absolute inset-x-3 bottom-0 z-10 h-1/2 rounded-full bg-card opacity-0",
             "transition-opacity duration-200",
             "group-hover:opacity-100",
             "drop-shadow-btn-light group-active:hidden"
@@ -88,9 +86,9 @@ const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
 
   const ViewCard = () => (
     <div
-      className={cs(
+      className={cn(
         "block",
-        "focus:outline-none focus:ring-1 focus:ring-neutral-50 focus:ring-offset-1",
+        "focus:outline-hidden focus:ring-1 focus:ring-neutral-50 focus:ring-offset-1",
         "hover:cursor-not-allowed",
         {
           "md:pb-3": viewType === ViewLayoutOptions.GRID,
@@ -112,7 +110,7 @@ const OrganizationItem: FC<Props> = ({ children, org, viewType }) => {
   const LinkCard = () => (
     <Link
       to={link}
-      className={cs("group block", "focus:outline-none focus:ring-0", {
+      className={cn("group block", "focus:outline-hidden focus:ring-0", {
         "md:pb-3": viewType === ViewLayoutOptions.GRID,
       })}
     >

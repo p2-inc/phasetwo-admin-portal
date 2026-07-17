@@ -15,7 +15,7 @@ const CopyInline: FC<Props> = ({ label, value, labelNumber }) => {
   const { t } = useTranslation();
   const [copySuccess, setCopySuccess] = useState("copy");
 
-  const copyToClipBoard = async (copyMe) => {
+  const copyToClipBoard = async (copyMe: string) => {
     try {
       await navigator.clipboard.writeText(copyMe);
       setCopySuccess("copySuccess");
@@ -37,18 +37,18 @@ const CopyInline: FC<Props> = ({ label, value, labelNumber }) => {
     <div>
       <div className="space-y-2">
         <div className="flex items-center space-x-3">
-          <div className="font-semibold dark:text-zinc-200">{label}</div>
+          <div className="font-semibold text-foreground">{label}</div>
         </div>
         <div className="flex items-center space-x-1">
           <div
-            className="flex max-w-[500px] items-center justify-between space-x-10 rounded border p-2 transition hover:border-gray-400 dark:border-zinc-600"
-            onClick={() => copyToClipBoard(value)}
+            className="flex max-w-[500px] items-center justify-between space-x-10 rounded-sm border border-border p-2 transition hover:border-muted-foreground"
+            onClick={() => copyToClipBoard(value!)}
           >
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap break-all  font-mono text-sm text-gray-800 dark:text-zinc-200">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap break-all font-mono text-sm text-foreground">
               {value}
             </div>
           </div>
-          <Button onClick={() => copyToClipBoard(value)}>
+          <Button onClick={() => copyToClipBoard(value!)}>
             {copyIconToShow}
           </Button>
         </div>

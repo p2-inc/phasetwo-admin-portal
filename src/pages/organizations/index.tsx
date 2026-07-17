@@ -9,12 +9,11 @@ import OrganizationItem from "@/components/elements/organizations/item";
 import ViewSwitch, {
   ViewLayoutOptions,
 } from "@/components/elements/forms/switches/view-switch";
-import { useEffect, useState } from "react";
-import cs from "classnames";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 import DomainStat from "./components/domain-stat";
 import MembersStat from "./components/members-stat";
 import useUser from "@/components/utils/useUser";
-import Fuse from "fuse.js";
 import { useTranslation } from "react-i18next";
 import SsoConnections from "./components/sso-connections-stat";
 
@@ -36,18 +35,15 @@ export default function Organizations() {
       { skip: !user?.id }
     );
 
-  const fuse = new Fuse(userOrgs, {
-    keys: ["displayName", "name", "domains"],
-  });
-
-  useEffect(() => {
-    fuse.setCollection(userOrgs);
-  }, [userOrgs]);
-
+  const lowerSearch = searchString.toLowerCase();
   const searchOrgs =
     searchString === ""
-      ? userOrgs.map((org) => ({ item: org }))
-      : fuse.search(searchString);
+      ? userOrgs
+      : userOrgs.filter(
+          (org) =>
+            org.name?.toLowerCase().includes(lowerSearch) ||
+            org.displayName?.toLowerCase().includes(lowerSearch)
+        );
 
   return (
     <>
@@ -83,14 +79,14 @@ export default function Organizations() {
             )}
             {!isFetching && (
               <div
-                className={cs({
+                className={cn({
                   "grid grid-cols-1 justify-items-stretch gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3":
                     viewType === ViewLayoutOptions.GRID,
-                  "divide-y rounded-md border border-gray-200 bg-gray-50 dark:divide-zinc-600 dark:border-zinc-600 dark:bg-p2dark-1000":
+                  "divide-y divide-border rounded-md border border-border bg-muted":
                     viewType === ViewLayoutOptions.LIST,
                 })}
               >
-                {searchOrgs.map(({ item: org }) => {
+                {searchOrgs.map((org) => {
                   return (
                     <OrganizationItem
                       key={org.id}

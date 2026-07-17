@@ -6,7 +6,7 @@ import { config } from "@/config";
 import { t } from "i18next";
 import { P2Params } from "index";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import {
   useGetOrganizationByIdQuery,
@@ -39,7 +39,7 @@ const SettingsGeneral = ({ hasManageOrganizationRole }: SettingsProps) => {
 
   const [updateOrg, { isLoading }] = useUpdateOrganizationMutation();
 
-  async function onSubmit(data) {
+  async function onSubmit(data: FieldValues) {
     const updatedOrg = { ...org, ...data };
 
     await updateOrg({

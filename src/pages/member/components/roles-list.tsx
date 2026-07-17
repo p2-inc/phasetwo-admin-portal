@@ -65,7 +65,7 @@ export const RolesList = ({
       ) : (
         <>
           <div className="mt-8 flex items-center space-x-2 border-b pb-2">
-            <div className="inline-block text-sm text-gray-600 dark:text-zinc-300">
+            <div className="inline-block text-sm text-muted-foreground">
               Choose roles:
             </div>
             <Button
@@ -161,7 +161,9 @@ export const RolesList = ({
                 }
                 key={item.name}
                 roleType={
-                  !item.isApplicationRole ? t("organization") : t("application")
+                  (!item.isApplicationRole
+                    ? t("organization")
+                    : t("application")) as "organization" | "application"
                 }
               />
             ))}

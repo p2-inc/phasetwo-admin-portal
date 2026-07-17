@@ -5,7 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import jakarta.activation.MimetypesFileTypeMap;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.OPTIONS;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.PathSegment;
 import jakarta.ws.rs.core.Response;
@@ -231,6 +236,14 @@ public class PortalResourceProvider implements AccountResourceProvider, RealmRes
           .ifPresent(a -> env.getStyles().setSecondary900(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.css")))
           .ifPresent(a -> env.getStyles().setCustomCSS(a));
+      String v2Prefix = "_providerConfig.assets.portal.v2.";
+      Map<String, String> v2 =
+          realm.getAttributes().entrySet().stream()
+              .filter(e -> e.getKey().startsWith(v2Prefix) && e.getValue() != null)
+              .collect(
+                  Collectors.toMap(
+                      e -> e.getKey().substring(v2Prefix.length()), Map.Entry::getValue));
+      if (!v2.isEmpty()) env.getStyles().setV2(v2);
       env.setFeatures(PortalFeatures.fromSession(session, auth));
 
       String envStr =

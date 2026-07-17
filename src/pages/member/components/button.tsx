@@ -1,5 +1,5 @@
 const buttonClasses =
-  "rounded bg-indigo-50 py-1 px-2 text-xs font-semibold text-primary-700 shadow-sm enabled:hover:bg-indigo-100 disabled:opacity-50 lowercase";
+  "rounded-sm bg-accent py-1 px-2 text-xs font-semibold text-primary shadow-xs enabled:hover:bg-accent/80 disabled:opacity-50 lowercase";
 
 export const Button = ({
   onClick,

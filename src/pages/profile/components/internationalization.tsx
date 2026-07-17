@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Button from "@/components/elements/forms/buttons/button";
 import SectionHeader from "@/components/navs/section-header";
 import { config } from "@/config";
@@ -22,7 +22,7 @@ const Internationalization = () => {
     noSelection,
     ...Object.keys(supportedLocales).map((key) => ({
       id: key,
-      name: supportedLocales[key],
+      name: (supportedLocales as Record<string, string>)[key],
     })),
   ];
 
@@ -56,7 +56,7 @@ const Internationalization = () => {
   const [updateAccount, { isLoading: isUpdatingAccount }] =
     useUpdateAccountMutation();
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (selectedLocale.id !== "none") {

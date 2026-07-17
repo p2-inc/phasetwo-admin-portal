@@ -1,10 +1,5 @@
-import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  InformationCircleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
-import cs from "classnames";
+import { CircleCheck, CircleX, Info, TriangleAlert } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   title?: string;
@@ -27,7 +22,7 @@ const Alert: React.FC<Props> = ({ title, body, type = "success" }) => {
 
   return (
     <div
-      className={cs(`rounded-md p-4`, {
+      className={cn(`rounded-md p-4`, {
         "bg-green-50": color === "green",
         "bg-yellow-50": color === "yellow",
         "bg-red-50": color === "red",
@@ -35,36 +30,30 @@ const Alert: React.FC<Props> = ({ title, body, type = "success" }) => {
       })}
     >
       <div className="flex">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           {type === "success" && (
-            <CheckCircleIcon
+            <CircleCheck
               className={`h-5 w-5 text-green-400`}
               aria-hidden="true"
             />
           )}
           {type === "warning" && (
-            <ExclamationTriangleIcon
+            <TriangleAlert
               className={`h-5 w-5 text-yellow-400`}
               aria-hidden="true"
             />
           )}
           {type === "info" && (
-            <InformationCircleIcon
-              className={`h-5 w-5 text-blue-400`}
-              aria-hidden="true"
-            />
+            <Info className={`h-5 w-5 text-blue-400`} aria-hidden="true" />
           )}
           {type === "danger" && (
-            <XCircleIcon
-              className={`h-5 w-5 text-red-400`}
-              aria-hidden="true"
-            />
+            <CircleX className={`h-5 w-5 text-red-400`} aria-hidden="true" />
           )}
         </div>
         <div className="ml-3">
           {title && (
             <h3
-              className={cs(`text-sm font-medium`, {
+              className={cn(`text-sm font-medium`, {
                 "text-green-800": color === "green",
                 "text-yellow-800": color === "yellow",
                 "text-red-800": color === "red",
@@ -76,7 +65,7 @@ const Alert: React.FC<Props> = ({ title, body, type = "success" }) => {
           )}
           {body && (
             <div
-              className={cs(`mt-2 text-sm`, {
+              className={cn(`mt-2 text-sm`, {
                 "text-green-700": color === "green",
                 "text-yellow-700": color === "yellow",
                 "text-red-700": color === "red",

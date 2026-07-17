@@ -1,5 +1,5 @@
 import Button from "@/components/elements/forms/buttons/button";
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 import SectionHeader from "@/components/navs/section-header";
 import OpenSSOLink from "@/components/utils/ssoLink";
 import { P2Params } from "index";
@@ -60,14 +60,16 @@ const SettingsSSO = ({ hasManageIDPRole }: SettingsProps) => {
       .then(() => {
         setConfirmEnableSSOProvider(null);
         P2Toast({
-          title: t("ssoProviderEnabled", [idp.displayName || idp.alias]),
+          title: t("ssoProviderEnabled", { 0: idp.displayName || idp.alias }),
           success: true,
         });
       })
       .catch((err) => {
         console.error("Error enabling SSO provider:", err);
         P2Toast({
-          title: t("ssoProviderEnableError", [idp.displayName || idp.alias]),
+          title: t("ssoProviderEnableError", {
+            0: idp.displayName || idp.alias,
+          }),
           error: true,
         });
       });
@@ -81,16 +83,16 @@ const SettingsSSO = ({ hasManageIDPRole }: SettingsProps) => {
     })
       .then(() => {
         P2Toast({
-          title: t("ssoProviderDeleted", [idp.displayName || idp.alias]),
+          title: t("ssoProviderDeleted", { 0: idp.displayName || idp.alias }),
           success: true,
         });
       })
       .catch((err) => {
         P2Toast({
-          title: t("ssoProviderDeleteError", [
-            idp.displayName || idp.alias,
-            err.message,
-          ]),
+          title: t("ssoProviderDeleteError", {
+            0: idp.displayName || idp.alias,
+            1: err.message,
+          }),
           error: true,
         });
       });
@@ -132,18 +134,18 @@ const SettingsSSO = ({ hasManageIDPRole }: SettingsProps) => {
                 title={idp.enabled ? t("enabled") : t("disabled")}
               >
                 <span
-                  className={cs(
+                  className={cn(
                     "absolute inline-flex h-full w-full rounded-full  opacity-75",
                     {
-                      "animate-ping  bg-primary-700": idp.enabled,
-                      "bg-gray-300": !idp.enabled,
+                      "animate-ping  bg-primary": idp.enabled,
+                      "bg-muted-foreground": !idp.enabled,
                     }
                   )}
                 ></span>
                 <span
-                  className={cs("relative inline-flex h-2 w-2 rounded-full ", {
-                    "bg-primary-700": idp.enabled,
-                    "bg-gray-300": !idp.enabled,
+                  className={cn("relative inline-flex h-2 w-2 rounded-full ", {
+                    "bg-primary": idp.enabled,
+                    "bg-muted-foreground": !idp.enabled,
                   })}
                 ></span>
               </span>
@@ -184,10 +186,11 @@ const SettingsSSO = ({ hasManageIDPRole }: SettingsProps) => {
           close={() => {
             setConfirmEnableSSOProvider(null);
           }}
-          modalTitle={t("toggleSSOProvider", [
-            confirmEnableSSOProvider?.displayName ||
+          modalTitle={t("toggleSSOProvider", {
+            0:
+              confirmEnableSSOProvider?.displayName ||
               confirmEnableSSOProvider?.alias,
-          ])}
+          })}
           modalMessage={t("toggleSSOQuestion")}
           onContinue={() => toggleSSOProvider(confirmEnableSSOProvider)}
         />
@@ -198,10 +201,11 @@ const SettingsSSO = ({ hasManageIDPRole }: SettingsProps) => {
           close={() => {
             setConfirmRemoveSSOProvider(null);
           }}
-          modalTitle={t("deleteSSOProvider", [
-            confirmEnableSSOProvider?.displayName ||
+          modalTitle={t("deleteSSOProvider", {
+            0:
+              confirmEnableSSOProvider?.displayName ||
               confirmEnableSSOProvider?.alias,
-          ])}
+          })}
           modalMessage={t("deleteSSOProviderQuestion")}
           onContinue={() => handleDeleteIdP(confirmRemoveSSOProvider)}
         />

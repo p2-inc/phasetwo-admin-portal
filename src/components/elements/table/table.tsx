@@ -1,11 +1,20 @@
-import cs from "classnames";
+import { cn } from "@/lib/utils";
+import {
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const firstThClasses =
-  "py-3.5 pl-4 pr-3 text-left font-semibold text-black dark:text-zinc-200 sm:pl-6";
+  "whitespace-normal py-3.5 pl-4 pr-3 text-left font-semibold text-foreground sm:pl-6";
 export const thClasses =
-  "px-3 py-3.5 text-left font-semibold text-black dark:text-zinc-200";
+  "whitespace-normal px-3 py-3.5 text-left font-semibold text-foreground";
 export const firstTdClasses =
-  "whitespace-normal py-4 pl-4 pr-3 font-medium text-black dark:text-zinc-200 sm:pl-6";
+  "whitespace-normal py-4 pl-4 pr-3 font-medium text-foreground sm:pl-6";
 export const tdClasses = "whitespace-normal px-3 py-4";
 
 export type TableColumns = {
@@ -25,29 +34,29 @@ type Props = {
   emptyState?: React.ReactNode;
 };
 
-const loadingState = (columns) => {
+const loadingState = (columns: TableColumns) => {
   return (
-    <div className="overflow-auto rounded-md border border-gray-200 dark:border-zinc-600">
-      <table className="min-w-full divide-y divide-gray-200 bg-gray-50 text-sm font-medium text-black dark:divide-zinc-600 dark:bg-p2dark-1000 dark:text-zinc-600">
-        <thead className="animate-pulse">
-          <tr>
+    <div className="overflow-auto rounded-md border border-border">
+      <UITable className="min-w-full bg-muted text-sm font-medium">
+        <TableHeader>
+          <TableRow>
             {columns.map((c, i) => (
-              <th className="p-4" key={i}>
-                <div className="h-4 w-1/4 rounded-md bg-gray-300 dark:bg-zinc-600"></div>
-              </th>
+              <TableHead className="p-4" key={i}>
+                <Skeleton className="h-4 w-1/4" />
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody className="animate-pulse">
-          <tr>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
             {columns.map((c, i) => (
-              <td className="p-4" key={i}>
-                <div className="h-4 w-1/2 rounded-md bg-gray-300 dark:bg-zinc-600"></div>
-              </td>
+              <TableCell className="p-4" key={i}>
+                <Skeleton className="h-4 w-1/2" />
+              </TableCell>
             ))}
-          </tr>
-        </tbody>
-      </table>
+          </TableRow>
+        </TableBody>
+      </UITable>
     </div>
   );
 };
@@ -58,50 +67,44 @@ const Table: React.FC<Props> = ({ columns, rows, isLoading, emptyState }) => {
   }
   if (rows.length === 0 && emptyState) {
     return (
-      <div className="rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-zinc-600 dark:bg-p2dark-1000 dark:text-zinc-200">
+      <div className="rounded-md border border-border bg-muted p-4 text-foreground">
         {emptyState}
       </div>
     );
   }
   return (
-    <div className="overflow-auto rounded-md border border-gray-200 dark:border-zinc-600 md:overflow-visible">
-      <table className="min-w-full divide-y divide-gray-200 rounded-md bg-gray-50 text-sm font-medium text-black dark:divide-zinc-600 dark:bg-p2dark-1000 dark:text-zinc-200">
-        <thead>
-          <tr>
+    <div className="overflow-auto rounded-md border border-border md:overflow-visible">
+      <UITable className="min-w-full rounded-md bg-muted text-sm font-medium text-foreground">
+        <TableHeader>
+          <TableRow>
             {columns.map((column, index) => (
-              <th
-                className={cs({
-                  [firstThClasses]: index === 0,
-                  [thClasses]: index > 0,
-                })}
+              <TableHead
+                className={cn(index === 0 ? firstThClasses : thClasses)}
                 key={column.key}
               >
                 {column.data}
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((row, index) => (
-            <tr key={index}>
+            <TableRow key={index}>
               {columns.map((column, index) => (
-                <td
-                  className={cs(
-                    {
-                      [firstTdClasses]: index === 0,
-                      [tdClasses]: index > 0,
-                    },
+                <TableCell
+                  className={cn(
+                    index === 0 ? firstTdClasses : tdClasses,
                     column.columnClasses
                   )}
                   key={column.key}
                 >
                   {row[column.key]}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </UITable>
     </div>
   );
 };

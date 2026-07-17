@@ -1,5 +1,4 @@
 import SectionHeader from "@/components/navs/section-header";
-import cs from "classnames";
 import Button from "@/components/elements/forms/buttons/button";
 import {
   useAddOrganizationInvitationMutation,
@@ -7,10 +6,10 @@ import {
 } from "@/store/apis/orgs";
 import { useState } from "react";
 import RHFFormTextInputWithLabel from "@/components/elements/forms/inputs/rhf-text-input-with-label";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { config } from "@/config";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useKeycloak } from "@react-keycloak/web";
+import { keycloak } from "@/keycloak";
 import P2Toast from "@/components/utils/toast";
 import { User } from "lucide-react";
 import useUser from "@/components/utils/useUser";
@@ -23,9 +22,9 @@ const { realm } = config.env;
 
 const loadingIcon = (
   <div>
-    <div className={cs("relative h-12 w-12 overflow-hidden rounded-md")}>
-      <div className="absolute -inset-10 z-10 bg-primary-gradient"></div>
-      <div className="absolute inset-[2px] z-20 flex items-center justify-center rounded bg-white dark:bg-p2dark-1000 dark:text-zinc-200">
+    <div className="relative h-12 w-12 overflow-hidden rounded-md">
+      <div className="absolute -inset-10 z-10 bg-linear-to-r from-primary/20 to-primary"></div>
+      <div className="absolute inset-[2px] z-20 flex items-center justify-center rounded-sm bg-card text-card-foreground">
         <User />
       </div>
     </div>
@@ -33,7 +32,6 @@ const loadingIcon = (
 );
 
 const NewInvitation = () => {
-  const { keycloak } = useKeycloak();
   const navigate = useNavigate();
   let { orgId } = useParams();
   const { t } = useTranslation();
@@ -57,7 +55,7 @@ const NewInvitation = () => {
   const [addOrganizationInvitation] = useAddOrganizationInvitationMutation();
   const [selectedRoles, setSelectedRoles] = useState<DecoratedRole[]>();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FieldValues) => {
     if (data.email) {
       P2Toast({
         title: t("invitation-toast-submit", { data }),
@@ -99,13 +97,13 @@ const NewInvitation = () => {
   return (
     <div className="mt-4 md:mt-16">
       <SectionHeader
-        title={t("invitation-title", [orgName])}
+        title={t("invitation-title", { 0: orgName })}
         description={t("invitation-instructions-description")}
         icon={loadingIcon}
         rightContent={
           <Link
             to={`/organizations/${orgId}/details`}
-            className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
+            className="inline-block rounded-lg px-4 py-2 font-medium text-foreground opacity-60 transition hover:bg-muted hover:opacity-100"
           >
             {t("organization")}
           </Link>

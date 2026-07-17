@@ -326,6 +326,11 @@ public class PortalEnvironment {
     @JsonProperty("customCSS")
     private String customCSS;
 
+    /** New minimal token set, realm attributes _providerConfig.assets.portal.v2.<token> */
+    @JsonProperty("v2")
+    @JsonInclude(Include.NON_EMPTY)
+    private Map<String, String> v2;
+
     // getters and setters
 
     public String getPrimary100() {
@@ -406,6 +411,14 @@ public class PortalEnvironment {
 
     public void setCustomCSS(String customCSS) {
       this.customCSS = customCSS;
+    }
+
+    public Map<String, String> getV2() {
+      return v2;
+    }
+
+    public void setV2(Map<String, String> v2) {
+      this.v2 = v2;
     }
   }
 }

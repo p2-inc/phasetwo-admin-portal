@@ -1,4 +1,9 @@
-import { Menu } from "@headlessui/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery,
   UserRepresentation,
@@ -41,36 +46,34 @@ const FilteredRole: React.FC<FilteredRoleProp> = ({
   const { t } = useTranslation();
 
   return (
-    <Menu as="div" className="relative inline-block w-full text-left md:w-auto">
-      <Menu.Button className="w-full">
-        <div className="flex w-full items-center justify-center space-x-2 rounded border border-gray-200 py-1 px-4 text-sm transition hover:border-gray-800 dark:border-zinc-800 dark:hover:border-zinc-600">
+    <DropdownMenu>
+      <DropdownMenuTrigger className="relative inline-block w-full text-left md:w-auto">
+        <div className="flex w-full items-center justify-center space-x-2 rounded-sm border border-border py-1 px-4 text-sm transition hover:border-foreground">
           <span
             className={`inline-block h-2 w-2 rounded-full ${regexpClassName}`}
           ></span>
-          <span className="inline-block dark:text-zinc-200">
+          <span className="inline-block">
             {filtered.length} {regexpName}
           </span>
         </div>
-      </Menu.Button>
-      <Menu.Items className="absolute right-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-white p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:border dark:border-zinc-600 dark:bg-p2dark-900">
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-60 p-4">
         {filtered.map((filteredRole) => (
-          <Menu.Item key={filteredRole.name}>
-            <div>
-              <RoleBadge name={filteredRole.name} />
-            </div>
-          </Menu.Item>
+          <DropdownMenuItem key={filteredRole.name} className="p-0">
+            <RoleBadge name={filteredRole.name} />
+          </DropdownMenuItem>
         ))}
         {!isSameUserAndMember && hasManageRolesRole && (
-          <Menu.Item>
+          <DropdownMenuItem asChild className="p-0 focus:bg-transparent">
             <Link to={`/organizations/${orgId}/members/${member.id}/roles`}>
               <Button isCompact className="mt-4 w-full">
                 {t("editRoles")}
               </Button>
             </Link>
-          </Menu.Item>
+          </DropdownMenuItem>
         )}
-      </Menu.Items>
-    </Menu>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -87,7 +90,7 @@ const MemberRoles: React.FC<Props> = ({ member, orgId, realm }) => {
   return (
     <>
       {isLoading ? (
-        <div className="inline-block h-[30px] w-32 animate-pulse rounded bg-gray-200"></div>
+        <div className="inline-block h-[30px] w-32 animate-pulse rounded-sm bg-muted"></div>
       ) : (
         hasViewRolesRole &&
         roleSettings.map((f) => (

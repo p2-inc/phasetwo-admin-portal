@@ -9,6 +9,7 @@ import {
   useGetOrganizationByIdQuery,
   useGetOrganizationDomainsQuery,
   useGetOrganizationInvitationCountQuery,
+  useGetOrganizationMembershipsCountQuery,
   useGetOrganizationMembershipsQuery,
 } from "@/store/apis/orgs";
 import RoundBadge from "@/components/elements/badges/round-badge";
@@ -26,12 +27,25 @@ import MembersActionMenu from "./components/member-action-menu";
 import Breadcrumbs from "@/components/navs/breadcrumbs";
 import OpenSSOLink from "@/components/utils/ssoLink";
 import MembersTable from "@/components/elements/table/members-table";
-import { Globe, Network, Plus, User } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Globe,
+  Network,
+  Plus,
+  User,
+} from "lucide-react";
 import useUser from "@/components/utils/useUser";
 import { useTranslation } from "react-i18next";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toNumber } from "lodash";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import useOrgDisplayName from "@/components/utils/org-display-name";
 
 export default function OrganizationDetail() {
@@ -64,10 +78,12 @@ export default function OrganizationDetail() {
     first,
     max,
     search,
+    excludeAdminAccounts: true,
   });
-  const { data: allMembers = [] } = useGetOrganizationMembershipsQuery({
+  const { data: membersCount = 0 } = useGetOrganizationMembershipsCountQuery({
     orgId: orgId!,
     realm,
+    excludeAdminAccounts: true,
   });
   const { data: inviteCount = 0 } = useGetOrganizationInvitationCountQuery({
     orgId: orgId!,
@@ -95,7 +111,6 @@ export default function OrganizationDetail() {
   const hasViewIDPRole = hasViewIdentityProvidersRole(orgId);
   // const [createPortalLink, { isSuccess }] = useCreatePortalLinkMutation();
 
-  const allMembersCount = allMembers.length - 1;
   const totalMembers = members.length;
 
   const rows: TableRows = members.map((member) => ({
@@ -105,15 +120,19 @@ export default function OrganizationDetail() {
     action: <MembersActionMenu member={member} orgId={orgId!} realm={realm} />,
   }));
 
-  const forwardDisabled = isFetching || totalMembers < max;
+  // The count endpoint is not search-aware, so the exact total only applies
+  // to the unfiltered list; searches fall back to page-fullness.
+  const forwardDisabled =
+    isFetching ||
+    (search === "" ? first + max >= membersCount : totalMembers < max);
   const backwardDisabled = isFetching || first === 0;
   const lowEnd = first + 1;
-  const highEnd = forwardDisabled ? first + totalMembers : first + max;
+  const highEnd = first + totalMembers;
   const forward = () => setFirst(first + max);
   const backward = () => setFirst(first - max);
-  const adjustMax = (e: ChangeEvent<HTMLSelectElement>) => {
+  const adjustMax = (value: string) => {
     setFirst(0);
-    setMax(toNumber(e.target.options[e.target.selectedIndex].text));
+    setMax(toNumber(value));
   };
 
   return (
@@ -147,7 +166,7 @@ export default function OrganizationDetail() {
                   <RoundedIcon>
                     <User className="h-5 w-5" />
                   </RoundedIcon>
-                  <Stat label={t("members")} value={allMembersCount}></Stat>
+                  <Stat label={t("members")} value={membersCount}></Stat>
                   {hasViewInvitationsRole ? (
                     <Link to={`/organizations/${orgId}/invitation/pending`}>
                       <Stat label={t("invited")} value={inviteCount}></Stat>
@@ -158,7 +177,7 @@ export default function OrganizationDetail() {
                 </OACTopRow>
                 <div>
                   <SectionHeader title={t("members")} variant="small" />
-                  <div className="text-sm leading-relaxed text-gray-600 dark:text-zinc-300">
+                  <div className="text-sm leading-relaxed text-muted-foreground">
                     {t("inviteNewMembersOrRemoveMembersFromTheOrganization")}
                   </div>
                 </div>
@@ -209,7 +228,7 @@ export default function OrganizationDetail() {
                 </OACTopRow>
                 <div>
                   <SectionHeader title={t("ssoConnections")} variant="small" />
-                  <div className="text-sm leading-relaxed text-gray-600 dark:text-zinc-300">
+                  <div className="text-sm leading-relaxed text-muted-foreground">
                     {t("setupSsoConnectionsAsNecessaryForThisOrganization")}
                   </div>
                 </div>
@@ -251,7 +270,7 @@ export default function OrganizationDetail() {
                 </OACTopRow>
                 <div>
                   <SectionHeader title={t("domains")} variant="small" />
-                  <div className="text-sm leading-relaxed text-gray-600 dark:text-zinc-300">
+                  <div className="text-sm leading-relaxed text-muted-foreground">
                     {t(
                       "setupAssociatedDomainsAndVerifyThemToEnsureFullSecurity"
                     )}
@@ -290,7 +309,7 @@ export default function OrganizationDetail() {
               <>
                 <SectionHeader title={t("members")} variant="small" />
                 <div className="ml-2">
-                  <RoundBadge>{allMembersCount}</RoundBadge>
+                  <RoundBadge>{membersCount}</RoundBadge>
                 </div>
               </>
             }
@@ -308,20 +327,20 @@ export default function OrganizationDetail() {
                 {isFetching && (
                   <div className="absolute left-[-5px] top-[-5px]">
                     <span className="relative flex h-3 w-3">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-500 opacity-75"></span>
-                      <span className="relative inline-flex h-3 w-3 rounded-full bg-primary-700"></span>
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
                     </span>
                   </div>
                 )}
               </div>
-              <div className="px-4 dark:text-zinc-200 ">
+              <div className="px-4 text-foreground">
                 <div className="flex h-full items-center">
                   <button
                     onClick={backward}
                     disabled={backwardDisabled}
                     className="disabled:opacity-30"
                   >
-                    <ChevronLeftIcon className="w-5" />
+                    <ChevronLeft className="w-5" />
                   </button>
                   <div className="px-2">
                     {lowEnd}-{highEnd}
@@ -331,22 +350,25 @@ export default function OrganizationDetail() {
                     disabled={forwardDisabled}
                     className="disabled:opacity-30"
                   >
-                    <ChevronRightIcon className="w-5" />
+                    <ChevronRight className="w-5" />
                   </button>
                 </div>
               </div>
               <div>
-                <select
-                  id="location"
+                <Select
                   name="location"
-                  className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-primary-500 sm:text-sm sm:leading-6"
                   defaultValue="10"
-                  onChange={adjustMax}
+                  onValueChange={adjustMax}
                 >
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
-                </select>
+                  <SelectTrigger id="location" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             {featureFlags.orgMembersEnabled && (

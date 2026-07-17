@@ -1,5 +1,5 @@
 import { FC, ReactElement } from "react";
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 
 type Props = {
   title: string;
@@ -20,7 +20,7 @@ const SectionHeader: FC<Props> = ({
 }) => {
   return (
     <div
-      className={cs({
+      className={cn({
         "space-y-1": variant === "large" || variant === "medium",
         "space-y-0": variant === "small",
       })}
@@ -34,7 +34,7 @@ const SectionHeader: FC<Props> = ({
       )}
 
       <h2
-        className={cs("font-semibold text-secondary-900 dark:text-zinc-200", {
+        className={cn("font-semibold text-foreground", {
           "text-2xl": variant === "large",
           "text-xl": variant === "medium",
           "text-l": variant === "small",
@@ -43,7 +43,7 @@ const SectionHeader: FC<Props> = ({
         {title}
       </h2>
       {description && (
-        <p className="max-w-prose text-base text-gray-600 dark:text-zinc-300">
+        <p className="max-w-prose text-base text-muted-foreground">
           {description}
         </p>
       )}

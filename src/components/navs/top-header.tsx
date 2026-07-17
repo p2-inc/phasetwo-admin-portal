@@ -23,7 +23,7 @@ const TopHeader: FC<Props> = ({
       leftAreaItems={
         <>
           {leftAreaItems}
-          <h1 className="text-xl font-medium leading-[38px] dark:text-zinc-200">
+          <h1 className="text-xl font-medium leading-[38px] text-foreground">
             {header}
           </h1>
           {!isNil(badgeVal) && (

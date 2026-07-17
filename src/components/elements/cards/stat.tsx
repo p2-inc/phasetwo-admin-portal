@@ -13,7 +13,7 @@ const ProgressBar = ({ percent = 0 }) => {
   return (
     <svg className="h-6 w-6">
       <circle
-        className="text-gray-300"
+        className="text-border"
         strokeWidth="3"
         stroke="currentColor"
         fill="transparent"
@@ -22,7 +22,7 @@ const ProgressBar = ({ percent = 0 }) => {
         cy="12"
       />
       <circle
-        className=" text-primary-700"
+        className="text-primary"
         strokeWidth="3"
         strokeDasharray={circumference}
         strokeDashoffset={circumference - (percent / 100) * circumference}
@@ -46,8 +46,8 @@ const Stat: React.FC<Props> = ({ percent, hoverPercentText, value, label }) => {
         </div>
       )}
       <div>
-        <div className="font-semibold dark:text-zinc-200">{value}</div>
-        <div className="text-sm font-medium capitalize text-gray-600 dark:text-zinc-300">
+        <div className="font-semibold text-foreground">{value}</div>
+        <div className="text-sm font-medium capitalize text-muted-foreground">
           {label}
         </div>
       </div>

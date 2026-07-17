@@ -1,10 +1,10 @@
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 
 const OrganizationsLoader: React.FC = () => {
   return (
     <div
-      className={cs(
-        "col-span-1 flex flex-col rounded-md border border-gray-200 bg-gray-50 dark:border-zinc-600 dark:bg-p2dark-1000",
+      className={cn(
+        "col-span-1 flex flex-col rounded-md border border-border bg-muted",
         "px-10 py-9",
         "space-y-6",
         "min-h-[179px]"

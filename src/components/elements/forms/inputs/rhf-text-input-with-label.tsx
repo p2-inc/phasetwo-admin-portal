@@ -1,4 +1,3 @@
-import cs from "classnames";
 import { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
 import {
   FieldError,
@@ -7,7 +6,8 @@ import {
   Merge,
   UseFormRegister,
 } from "react-hook-form";
-import { BasicFormClasses } from "./text-input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Props = {
   slug: string;
@@ -35,27 +35,28 @@ const RHFFormTextInputWithLabel: FC<Props> = ({
 }) => {
   return (
     <div className="sm:col-span-3">
-      <label
-        htmlFor={slug}
-        className="block text-sm font-medium text-gray-700 dark:text-zinc-200"
-      >
-        {label}
-      </label>
+      <Label htmlFor={slug}>{label}</Label>
       <div className="mt-1">
-        <input
+        <Input
           type="text"
           id={slug}
-          className={cs(BasicFormClasses, "w-full", {
-            "border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500":
-              error,
-          })}
+          className="w-full"
           placeholder="placeholder"
+          aria-invalid={error ? true : undefined}
           {...register(slug, registerArgs)}
           {...inputArgs}
         />
       </div>
+      {error?.message && (
+        <p className="mt-2 text-sm text-destructive" id={`${slug}__error`}>
+          {String(error.message)}
+        </p>
+      )}
       {helpText && (
-        <p className="mt-2 text-sm text-gray-500" id={`${slug}__help_text`}>
+        <p
+          className="mt-2 text-sm text-muted-foreground"
+          id={`${slug}__help_text`}
+        >
           {helpText}
         </p>
       )}
