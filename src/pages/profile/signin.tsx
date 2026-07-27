@@ -3,7 +3,6 @@ import SectionHeader from "@/components/navs/section-header";
 import {
   useGetCredentialsQuery,
   useDeleteCredentialMutation,
-  UserCredentialMetadataRepresentation,
   CredentialRepresentation,
   CredentialMetadataRepresentation,
 } from "@/store/apis/profile";
@@ -96,41 +95,41 @@ const SigninProfile = () => {
     credentialType: CredentialType,
     credentials: CredentialRepresentation[]
   ): TableRows => {
-    const metadatas: UserCredentialMetadataRepresentation[] = [];
-    let credentialRep : CredentialRepresentation
+    const rows: TableRows = [];
     credentials
       .filter((credential) => credential.type === credentialType)
       .forEach((credential) => {
-        if (credential.userCredentialMetadatas) {
-          metadatas.push(...credential.userCredentialMetadatas);
-          credentialRep = credential
-        }
+        (credential.userCredentialMetadatas ?? []).forEach((metadata) => {
+          rows.push({
+            name: metadata.credential?.userLabel ?? credentialType,
+            created: time(metadata.credential?.createdDate),
+            action: (
+              <>
+                {credentialType === CredentialType.PASSWORD
+                  ? featureFlags.passwordUpdateAllowed && (
+                      <Button
+                        isCompact
+                        className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
+                        onClick={() => updateAIA("UPDATE_PASSWORD")}
+                      >
+                        {t("update")}
+                      </Button>
+                    )
+                  : credential.removeable !== false && (
+                      <Button
+                        isCompact
+                        className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
+                        onClick={() => removeCredential(metadata.credential!)}
+                      >
+                        {t("remove")}
+                      </Button>
+                    )}
+              </>
+            ),
+          });
+        });
       });
-    return metadatas.map((metadata) => ({
-      name: metadata.credential?.userLabel ?? credentialType,
-      created: time(metadata.credential?.createdDate),
-      action: (
-        <>
-          {(featureFlags.passwordUpdateAllowed || (credentialType == CredentialType.WEB_AUTH_N_PASSWORDLESS_REGISTER && credentialRep.removeable)) && (
-            <Button
-              isCompact
-              className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
-              onClick={() => {
-                if (credentialType === CredentialType.PASSWORD) {
-                  updateAIA("UPDATE_PASSWORD");
-                } else {
-                  removeCredential(metadata.credential!);
-                }
-              }}
-            >
-              {credentialType === CredentialType.PASSWORD
-                ? t("update")
-                : t("remove")}
-            </Button>
-          )}
-        </>
-      ),
-    }));
+    return rows;
   };
 
   return (
