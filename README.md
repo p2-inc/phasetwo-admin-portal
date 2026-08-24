@@ -58,31 +58,65 @@ The Portal is built on [shadcn/ui](https://ui.shadcn.com/) components that read 
 
 #### Theme tokens (recommended)
 
-Each token is set with the `_providerConfig.assets.portal.v2.` prefix, e.g. `_providerConfig.assets.portal.v2.primary`. Colors are `#rgb`/`#rrggbb` hex values.
+Each token is set with the `_providerConfig.assets.theme.v2.` prefix, e.g.
+`_providerConfig.assets.theme.v2.primary`. The namespace is **shared** — the login theme
+and the Phase Two dashboard read and write the same attributes, so branding a realm once
+brands every surface. Colors accept `#rgb`/`#rrggbb` hex, a bare CSS color keyword, or a
+single `rgb()`/`hsl()`/`hwb()`/`lab()`/`lch()`/`oklab()`/`oklch()` function.
 
-| Key | Drives | Legacy fallback | Default |
-|---|---|---|---|
-| `_providerConfig.assets.portal.v2.primary` | `--primary`, `--ring` | `primaryColor700` | `#1570c2` |
-| `_providerConfig.assets.portal.v2.primaryForeground` | `--primary-foreground` | _(none)_ | auto-contrast of `primary` |
-| `_providerConfig.assets.portal.v2.cta` | `--cta` | `secondaryColor900` | `#252627` |
-| `_providerConfig.assets.portal.v2.ctaForeground` | `--cta-foreground` | _(none)_ | auto-contrast of `cta` |
-| `_providerConfig.assets.portal.v2.background` | `--background`, `--card`, `--popover` | _(none)_ | `#ffffff` |
-| `_providerConfig.assets.portal.v2.foreground` | `--foreground`, `--card-foreground`, `--popover-foreground` | _(none)_ | `#09090b` |
-| `_providerConfig.assets.portal.v2.muted` | `--muted`, `--secondary`, `--accent` | _(none)_ | `#f4f4f5` |
-| `_providerConfig.assets.portal.v2.border` | `--border`, `--input` | _(none)_ | `#e4e4e7` |
-| `_providerConfig.assets.portal.v2.radius` | `--radius` | _(none)_ | `0.5rem` |
-| `_providerConfig.assets.portal.v2.darkBackground` | `--background`, `--card`, `--popover` (dark mode) | _(none)_ | `#09090b` |
-| `_providerConfig.assets.portal.v2.darkForeground` | `--foreground` (dark mode) | _(none)_ | `#fafafa` |
-| `_providerConfig.assets.portal.v2.darkCta` | `--cta` (dark mode) | _(none)_ | `#ffffff` |
-| `_providerConfig.assets.portal.v2.darkCtaForeground` | `--cta-foreground` (dark mode) | _(none)_ | auto-contrast of `darkCta` |
+Every color token takes an optional dark-mode override named `dark<Token>` — e.g.
+`_providerConfig.assets.theme.v2.darkBackground`.
 
-`cta` is the neutral emphasized action button — black in light mode, white in dark mode by default — distinct from the brand-colored `primary`. Its hover state is derived from the token itself (`bg-cta/90`) rather than from a separate shade.
+**Base tokens** carry a built-in default:
 
-If a foreground token (`primaryForeground`, `ctaForeground`, `darkCtaForeground`) is not set, a readable near-black or white is computed from the relative luminance of its background token (`primary`, `cta`, `darkCta` respectively). Related variables such as `--muted-foreground` are derived from the tokens above.
+| Token | CSS variable | Legacy fallback | Light default | Dark default |
+| --- | --- | --- | --- | --- |
+| `background` | `--background` | _(none)_ | `#ffffff` | `#09090b` |
+| `foreground` | `--foreground` | _(none)_ | `#09090b` | `#fafafa` |
+| `primary` | `--primary` | `primaryColor700` | `#1570c2` | `#1570c2` |
+| `primaryForeground` | `--primary-foreground` | _(none)_ | auto-contrast | auto-contrast |
+| `secondary` | `--secondary` | _(none)_ | `#f4f4f5` | `#27272a` |
+| `secondaryForeground` | `--secondary-foreground` | _(none)_ | `#18181b` | `#fafafa` |
+| `muted` | `--muted` | _(none)_ | `#f4f4f5` | `#27272a` |
+| `mutedForeground` | `--muted-foreground` | _(none)_ | `#71717a` | `#a1a1aa` |
+| `border` | `--border` | _(none)_ | `#e4e4e7` | `#27272a` |
+
+**Derived tokens** have no default of their own: set one to override it, leave it unset
+and it follows its base token. This is what makes a lone custom `primary` also move the
+focus ring, and a lone custom `background` also move the card surface.
+
+| Token | CSS variable | Follows when unset |
+| --- | --- | --- |
+| `card` | `--card`, `--popover` | `background` |
+| `cardForeground` | `--card-foreground`, `--popover-foreground` | `foreground` |
+| `accent` | `--accent` | `muted` |
+| `accentForeground` | `--accent-foreground` | `foreground` |
+| `input` | `--input` | `border` |
+| `ring` | `--ring` | `primary` |
+
+**Other tokens:** `radius` (`--radius`, a CSS length, default `0.5rem`) and `fontFamily`
+(`--font-sans`, a CSS font stack — omitted entirely when unset, leaving the stylesheet's
+own stack in place).
+
+Three behaviors are worth knowing:
+
+- **Brand color is mode-independent.** Set `primary` or `secondary` and leave the dark
+  override unset, and dark mode inherits the light value rather than reverting to the
+  default. Surface and neutral tokens never inherit — a light `background` will not light
+  up dark mode.
+- **Foregrounds auto-contrast.** `primaryForeground` and `secondaryForeground`, when
+  unset, are computed as a readable near-black or white from their background's relative
+  luminance. `foreground` does the same from `background`, but only when the background is
+  a measurable hex value — assuming a dark background would put white text on
+  `background: white`.
+- **The sidebar has no tokens of its own.** It is a recessed surface that reuses `muted`,
+  with `border` as its hover tint and `primary` for the active item and focus ring. Brand
+  those three and the sidebar follows.
 
 #### Legacy keys
 
-These keys are built off of the [Tailwind color](https://tailwindcss.com/docs/customizing-colors) formatting, with the lowest color being lightest and the highest being darkest. They are preserved for compatibility and remain readable, but only `primaryColor700` and `secondaryColor900` still have an effect on the portal: they are the fallbacks for the `primary` and `cta` tokens when `v2.primary` / `v2.cta` are not set. The rest are accepted and ignored — see [Precedence](#precedence). Realms that want custom surfaces (background, foreground, muted, dark mode) must set the `v2` tokens above.
+
+These keys are built off of the [Tailwind color](https://tailwindcss.com/docs/customizing-colors) formatting, with the lowest color being lightest and the highest being darkest. They are preserved for compatibility and remain readable, but only `primaryColor700` still has an effect on the portal: it is the fallback for the `primary` token when `theme.v2.primary` is not set. The rest are accepted and ignored — see [Precedence](#precedence). Realms that want custom surfaces (background, foreground, muted, dark mode) must set the `theme.v2` tokens above.
 
 | Key | Description | Default |
 |---|---|---|
@@ -102,10 +136,10 @@ These keys are built off of the [Tailwind color](https://tailwindcss.com/docs/cu
 Every token resolves independently, in this order:
 
 1. the `v2` attribute, if set;
-2. otherwise, for `primary` and `cta` only, the matching legacy key — `primaryColor700` and `secondaryColor900` respectively — if set;
+2. otherwise, for `primary` only, the matching legacy key `primaryColor700`, if set;
 3. otherwise the built-in default.
 
-`primary` and `cta` are the only tokens with a legacy fallback. Every other legacy key — `primaryColor100`, `primaryColor200`, `primaryColor400`, `primaryColor500`, `primaryColor600`, `primaryColor900`, and `secondaryColor800` — is still read from the realm attributes but no longer affects rendering: in the pre-shadcn portal those keys styled incidental details (a dropdown ring offset, a search icon, a modal tint) rather than surfaces, so promoting them to `--background`/`--foreground` would repaint the whole page with a color that never had that role. `secondaryColor800` is ignored for a different reason: it was the CTA button's hover shade, and the hover is now derived from `cta` itself. A realm that wants custom surfaces sets the `v2` tokens explicitly.
+`primary` is the only token with a legacy fallback. Every other legacy key — `primaryColor100`, `primaryColor200`, `primaryColor400`, `primaryColor500`, `primaryColor600`, `primaryColor900`, `secondaryColor800`, and `secondaryColor900` — is still read from the realm attributes but no longer affects rendering: in the pre-shadcn portal those keys styled incidental details (a dropdown ring offset, a search icon, a modal tint) rather than surfaces, so promoting them to `--background`/`--foreground` would repaint the whole page with a color that never had that role. `secondaryColor800` and `secondaryColor900` are ignored for a different reason: they were the CTA button's hover shade and face, and the `cta` token has folded into `primary` — a realm that only ever customized `secondaryColor900` should set `theme.v2.primary`. A realm that wants custom surfaces sets the `theme.v2` tokens explicitly.
 
 #### Custom CSS
 

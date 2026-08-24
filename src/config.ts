@@ -1,4 +1,5 @@
 import { isEmpty } from "lodash";
+import type { PortalThemeTokenName } from "@/lib/tokens";
 
 export interface Environment {
   name: string;
@@ -30,20 +31,11 @@ export interface Environment {
   };
 }
 
-export type PortalThemeTokenName =
-  | "primary"
-  | "primaryForeground"
-  | "cta"
-  | "ctaForeground"
-  | "background"
-  | "foreground"
-  | "muted"
-  | "border"
-  | "radius"
-  | "darkBackground"
-  | "darkForeground"
-  | "darkCta"
-  | "darkCtaForeground";
+export type {
+  PortalColorToken,
+  PortalDarkColorToken,
+  PortalThemeTokenName,
+} from "@/lib/tokens";
 
 export interface Features {
   profileEnabled: boolean;

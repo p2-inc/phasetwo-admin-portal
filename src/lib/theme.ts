@@ -1,5 +1,15 @@
 
-import { Environment, PortalThemeTokenName } from "@/config";
+import type { Environment } from "@/config";
+import {
+  BASE_TOKENS,
+  darkTokenName,
+  DERIVED_TOKENS,
+  PORTAL_COLOR_TOKENS,
+  type BaseToken,
+  type DerivedToken,
+  type PortalColorToken,
+  type PortalThemeTokenName,
+} from "@/lib/tokens";
 
 export type PortalStyles = Environment["styles"];
 
@@ -10,25 +20,55 @@ export type PortalStyles = Environment["styles"];
 export type ThemeTokens = Record<PortalThemeTokenName, string>;
 
 /**
- * The foregrounds that always derive from their own background — rather than
- * standing alone as a default pair — are absent here and resolved by
- * contrast: primaryForeground, ctaForeground, darkCtaForeground.
+ * Derivation is a fallback, not a lock: a surface uses the explicit token when the
+ * realm set it, and otherwise computes it from the base token named here. This is
+ * what keeps a lone custom `primary` moving the focus ring, and a lone custom
+ * `background` moving the card surface.
  */
-export const DEFAULT_TOKENS: Omit<
-  ThemeTokens,
-  "primaryForeground" | "ctaForeground" | "darkCtaForeground"
-> = {
-  primary: "#1570c2",
-  cta: "#252627",
+export const DERIVED_FROM: Record<DerivedToken, BaseToken> = {
+  card: "background",
+  cardForeground: "foreground",
+  accent: "muted",
+  accentForeground: "foreground",
+  input: "border",
+  ring: "primary",
+};
+
+/**
+ * Brand colour is mode-independent: when the realm sets one of these for light and
+ * leaves the dark override unset, dark mode inherits the light value rather than
+ * dropping back to the stock dark palette. Surface and neutral tokens never inherit
+ * — a light background must not light up dark mode.
+ */
+const BRAND_TOKENS: readonly BaseToken[] = ["primary", "secondary"];
+
+/** Base-token defaults for light mode. */
+export const LIGHT_DEFAULTS: Record<BaseToken, string> = {
   background: "#ffffff",
   foreground: "#09090b",
+  primary: "#1570c2",
+  primaryForeground: "#ffffff",
+  secondary: "#f4f4f5",
+  secondaryForeground: "#18181b",
   muted: "#f4f4f5",
+  mutedForeground: "#71717a",
   border: "#e4e4e7",
-  radius: "0.5rem",
-  darkBackground: "#09090b",
-  darkForeground: "#fafafa",
-  darkCta: "#ffffff",
 };
+
+/** Base-token defaults for dark mode. */
+export const DARK_DEFAULTS: Record<BaseToken, string> = {
+  background: "#09090b",
+  foreground: "#fafafa",
+  primary: "#1570c2",
+  primaryForeground: "#ffffff",
+  secondary: "#27272a",
+  secondaryForeground: "#fafafa",
+  muted: "#27272a",
+  mutedForeground: "#a1a1aa",
+  border: "#27272a",
+};
+
+export const DEFAULT_RADIUS = "0.5rem";
 
 /** Parse #rgb or #rrggbb into [r, g, b]; null for anything else. */
 function parseHex(color: string): [number, number, number] | null {
@@ -136,155 +176,201 @@ function pick(
 
 /**
  * Resolve the effective theme tokens from realm styles.
- * Per token: v2 attribute -> legacy derivation -> built-in default.
- * Only `primary` (primaryColor700) and `cta` (secondaryColor900) derive from
- * a legacy key — see the note at the top of this file. All other legacy keys
- * are ignored. A value that fails validation is treated as unset.
  *
- * Each foreground auto-contrasts against its own background when the realm
- * set that background but left the text color unset — otherwise a lone
- * v2.background="#111827" would keep the default near-black foreground at
- * 1.12:1. The built-in defaults are already contrasting pairs, so the
- * derivation only kicks in for an explicitly set background; a background
- * that fails validation is unset, and its default pair still holds.
- * See derivedForeground for why only hex backgrounds are derived from.
+ * Per token, first valid candidate wins: the `theme.v2.*` attribute, then the one
+ * legacy key that still maps (`primary` <- `primaryColor700`), then a derivation,
+ * then the built-in default. A value that fails validation is treated as unset.
+ *
+ * The old `secondaryColor900` fallback is gone with `cta`: that token folded into
+ * `primary`, so a realm that only ever customised it should set `theme.v2.primary`.
+ * Every other legacy key styled incidental details and is ignored.
+ *
+ * Dark mode resolves independently against the dark defaults, except for the brand
+ * tokens, which inherit their light value when the realm left the dark override
+ * unset. Foregrounds auto-contrast against whatever their background resolved to,
+ * including an inherited brand colour, so a pale brand never keeps white text.
  */
 export function resolveTokens(styles: PortalStyles | undefined): ThemeTokens {
   const s = styles ?? {};
   const v2 = s.v2 ?? {};
 
-  const primary = pick(
-    isColor,
-    v2.primary,
-    s.primary700,
-    DEFAULT_TOKENS.primary
-  );
-  const cta = pick(isColor, v2.cta, s.secondary900, DEFAULT_TOKENS.cta);
-  const darkCta = pick(isColor, v2.darkCta, DEFAULT_TOKENS.darkCta);
-  const setBackground = pick(isColor, v2.background);
-  const setDarkBackground = pick(isColor, v2.darkBackground);
-  const background = pick(isColor, setBackground, DEFAULT_TOKENS.background);
-  const darkBackground = pick(
-    isColor,
-    setDarkBackground,
-    DEFAULT_TOKENS.darkBackground
-  );
-  return {
-    primary,
-    primaryForeground: pick(
-      isColor,
-      v2.primaryForeground,
-      contrastForeground(primary)
-    ),
-    cta,
-    ctaForeground: pick(isColor, v2.ctaForeground, contrastForeground(cta)),
-    background,
-    foreground: pick(
-      isColor,
-      v2.foreground,
-      derivedForeground(setBackground),
-      DEFAULT_TOKENS.foreground
-    ),
-    muted: pick(isColor, v2.muted, DEFAULT_TOKENS.muted),
-    border: pick(isColor, v2.border, DEFAULT_TOKENS.border),
-    radius: pick(isLength, v2.radius, DEFAULT_TOKENS.radius),
-    darkBackground,
-    darkForeground: pick(
-      isColor,
-      v2.darkForeground,
-      derivedForeground(setDarkBackground),
-      DEFAULT_TOKENS.darkForeground
-    ),
-    darkCta,
-    darkCtaForeground: pick(
-      isColor,
-      v2.darkCtaForeground,
-      contrastForeground(darkCta)
-    ),
-  };
+  const attr = (token: PortalThemeTokenName): string | undefined => v2[token];
+
+  /** One mode's colours. `lightExplicit` is set only when resolving dark. */
+  function resolveMode(
+    dark: boolean,
+    lightExplicit?: Partial<Record<PortalColorToken, string>>
+  ) {
+    const defaults = dark ? DARK_DEFAULTS : LIGHT_DEFAULTS;
+    const out = {} as Record<PortalColorToken, string>;
+    const explicit: Partial<Record<PortalColorToken, string>> = {};
+
+    for (const token of BASE_TOKENS) {
+      const v = pick(isColor, attr(dark ? darkTokenName(token) : token));
+      // `primary` keeps its one surviving legacy fallback.
+      const legacy =
+        !dark && token === "primary" ? pick(isColor, s.primary700) : "";
+      let set = v || legacy;
+      // Brand colour is mode-independent; read the light *explicit* value so an
+      // all-default realm stays on the dark palette, and so the foreground below
+      // contrasts against a value the realm actually chose.
+      if (!set && dark && lightExplicit && BRAND_TOKENS.includes(token)) {
+        set = lightExplicit[token] ?? "";
+      }
+      if (set) explicit[token] = set;
+      out[token] = set || defaults[token];
+    }
+
+    // A foreground the realm left unset contrasts against its own background.
+    //
+    // The brand pairs use contrastForeground, which assumes a dark colour when
+    // the value is not measurable hex -- a fair bet for a brand accent, and what
+    // the login theme's resolver does too. `foreground` uses derivedForeground
+    // instead, which declines to guess: backgrounds are usually light, so
+    // assuming dark would put white text on `background: white`.
+    for (const [fg, bg] of [
+      ["primaryForeground", "primary"],
+      ["secondaryForeground", "secondary"],
+    ] as const) {
+      if (!explicit[fg] && explicit[bg]) {
+        out[fg] = contrastForeground(out[bg]);
+      }
+    }
+    if (!explicit.foreground && explicit.background) {
+      const derived = derivedForeground(out.background);
+      if (derived) out.foreground = derived;
+    }
+
+    for (const token of DERIVED_TOKENS) {
+      const from = DERIVED_FROM[token];
+      const set = pick(isColor, attr(dark ? darkTokenName(token) : token));
+      if (set) explicit[token] = set;
+      out[token] = set || out[from];
+    }
+
+    return { out, explicit };
+  }
+
+  const light = resolveMode(false);
+  const dark = resolveMode(true, light.explicit);
+
+  const tokens = {} as ThemeTokens;
+  for (const token of PORTAL_COLOR_TOKENS) {
+    tokens[token] = light.out[token];
+    tokens[darkTokenName(token) as keyof ThemeTokens] = dark.out[token];
+  }
+  tokens.radius = pick(isLength, attr("radius"), DEFAULT_RADIUS);
+  tokens.fontFamily = (attr("fontFamily") ?? "").trim();
+  return tokens;
 }
 
 /**
- * Emit CSS variable definitions for the resolved tokens. The variable
- * names/derivations mirror the defaults in src/index.css; when every token
- * is at its default the visual result is identical to no injection.
+ * Emit CSS variable definitions for the resolved tokens. Names and derivations
+ * mirror the defaults in src/index.css, so when every token is at its default the
+ * result is identical to no injection at all.
  *
- * The dark surfaces lift `darkBackground` toward its own contrasting color
- * rather than toward a literal `white`: a realm may set darkBackground to a
- * light value, and mixing that toward white would collapse every surface
- * onto the background (#f5f5f5 -> #f6f6f6, 1.01:1). Against the default dark
- * base this still resolves to white, so the emitted CSS is unchanged.
- * The *-foreground mixes need no such fix — they are already expressed
- * against their own token pair rather than a literal.
+ * Every token now resolves per mode, so the dark block reads its own `dark*` values
+ * instead of re-deriving surfaces from `darkBackground` with a colour-mix. The one
+ * mix that remains is the `--sidebar` tint, which has no token of its own.
  *
- * The --sidebar-* family is derived from the tokens above rather than from
- * v2 attributes of its own: the sidebar is a recessed surface, so it reuses
- * `muted` (the dark surface mix in dark mode) with `border` as its hover
- * tint, and takes the brand `primary` for its active item and focus ring.
- * A realm therefore brands the sidebar by branding primary/muted/border,
- * and the token set stays pared down.
+ * The --sidebar-* family is derived rather than settable: the sidebar is a recessed
+ * surface, so it reuses `muted` with `border` as its hover tint and takes `primary`
+ * for its active item and focus ring. A realm brands the sidebar by branding
+ * primary/muted/border, and the token set stays pared down.
+ *
+ * `--font-sans` is only emitted when the realm set a font, so an unset value leaves
+ * the stylesheet's own stack alone rather than blanking it.
  */
 export function tokensToCss(t: ThemeTokens): string {
-  const darkContrast = contrastForeground(t.darkBackground);
-  const darkSurface = `color-mix(in srgb, ${t.darkBackground} 88%, ${darkContrast})`;
-  return `:root {
-  --background: ${t.background};
-  --foreground: ${t.foreground};
-  --card: ${t.background};
-  --card-foreground: ${t.foreground};
-  --popover: ${t.background};
-  --popover-foreground: ${t.foreground};
-  --primary: ${t.primary};
-  --primary-foreground: ${t.primaryForeground};
-  --cta: ${t.cta};
-  --cta-foreground: ${t.ctaForeground};
-  --secondary: ${t.muted};
-  --secondary-foreground: ${t.foreground};
-  --muted: ${t.muted};
-  --muted-foreground: color-mix(in srgb, ${t.foreground} 55%, ${t.background});
-  --accent: ${t.muted};
-  --accent-foreground: ${t.foreground};
-  --border: ${t.border};
-  --input: ${t.border};
-  --ring: ${t.primary};
-  --radius: ${t.radius};
-  --sidebar: ${t.muted};
-  --sidebar-foreground: ${t.foreground};
-  --sidebar-primary: ${t.primary};
-  --sidebar-primary-foreground: ${t.primaryForeground};
-  --sidebar-accent: ${t.border};
-  --sidebar-accent-foreground: ${t.foreground};
-  --sidebar-border: ${t.border};
-  --sidebar-ring: ${t.primary};
-}
-.dark {
-  --background: ${t.darkBackground};
-  --foreground: ${t.darkForeground};
-  --card: ${t.darkBackground};
-  --card-foreground: ${t.darkForeground};
-  --popover: ${t.darkBackground};
-  --popover-foreground: ${t.darkForeground};
-  --primary: ${t.primary};
-  --primary-foreground: ${t.primaryForeground};
-  --cta: ${t.darkCta};
-  --cta-foreground: ${t.darkCtaForeground};
-  --secondary: ${darkSurface};
-  --secondary-foreground: ${t.darkForeground};
-  --muted: ${darkSurface};
-  --muted-foreground: color-mix(in srgb, ${t.darkForeground} 65%, ${t.darkBackground});
-  --accent: ${darkSurface};
-  --accent-foreground: ${t.darkForeground};
-  --border: ${darkSurface};
-  --input: ${darkSurface};
-  --ring: ${t.primary};
-  --sidebar: ${darkSurface};
-  --sidebar-foreground: ${t.darkForeground};
-  --sidebar-primary: ${t.primary};
-  --sidebar-primary-foreground: ${t.primaryForeground};
-  --sidebar-accent: ${darkSurface};
-  --sidebar-accent-foreground: ${t.darkForeground};
-  --sidebar-border: ${darkSurface};
-  --sidebar-ring: ${t.primary};
-}
+  const block = (
+    scope: string,
+    c: {
+      background: string;
+      foreground: string;
+      card: string;
+      cardForeground: string;
+      primary: string;
+      primaryForeground: string;
+      secondary: string;
+      secondaryForeground: string;
+      muted: string;
+      mutedForeground: string;
+      accent: string;
+      accentForeground: string;
+      border: string;
+      input: string;
+      ring: string;
+    },
+    extra = ""
+  ) => `${scope} {
+  --background: ${c.background};
+  --foreground: ${c.foreground};
+  --card: ${c.card};
+  --card-foreground: ${c.cardForeground};
+  --popover: ${c.card};
+  --popover-foreground: ${c.cardForeground};
+  --primary: ${c.primary};
+  --primary-foreground: ${c.primaryForeground};
+  --secondary: ${c.secondary};
+  --secondary-foreground: ${c.secondaryForeground};
+  --muted: ${c.muted};
+  --muted-foreground: ${c.mutedForeground};
+  --accent: ${c.accent};
+  --accent-foreground: ${c.accentForeground};
+  --border: ${c.border};
+  --input: ${c.input};
+  --ring: ${c.ring};
+  --sidebar: ${c.muted};
+  --sidebar-foreground: ${c.foreground};
+  --sidebar-primary: ${c.primary};
+  --sidebar-primary-foreground: ${c.primaryForeground};
+  --sidebar-accent: ${c.border};
+  --sidebar-accent-foreground: ${c.foreground};
+  --sidebar-border: ${c.border};
+  --sidebar-ring: ${c.ring};${extra}
+}`;
+
+  const light = {
+    background: t.background,
+    foreground: t.foreground,
+    card: t.card,
+    cardForeground: t.cardForeground,
+    primary: t.primary,
+    primaryForeground: t.primaryForeground,
+    secondary: t.secondary,
+    secondaryForeground: t.secondaryForeground,
+    muted: t.muted,
+    mutedForeground: t.mutedForeground,
+    accent: t.accent,
+    accentForeground: t.accentForeground,
+    border: t.border,
+    input: t.input,
+    ring: t.ring,
+  };
+
+  const dark = {
+    background: t.darkBackground,
+    foreground: t.darkForeground,
+    card: t.darkCard,
+    cardForeground: t.darkCardForeground,
+    primary: t.darkPrimary,
+    primaryForeground: t.darkPrimaryForeground,
+    secondary: t.darkSecondary,
+    secondaryForeground: t.darkSecondaryForeground,
+    muted: t.darkMuted,
+    mutedForeground: t.darkMutedForeground,
+    accent: t.darkAccent,
+    accentForeground: t.darkAccentForeground,
+    border: t.darkBorder,
+    input: t.darkInput,
+    ring: t.darkRing,
+  };
+
+  const extras =
+    `\n  --radius: ${t.radius};` +
+    (t.fontFamily ? `\n  --font-sans: ${t.fontFamily};` : "");
+
+  return `${block(":root", light, extras)}
+${block(".dark", dark)}
 `;
 }

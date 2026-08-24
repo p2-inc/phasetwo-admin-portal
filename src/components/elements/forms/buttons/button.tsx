@@ -18,7 +18,7 @@ const Button: FC<ButtonProps> = ({
 }) => {
   return (
     <UIButton
-      variant={isBlackButton ? "cta" : "secondary"}
+      variant={isBlackButton ? "default" : "secondary"}
       size={isCompact ? "sm" : "default"}
       className={cn(className)}
       {...args}

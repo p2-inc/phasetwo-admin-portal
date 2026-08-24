@@ -236,7 +236,7 @@ public class PortalResourceProvider implements AccountResourceProvider, RealmRes
           .ifPresent(a -> env.getStyles().setSecondary900(a));
       Optional.ofNullable(realm.getAttribute(String.format("_providerConfig.assets.portal.css")))
           .ifPresent(a -> env.getStyles().setCustomCSS(a));
-      String v2Prefix = "_providerConfig.assets.portal.v2.";
+      String v2Prefix = "_providerConfig.assets.theme.v2.";
       Map<String, String> v2 =
           realm.getAttributes().entrySet().stream()
               .filter(e -> e.getKey().startsWith(v2Prefix) && e.getValue() != null)

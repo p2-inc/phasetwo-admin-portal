@@ -2,35 +2,81 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
-  DEFAULT_TOKENS,
+  DARK_DEFAULTS,
+  DEFAULT_RADIUS,
+  LIGHT_DEFAULTS,
   contrastForeground,
   resolveTokens,
   tokensToCss,
 } from "./theme";
+import { darkTokenName, PORTAL_COLOR_TOKENS } from "./tokens";
 
 describe("resolveTokens", () => {
   it("returns built-in defaults when styles are empty", () => {
     const t = resolveTokens({});
     expect(t).toEqual({
-      primary: "#1570c2",
-      primaryForeground: "#ffffff",
-      cta: "#252627",
-      ctaForeground: "#ffffff",
       background: "#ffffff",
       foreground: "#09090b",
+      primary: "#1570c2",
+      primaryForeground: "#ffffff",
+      secondary: "#f4f4f5",
+      secondaryForeground: "#18181b",
       muted: "#f4f4f5",
+      mutedForeground: "#71717a",
       border: "#e4e4e7",
-      radius: "0.5rem",
+      // Derived from their base token when unset.
+      card: "#ffffff",
+      cardForeground: "#09090b",
+      accent: "#f4f4f5",
+      accentForeground: "#09090b",
+      input: "#e4e4e7",
+      ring: "#1570c2",
       darkBackground: "#09090b",
       darkForeground: "#fafafa",
-      darkCta: "#ffffff",
-      darkCtaForeground: "#18181b",
+      darkPrimary: "#1570c2",
+      darkPrimaryForeground: "#ffffff",
+      darkSecondary: "#27272a",
+      darkSecondaryForeground: "#fafafa",
+      darkMuted: "#27272a",
+      darkMutedForeground: "#a1a1aa",
+      darkBorder: "#27272a",
+      darkCard: "#09090b",
+      darkCardForeground: "#fafafa",
+      darkAccent: "#27272a",
+      darkAccentForeground: "#fafafa",
+      darkInput: "#27272a",
+      darkRing: "#1570c2",
+      radius: "0.5rem",
+      fontFamily: "",
     });
   });
 
-  it("derives only primary and cta from the legacy ramp; surfaces stay neutral", () => {
+  it("covers every token in the shared vocabulary", () => {
+    // Guards against a token being added to the vocabulary but never resolved.
+    const t = resolveTokens({});
+    for (const token of PORTAL_COLOR_TOKENS) {
+      expect(t[token], token).toBeTruthy();
+      expect(t[darkTokenName(token)], darkTokenName(token)).toBeTruthy();
+    }
+  });
+
+  it("keeps the base defaults in step with the light and dark palettes", () => {
+    const t = resolveTokens({});
+    for (const [token, value] of Object.entries(LIGHT_DEFAULTS)) {
+      expect(t[token as keyof typeof LIGHT_DEFAULTS], token).toBe(value);
+    }
+    for (const [token, value] of Object.entries(DARK_DEFAULTS)) {
+      expect(t[darkTokenName(token as never)], token).toBe(value);
+    }
+    expect(t.radius).toBe(DEFAULT_RADIUS);
+  });
+
+  it("derives only primary from the legacy ramp; surfaces stay neutral", () => {
     const t = resolveTokens({
       primary700: "#c2410c",
+      // secondary900 was the `cta` fallback. cta folded into primary, so this
+      // key now reaches no token at all -- a realm that only customised it must
+      // set theme.v2.primary instead.
       secondary900: "#1c1917",
       // Incidental legacy keys: a dropdown ring-offset, a search-icon color,
       // a modal tint, the CTA's hover shade. None of these were surfaces in
@@ -43,25 +89,64 @@ describe("resolveTokens", () => {
       primary600: "#ea580c",
       secondary800: "#292524",
     });
-    expect(t.primary).toBe("#c2410c"); // the brand accent
-    expect(t.cta).toBe("#1c1917"); // the black CTA button's face
+    expect(t.primary).toBe("#c2410c"); // the brand accent, the one survivor
     expect(t.background).toBe("#ffffff");
     expect(t.foreground).toBe("#09090b");
     expect(t.muted).toBe("#f4f4f5");
+    expect(t.secondary).toBe("#f4f4f5");
     expect(t.darkBackground).toBe("#09090b");
     expect(t.border).toBe("#e4e4e7");
     expect(t.radius).toBe("0.5rem");
     expect(t.darkForeground).toBe("#fafafa");
     // derived from resolved primary (dark orange -> white text)
     expect(t.primaryForeground).toBe("#ffffff");
-    // derived from resolved cta (near-black -> white text)
-    expect(t.ctaForeground).toBe("#ffffff");
-    // secondaryColor800 was the legacy hover shade; hover is now derived
-    // from cta itself, so it reaches no token.
+    // ring follows the branded primary; card/accent/input stay neutral
+    expect(t.ring).toBe("#c2410c");
+    expect(t.card).toBe("#ffffff");
+    expect(t.accent).toBe("#f4f4f5");
+    expect(t.input).toBe("#e4e4e7");
+    // Neither dropped legacy key may reach any token.
+    expect(Object.values(t)).not.toContain("#1c1917");
     expect(Object.values(t)).not.toContain("#292524");
-    // the dark CTA was hardcoded white and has no legacy fallback
-    expect(t.darkCta).toBe("#ffffff");
-    expect(t.darkCtaForeground).toBe("#18181b");
+  });
+
+  it("carries a branded light primary into dark mode", () => {
+    // Brand colour is mode-independent: the dark override was not set, so it
+    // inherits rather than reverting to the default blue.
+    const t = resolveTokens({ v2: { primary: "#7c3aed" } });
+    expect(t.darkPrimary).toBe("#7c3aed");
+    expect(t.darkRing).toBe("#7c3aed");
+  });
+
+  it("prefers an explicit dark brand override over the light value", () => {
+    const t = resolveTokens({
+      v2: { primary: "#7c3aed", darkPrimary: "#a78bfa" },
+    });
+    expect(t.primary).toBe("#7c3aed");
+    expect(t.darkPrimary).toBe("#a78bfa");
+  });
+
+  it("does not carry a light surface token into dark mode", () => {
+    // A light background must never light up dark mode.
+    const t = resolveTokens({ v2: { background: "#fef9c3" } });
+    expect(t.background).toBe("#fef9c3");
+    expect(t.darkBackground).toBe("#09090b");
+    expect(t.darkCard).toBe("#09090b");
+  });
+
+  it("keeps the dark palette for brand tokens when nothing is set", () => {
+    const t = resolveTokens({});
+    expect(t.darkSecondary).toBe("#27272a");
+  });
+
+  it("derives a token from its base only while it is unset", () => {
+    const derived = resolveTokens({ v2: { border: "#ff0000" } });
+    expect(derived.input).toBe("#ff0000"); // follows border
+    const explicit = resolveTokens({
+      v2: { border: "#ff0000", input: "#00ff00" },
+    });
+    expect(explicit.input).toBe("#00ff00"); // explicit wins
+    expect(explicit.border).toBe("#ff0000");
   });
 
   it("prefers v2 over legacy primary, per token independently", () => {
@@ -90,38 +175,20 @@ describe("resolveTokens", () => {
     asserts wiring, not aesthetics.
   */
   it("maps every v2 token through to its own output token", () => {
-    const t = resolveTokens({
-      v2: {
-        primary: "#010203",
-        primaryForeground: "#040506",
-        cta: "#191a1b",
-        ctaForeground: "#1c1d1e",
-        background: "#070809",
-        foreground: "#0a0b0c",
-        muted: "#0d0e0f",
-        border: "#101112",
-        radius: "1.5rem",
-        darkBackground: "#131415",
-        darkForeground: "#161718",
-        darkCta: "#1f2021",
-        darkCtaForeground: "#222324",
-      },
-    });
-    expect(t).toEqual({
-      primary: "#010203",
-      primaryForeground: "#040506",
-      cta: "#191a1b",
-      ctaForeground: "#1c1d1e",
-      background: "#070809",
-      foreground: "#0a0b0c",
-      muted: "#0d0e0f",
-      border: "#101112",
-      radius: "1.5rem",
-      darkBackground: "#131415",
-      darkForeground: "#161718",
-      darkCta: "#1f2021",
-      darkCtaForeground: "#222324",
-    });
+    // One distinct value per token, so a mis-wired token shows up as a swap
+    // rather than as a passing test.
+    const v2 = Object.fromEntries(
+      PORTAL_COLOR_TOKENS.flatMap((token, i) => [
+        [token, `#${String(i + 10).padStart(2, "0")}0000`],
+        [darkTokenName(token), `#00${String(i + 10).padStart(2, "0")}00`],
+      ])
+    );
+    const t = resolveTokens({ v2: { ...v2, radius: "1.5rem" } });
+
+    for (const [token, value] of Object.entries(v2)) {
+      expect(t[token as keyof typeof t], token).toBe(value);
+    }
+    expect(t.radius).toBe("1.5rem");
   });
 
   it("uses explicit v2 primaryForeground over auto-contrast", () => {
@@ -293,90 +360,81 @@ describe("resolveTokens foreground auto-contrast", () => {
   legacy fallback (secondaryColor900); the dark CTA was a hardcoded white in
   the pre-shadcn portal, so `darkCta` has no legacy source.
 */
-describe("resolveTokens cta", () => {
-  it("derives cta from the legacy secondaryColor900", () => {
+describe("resolveTokens secondary", () => {
+  // `cta` folded into `primary`; `secondary` is now a settable token of its own
+  // rather than an alias of `muted`. Its default is still the muted neutral, so
+  // an unbranded realm looks exactly as it did.
+  it("defaults to the muted neutral in both modes", () => {
+    const t = resolveTokens({});
+    expect(t.secondary).toBe("#f4f4f5");
+    expect(t.secondary).toBe(t.muted);
+    expect(t.darkSecondary).toBe("#27272a");
+    expect(t.darkSecondary).toBe(t.darkMuted);
+  });
+
+  it("can be branded independently of muted", () => {
+    const t = resolveTokens({ v2: { secondary: "#4c1d95" } });
+    expect(t.secondary).toBe("#4c1d95");
+    expect(t.muted).toBe("#f4f4f5");
+  });
+
+  it("auto-contrasts its foreground when branded", () => {
+    const t = resolveTokens({ v2: { secondary: "#4c1d95" } });
+    expect(t.secondaryForeground).toBe("#ffffff");
+  });
+
+  it("uses an explicit secondaryForeground over auto-contrast", () => {
+    const t = resolveTokens({
+      v2: { secondary: "#4c1d95", secondaryForeground: "#fde047" },
+    });
+    expect(t.secondaryForeground).toBe("#fde047");
+  });
+
+  it("is mode-independent like primary", () => {
+    const t = resolveTokens({ v2: { secondary: "#4c1d95" } });
+    expect(t.darkSecondary).toBe("#4c1d95");
+  });
+
+  it("resolves light and dark independently when both are set", () => {
+    const t = resolveTokens({
+      v2: { secondary: "#4c1d95", darkSecondary: "#c4b5fd" },
+    });
+    expect(t.secondary).toBe("#4c1d95");
+    expect(t.darkSecondary).toBe("#c4b5fd");
+  });
+
+  it("takes no legacy fallback", () => {
+    // secondaryColor900 fed the old `cta` and is deliberately dropped.
     const t = resolveTokens({ secondary900: "#1c1917" });
-    expect(t.cta).toBe("#1c1917");
-    expect(t.ctaForeground).toBe("#ffffff");
+    expect(t.secondary).toBe("#f4f4f5");
   });
 
-  it("prefers v2.cta over the legacy secondaryColor900", () => {
-    const t = resolveTokens({
-      secondary900: "#1c1917",
-      v2: { cta: "#4c1d95" },
-    });
-    expect(t.cta).toBe("#4c1d95");
+  it("emits the secondary pair in both blocks", () => {
+    const css = tokensToCss(
+      resolveTokens({ v2: { secondary: "#4c1d95", darkSecondary: "#c4b5fd" } })
+    );
+    const darkIdx = css.indexOf(".dark {");
+    expect(css.slice(0, darkIdx)).toContain("--secondary: #4c1d95;");
+    expect(css.slice(darkIdx)).toContain("--secondary: #c4b5fd;");
   });
 
-  it("falls back to the legacy value when v2.cta is invalid", () => {
-    const t = resolveTokens({
-      secondary900: "#1c1917",
-      v2: { cta: "red}" },
-    });
-    // rejected exactly as if unset — legacy is the next candidate
-    expect(t.cta).toBe("#1c1917");
-  });
-
-  it("falls back to the built-in default when the legacy value is invalid", () => {
-    const t = resolveTokens({ secondary900: "not a color" });
-    expect(t.cta).toBe("#252627");
-  });
-
-  it("defaults to the portal's near-black CTA with white text", () => {
-    const t = resolveTokens({});
-    expect(t.cta).toBe("#252627");
-    expect(t.ctaForeground).toBe("#ffffff");
-  });
-
-  it("derives a dark ctaForeground from a light v2.cta", () => {
-    const t = resolveTokens({ v2: { cta: "#fde047" } });
-    expect(t.cta).toBe("#fde047");
-    // light yellow CTA -> near-black text, not the #ffffff default
-    expect(t.ctaForeground).toBe("#18181b");
-  });
-
-  it("uses an explicit v2.ctaForeground over auto-contrast", () => {
-    const t = resolveTokens({ v2: { cta: "#fde047", ctaForeground: "#123456" } });
-    expect(t.ctaForeground).toBe("#123456");
-  });
-
-  it("defaults darkCta to white with near-black text", () => {
-    const t = resolveTokens({});
-    expect(t.darkCta).toBe("#ffffff");
-    expect(t.darkCtaForeground).toBe("#18181b");
-  });
-
-  it("does not derive darkCta from any legacy key", () => {
-    // the pre-shadcn dark CTA was hardcoded white, never realm-configurable
-    const t = resolveTokens({ secondary900: "#1c1917", secondary800: "#292524" });
-    expect(t.darkCta).toBe("#ffffff");
-  });
-
-  it("derives a light darkCtaForeground from a dark v2.darkCta", () => {
-    const t = resolveTokens({ v2: { darkCta: "#111827" } });
-    expect(t.darkCta).toBe("#111827");
-    expect(t.darkCtaForeground).toBe("#ffffff");
-  });
-
-  it("resolves cta and darkCta independently", () => {
-    const t = resolveTokens({ v2: { cta: "#4c1d95" } });
-    expect(t.cta).toBe("#4c1d95");
-    expect(t.darkCta).toBe("#ffffff");
+  it("no longer emits a cta variable", () => {
+    const css = tokensToCss(resolveTokens({}));
+    expect(css).not.toContain("--cta");
   });
 });
-
 /*
-  index.css carries the same defaults as DEFAULT_TOKENS, so an unbranded
-  realm renders identically whether or not the <style> element is injected.
-  The two are declared in different files and have drifted before, so the
-  cta pair is pinned here in both directions.
+  index.css carries the same defaults as the LIGHT_DEFAULTS / DARK_DEFAULTS
+  palettes, so an unbranded realm renders identically whether or not the
+  <style> element is injected. The two are declared in different files and have
+  drifted before, so every variable is pinned here in both directions.
 
-  Scoped to the cta variables: the surface variables are not comparable this
-  way, because tokensToCss derives several of them with color-mix() where
-  index.css carries a static approximation (--muted-foreground, and the
-  .dark surfaces).
+  This used to be scoped to the cta pair only, because tokensToCss derived
+  several surfaces with color-mix() where index.css carried a static
+  approximation. Now that each token resolves per mode, the emitted CSS and the
+  stylesheet are directly comparable and the whole palette is checked.
 */
-describe("index.css / DEFAULT_TOKENS parity", () => {
+describe("index.css / default palette parity", () => {
   const css = readFileSync(
     fileURLToPath(new URL("../index.css", import.meta.url)),
     "utf8"
@@ -389,26 +447,37 @@ describe("index.css / DEFAULT_TOKENS parity", () => {
     return css.slice(start, css.indexOf("}", start));
   };
 
-  it("declares the light cta pair at the DEFAULT_TOKENS values", () => {
-    const root = block(":root {");
-    expect(root).toContain(`--cta: ${DEFAULT_TOKENS.cta};`);
-    expect(root).toContain(
-      `--cta-foreground: ${contrastForeground(DEFAULT_TOKENS.cta)};`
+  /** `primaryForeground` -> `--primary-foreground`. */
+  const cssVar = (token: string) =>
+    `--${token.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
+
+  it("emits exactly what index.css declares when nothing is branded", () => {
+    const emitted = tokensToCss(resolveTokens({}));
+    const emittedLight = emitted.slice(0, emitted.indexOf(".dark {"));
+    const emittedDark = emitted.slice(emitted.indexOf(".dark {"));
+
+    for (const [token, value] of Object.entries(LIGHT_DEFAULTS)) {
+      const decl = `${cssVar(token)}: ${value};`;
+      expect(block(":root {"), decl).toContain(decl);
+      expect(emittedLight, decl).toContain(decl);
+    }
+    for (const [token, value] of Object.entries(DARK_DEFAULTS)) {
+      const decl = `${cssVar(token)}: ${value};`;
+      expect(block(".dark {"), decl).toContain(decl);
+      expect(emittedDark, decl).toContain(decl);
+    }
+  });
+
+  it("declares the default radius", () => {
+    expect(block(":root {")).toContain(`--radius: ${DEFAULT_RADIUS};`);
+    expect(tokensToCss(resolveTokens({}))).toContain(
+      `--radius: ${DEFAULT_RADIUS};`
     );
   });
 
-  it("declares the dark cta pair at the DEFAULT_TOKENS values", () => {
-    const dark = block(".dark {");
-    expect(dark).toContain(`--cta: ${DEFAULT_TOKENS.darkCta};`);
-    expect(dark).toContain(
-      `--cta-foreground: ${contrastForeground(DEFAULT_TOKENS.darkCta)};`
-    );
-  });
-
-  it("exposes the cta pair to Tailwind so bg-cta/text-cta-foreground compile", () => {
-    const theme = css.slice(css.indexOf("@theme inline {"));
-    expect(theme).toContain("--color-cta: var(--cta);");
-    expect(theme).toContain("--color-cta-foreground: var(--cta-foreground);");
+  it("no longer carries a cta pair in either direction", () => {
+    expect(css).not.toContain("--cta");
+    expect(tokensToCss(resolveTokens({}))).not.toContain("--cta");
   });
 
   /*
@@ -433,61 +502,27 @@ describe("index.css / DEFAULT_TOKENS parity", () => {
     }
   });
 
-  /*
-    The sidebar carries no v2 tokens, so its light defaults are exactly the
-    tokens it derives from — unlike the dark block, where tokensToCss uses a
-    color-mix() against a static approximation in index.css.
-  */
-  it("declares the light sidebar family at the DEFAULT_TOKENS values", () => {
-    const root = block(":root {");
-    expect(root).toContain(`--sidebar: ${DEFAULT_TOKENS.muted};`);
-    expect(root).toContain(`--sidebar-foreground: ${DEFAULT_TOKENS.foreground};`);
-    expect(root).toContain(`--sidebar-primary: ${DEFAULT_TOKENS.primary};`);
-    expect(root).toContain(
-      `--sidebar-primary-foreground: ${contrastForeground(
-        DEFAULT_TOKENS.primary
-      )};`
-    );
-    expect(root).toContain(`--sidebar-accent: ${DEFAULT_TOKENS.border};`);
-    expect(root).toContain(
-      `--sidebar-accent-foreground: ${DEFAULT_TOKENS.foreground};`
-    );
-    expect(root).toContain(`--sidebar-border: ${DEFAULT_TOKENS.border};`);
-    expect(root).toContain(`--sidebar-ring: ${DEFAULT_TOKENS.primary};`);
+  it("derives the sidebar family from the tokens it shadows", () => {
+    // The sidebar has no tokens of its own: it is a recessed surface reusing
+    // muted, with border as its hover tint and primary for active/focus.
+    const t = resolveTokens({});
+    const emitted = tokensToCss(t);
+    const light = emitted.slice(0, emitted.indexOf(".dark {"));
+    expect(light).toContain(`--sidebar: ${t.muted};`);
+    expect(light).toContain(`--sidebar-foreground: ${t.foreground};`);
+    expect(light).toContain(`--sidebar-primary: ${t.primary};`);
+    expect(light).toContain(`--sidebar-accent: ${t.border};`);
+    expect(light).toContain(`--sidebar-ring: ${t.ring};`);
   });
 
-  it("emits the same light sidebar values it declares when nothing is branded", () => {
-    // the injected stylesheet at defaults must be a no-op over index.css
-    const emitted = tokensToCss(resolveTokens({}));
-    const emittedRoot = emitted.slice(
-      emitted.indexOf(":root {"),
-      emitted.indexOf(".dark {")
+  it("moves the sidebar when the tokens it shadows are branded", () => {
+    const emitted = tokensToCss(
+      resolveTokens({ v2: { muted: "#ede9fe", primary: "#4c1d95" } })
     );
-    const root = block(":root {");
-    for (const decl of [
-      `--sidebar: ${DEFAULT_TOKENS.muted};`,
-      `--sidebar-primary: ${DEFAULT_TOKENS.primary};`,
-      `--sidebar-border: ${DEFAULT_TOKENS.border};`,
-      `--sidebar-ring: ${DEFAULT_TOKENS.primary};`,
-    ]) {
-      expect(emittedRoot).toContain(decl);
-      expect(root).toContain(decl);
-    }
-  });
-
-  it("emits the same cta values it declares when nothing is branded", () => {
-    // the injected stylesheet at defaults must be a no-op over index.css
-    const emitted = tokensToCss(resolveTokens({}));
-    const root = block(":root {");
-    const dark = block(".dark {");
-    for (const decl of [`--cta: ${DEFAULT_TOKENS.cta};`]) {
-      expect(emitted).toContain(decl);
-      expect(root).toContain(decl);
-    }
-    for (const decl of [`--cta: ${DEFAULT_TOKENS.darkCta};`]) {
-      expect(emitted).toContain(decl);
-      expect(dark).toContain(decl);
-    }
+    const light = emitted.slice(0, emitted.indexOf(".dark {"));
+    expect(light).toContain("--sidebar: #ede9fe;");
+    expect(light).toContain("--sidebar-primary: #4c1d95;");
+    expect(light).toContain("--sidebar-ring: #4c1d95;");
   });
 });
 
@@ -506,6 +541,39 @@ describe("contrastForeground", () => {
 });
 
 describe("tokensToCss", () => {
+  it("reads dark surfaces from their own tokens, not from darkBackground", () => {
+    // These used to be synthesised by lifting darkBackground with color-mix(),
+    // because there was no dark token set to read. There is now, so a realm that
+    // sets only darkBackground leaves the other dark surfaces on their defaults
+    // rather than dragging them along.
+    const css = tokensToCss(resolveTokens({ v2: { darkBackground: "#f5f5f5" } }));
+    const dark = css.slice(css.indexOf(".dark {"));
+    expect(css).not.toContain("color-mix");
+    expect(dark).toContain("--background: #f5f5f5;");
+    expect(dark).toContain(`--muted: ${DARK_DEFAULTS.muted};`);
+    expect(dark).toContain(`--border: ${DARK_DEFAULTS.border};`);
+  });
+
+  it("emits realm-set dark surfaces into the dark block only", () => {
+    const css = tokensToCss(
+      resolveTokens({ v2: { darkMuted: "#1e293b", darkBorder: "#334155" } })
+    );
+    const root = css.slice(css.indexOf(":root {"), css.indexOf(".dark {"));
+    const dark = css.slice(css.indexOf(".dark {"));
+    expect(dark).toContain("--muted: #1e293b;");
+    expect(dark).toContain("--border: #334155;");
+    expect(root).toContain(`--muted: ${LIGHT_DEFAULTS.muted};`);
+    expect(root).toContain(`--border: ${LIGHT_DEFAULTS.border};`);
+  });
+
+  it("omits --font-sans unless the realm set a font", () => {
+    expect(tokensToCss(resolveTokens({}))).not.toContain("--font-sans");
+    const branded = tokensToCss(
+      resolveTokens({ v2: { fontFamily: '"Inter", sans-serif' } })
+    );
+    expect(branded).toContain('--font-sans: "Inter", sans-serif;');
+  });
+
   it("emits :root and .dark blocks with the resolved values", () => {
     const css = tokensToCss(resolveTokens({ v2: { primary: "#16a34a" } }));
     expect(css).toContain(":root {");
@@ -520,63 +588,11 @@ describe("tokensToCss", () => {
     Mixing toward a literal `white` only works while the base is dark — a
     light darkBackground would land every surface on top of the background.
   */
-  it("lifts dark surfaces away from a light dark base", () => {
-    const t = resolveTokens({ v2: { darkBackground: "#f5f5f5" } });
-    const css = tokensToCss(t);
-    const mix = "color-mix(in srgb, #f5f5f5 88%, #18181b)";
-    // #f5f5f5 88% white would be #f6f6f6 on a #f5f5f5 background — 1.01:1
-    expect(css).not.toContain("88%, white)");
-    expect(css).toContain(`--border: ${mix};`);
-    expect(css).toContain(`--input: ${mix};`);
-    expect(css).toContain(`--muted: ${mix};`);
-    expect(css).toContain(`--secondary: ${mix};`);
-    expect(css).toContain(`--accent: ${mix};`);
-    // the sidebar is one of those surfaces, so it lifts with them
-    expect(css).toContain(`--sidebar: ${mix};`);
-    expect(css).toContain(`--sidebar-accent: ${mix};`);
-    expect(css).toContain(`--sidebar-border: ${mix};`);
-  });
-
-  it("still lifts dark surfaces toward white on the default dark base", () => {
-    const css = tokensToCss(resolveTokens({}));
-    // unchanged from the literal-white behavior, just spelled as a hex
-    const mix = "color-mix(in srgb, #09090b 88%, #ffffff)";
-    expect(css).toContain(`--border: ${mix};`);
-    expect(css).toContain(`--muted: ${mix};`);
-  });
-
   /*
     --cta is one of the few variables whose value differs between the two
     blocks (the CTA inverts in dark mode), so asserting it is present is not
     enough: each block must carry its own pair.
   */
-  it("emits the cta pair in both :root and .dark, per mode", () => {
-    const css = tokensToCss(resolveTokens({}));
-    const root = css.slice(css.indexOf(":root {"), css.indexOf(".dark {"));
-    const dark = css.slice(css.indexOf(".dark {"));
-    expect(root).toContain("--cta: #252627;");
-    expect(root).toContain("--cta-foreground: #ffffff;");
-    expect(dark).toContain("--cta: #ffffff;");
-    expect(dark).toContain("--cta-foreground: #18181b;");
-  });
-
-  it("emits realm-set cta values into their own blocks", () => {
-    const css = tokensToCss(
-      resolveTokens({ v2: { cta: "#fde047", darkCta: "#111827" } })
-    );
-    const root = css.slice(css.indexOf(":root {"), css.indexOf(".dark {"));
-    const dark = css.slice(css.indexOf(".dark {"));
-    expect(root).toContain("--cta: #fde047;");
-    expect(root).toContain("--cta-foreground: #18181b;"); // auto-contrast
-    expect(dark).toContain("--cta: #111827;");
-    expect(dark).toContain("--cta-foreground: #ffffff;");
-  });
-
-  it("emits a legacy-derived cta", () => {
-    const css = tokensToCss(resolveTokens({ secondary900: "#1c1917" }));
-    expect(css).toContain("--cta: #1c1917;");
-  });
-
   /*
     The sidebar has no v2 tokens of its own — it is derived, so branding
     only reaches it through primary/muted/border/foreground. These pin each
