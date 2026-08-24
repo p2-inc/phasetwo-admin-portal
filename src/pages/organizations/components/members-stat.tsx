@@ -1,7 +1,7 @@
 import Stat from "@/components/elements/cards/stat";
 import {
   OrganizationRepresentation,
-  useGetOrganizationMembershipsQuery,
+  useGetOrganizationMembershipsCountQuery,
 } from "@/store/apis/orgs";
 import { useTranslation } from "react-i18next";
 
@@ -12,14 +12,13 @@ type Props = {
 
 const MembersStat: React.FC<Props> = ({ org, realm }) => {
   const { t } = useTranslation();
-  const { data: members = [] } = useGetOrganizationMembershipsQuery({
+  const { data: membersCount = 0 } = useGetOrganizationMembershipsCountQuery({
     realm: realm,
     orgId: org.id!,
+    excludeAdminAccounts: true,
   });
 
-  const totalMembers = members.length === 0 ? 0 : members.length - 1;
-
-  return <Stat value={totalMembers} label={t("members")} />;
+  return <Stat value={membersCount} label={t("members")} />;
 };
 
 export default MembersStat;

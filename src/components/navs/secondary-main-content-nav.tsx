@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
-import cs from "classnames";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { ChevronIcon } from "@/components/icons";
 import { useTranslation } from "react-i18next";
 
@@ -37,36 +37,36 @@ const SecondaryMainContentNav: React.FC<Props> = ({ navigation }) => {
       <div className="md:hidden">
         {activeItem && (
           <button
-            className="flex w-full items-center rounded-md border-2 border-gray-200 px-4 py-2 text-sm font-medium dark:border-zinc-600 dark:text-zinc-200"
+            className="flex w-full items-center rounded-md border-2 border-border px-4 py-2 text-sm font-medium text-foreground"
             onClick={toggleMenu}
           >
             <div className="flex flex-1 items-center">
               {activeItem.icon && (
                 <activeItem.icon
-                  className={cs("-ml-1 mr-3 h-6 w-6 flex-shrink-0")}
+                  className="-ml-1 mr-3 h-6 w-6 shrink-0"
                   aria-hidden="true"
                 />
               )}
               {t(activeItem?.name)}
             </div>
-            <div className="flex-shrink-0">
-              <ChevronIcon className="rotate-90 stroke-gray-600" />
+            <div className="shrink-0">
+              <ChevronIcon className="rotate-90 stroke-muted-foreground" />
             </div>
           </button>
         )}
       </div>
-      <div className={cs("space-y-1 p-2", { "hidden md:block": !isOpen })}>
+      <div className={cn("space-y-1 p-2", { "hidden md:block": !isOpen })}>
         {navigation.map((item) => (
           <NavLink
             key={item.name}
             to={item.href}
             className={({ isActive }) =>
-              cs(
+              cn(
                 "group flex items-center rounded-md px-3 py-2 text-sm transition",
                 {
-                  "bg-gray-100 text-gray-900 dark:bg-zinc-800 dark:text-zinc-200":
+                  "bg-accent text-accent-foreground":
                     isActive && !item.href.startsWith("#"),
-                  "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-zinc-200":
+                  "text-muted-foreground hover:bg-accent hover:text-accent-foreground":
                     !isActive,
                 }
               )
@@ -76,7 +76,7 @@ const SecondaryMainContentNav: React.FC<Props> = ({ navigation }) => {
             <>
               {item.icon && (
                 <item.icon
-                  className={cs("-ml-1 mr-3 h-6 w-6 flex-shrink-0")}
+                  className="-ml-1 mr-3 h-6 w-6 shrink-0"
                   aria-hidden="true"
                 />
               )}

@@ -7,7 +7,7 @@ import {
   useUpdateAccountMutation,
 } from "@/store/apis/profile";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import RHFFormTextInputWithLabel from "@/components/elements/forms/inputs/rhf-text-input-with-label";
 import P2Toast from "@/components/utils/toast";
 import { keycloakService } from "@/keycloak";
@@ -49,7 +49,7 @@ const ProfileData = () => {
     setValue("username", account?.username);
   }, [account, setValue, featureFlags.registrationEmailAsUsername]);
 
-  const onSubmit = async (formData) => {
+  const onSubmit = async (formData: FieldValues) => {
     const updatedAccount = {
       ...account,
       ...formData,

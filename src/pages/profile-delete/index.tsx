@@ -3,7 +3,7 @@ import SectionHeader from "@/components/navs/section-header";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 import Button from "@/components/elements/forms/buttons/button";
 import { useTranslation } from "react-i18next";
 import { toLower } from "lodash";
@@ -14,9 +14,9 @@ const deleteAccount = new AIACommand(keycloakService, "delete_account");
 
 const loadingIcon = (
   <div>
-    <div className={cs("relative h-12 w-12 overflow-hidden rounded-md")}>
-      <div className="absolute -inset-10 z-10 bg-gradient-to-tr from-red-600 to-red-800"></div>
-      <div className="absolute inset-[2px] z-20 flex items-center justify-center rounded bg-white">
+    <div className={cn("relative h-12 w-12 overflow-hidden rounded-md")}>
+      <div className="absolute -inset-10 z-10 bg-linear-to-tr from-red-600 to-red-800"></div>
+      <div className="absolute inset-[2px] z-20 flex items-center justify-center rounded-sm bg-card">
         <User />
       </div>
     </div>
@@ -49,7 +49,7 @@ const ProfileDelete = () => {
           rightContent={
             <Link
               to={`/profile/general`}
-              className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100"
+              className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-muted hover:opacity-100"
             >
               {t("cancel")}
             </Link>

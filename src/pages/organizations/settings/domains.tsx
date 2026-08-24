@@ -46,7 +46,7 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
   const [verifyDomain, { isLoading: isVerifyDomainLoading }] =
     useVerifyDomainMutation();
 
-  const checkVerification = async (domain) => {
+  const checkVerification = async (domain: string) => {
     await verifyDomain({
       domainName: domain,
       orgId: orgId!,
@@ -58,19 +58,19 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
         if (r.verified) {
           P2Toast({
             success: true,
-            title: t("domainVerified", [domain]),
+            title: t("domainVerified", { 0: domain }),
           });
         } else {
           P2Toast({
             error: true,
-            title: t("domainVerificationFailed", [domain]),
+            title: t("domainVerificationFailed", { 0: domain }),
           });
         }
       })
       .catch((e) => {
         return P2Toast({
           error: true,
-          title: t("domainVerificationError", [domain, e.data.error]),
+          title: t("domainVerificationError", { 0: domain, 1: e.data.error }),
         });
       });
   };
@@ -95,14 +95,17 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
       .then((r) => {
         P2Toast({
           success: true,
-          title: t("removeDomainSuccess", [domain.domain_name]),
+          title: t("removeDomainSuccess", { 0: domain.domain_name }),
         });
         refetchDomains();
       })
       .catch((e) => {
         P2Toast({
           error: true,
-          title: t("removeDomainError", [domain.domain_name, e.data.error]),
+          title: t("removeDomainError", {
+            0: domain.domain_name,
+            1: e.data.error,
+          }),
         });
       })
       .finally(() => setShowRemoveConfirmModal(null));
@@ -199,9 +202,9 @@ const SettingsDomain = ({ hasManageOrganizationRole }: SettingsProps) => {
           close={() => {
             setShowRemoveConfirmModal(null);
           }}
-          modalTitle={t("removeDomainTitle", [
-            showRemoveConfirmModal.domain_name,
-          ])}
+          modalTitle={t("removeDomainTitle", {
+            0: showRemoveConfirmModal.domain_name,
+          })}
           modalMessage={t("removeDomainQuestion")}
           onContinue={() =>
             removeDomain(

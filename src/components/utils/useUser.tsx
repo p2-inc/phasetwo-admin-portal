@@ -20,7 +20,9 @@ export default function useUser() {
   }
 
   const checkOrgForRole = (orgId: string | undefined, role: Roles) => {
-    const getRoles = get(userOrgs, [orgId, "roles"]);
+    const getRoles = get(userOrgs, [orgId as string, "roles"]) as
+      | string[]
+      | undefined;
     return getRoles ? getRoles.includes(role) : false;
   };
 

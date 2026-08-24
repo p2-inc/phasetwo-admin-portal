@@ -48,35 +48,114 @@ When setting the attributes manually, the values are:
 | `_providerConfig.portal.org.domains.enabled` | Domains | `true` |
 | `_providerConfig.portal.org.sso.enabled` | SSO (requires idp-wizard extension) | `true` |
 | `_providerConfig.portal.org.events.enabled` | Events | `true` |
+| `_providerConfig.portal.org.attributes.enabled` | Attributes editor (organization settings) | `true` |
 
 ### Style
 
 It is also possible to add branding to the portal. It is recommended these, along with logos, are set through the [Phase Two extensions to the Keycloak Admin UI](https://github.com/p2-inc/keycloak-ui/), as there are other options there that are reused in Login forms styling, and the UI extensions also ensure that the attributes are set with appropriate values.
 
-These style keys are built off of the [Tailwind color](https://tailwindcss.com/docs/customizing-colors) formatting. The order of lowest color being lightest and highest color being darkest.
+The Portal is built on [shadcn/ui](https://ui.shadcn.com/) components that read their colors from CSS variables. Realm branding is applied at runtime by resolving a small set of theme tokens and injecting a `<style>` element that overwrites those variables (defaults live in [src/index.css](src/index.css), resolution logic in [src/lib/theme.ts](src/lib/theme.ts)).
 
-The keys specific to the Portal are:
+#### Theme tokens (recommended)
+
+Each token is set with the `_providerConfig.assets.theme.v2.` prefix, e.g.
+`_providerConfig.assets.theme.v2.primary`. The namespace is **shared** — the login theme
+and the Phase Two dashboard read and write the same attributes, so branding a realm once
+brands every surface. Colors accept `#rgb`/`#rrggbb` hex, a bare CSS color keyword, or a
+single `rgb()`/`hsl()`/`hwb()`/`lab()`/`lch()`/`oklab()`/`oklch()` function.
+
+Every color token takes an optional dark-mode override named `dark<Token>` — e.g.
+`_providerConfig.assets.theme.v2.darkBackground`.
+
+**Base tokens** carry a built-in default:
+
+| Token | CSS variable | Legacy fallback | Light default | Dark default |
+| --- | --- | --- | --- | --- |
+| `background` | `--background` | _(none)_ | `#ffffff` | `#09090b` |
+| `foreground` | `--foreground` | _(none)_ | `#09090b` | `#fafafa` |
+| `primary` | `--primary` | `primaryColor700` | `#1570c2` | `#1570c2` |
+| `primaryForeground` | `--primary-foreground` | _(none)_ | auto-contrast | auto-contrast |
+| `secondary` | `--secondary` | _(none)_ | `#f4f4f5` | `#27272a` |
+| `secondaryForeground` | `--secondary-foreground` | _(none)_ | `#18181b` | `#fafafa` |
+| `muted` | `--muted` | _(none)_ | `#f4f4f5` | `#27272a` |
+| `mutedForeground` | `--muted-foreground` | _(none)_ | `#71717a` | `#a1a1aa` |
+| `border` | `--border` | _(none)_ | `#e4e4e7` | `#27272a` |
+
+**Derived tokens** have no default of their own: set one to override it, leave it unset
+and it follows its base token. This is what makes a lone custom `primary` also move the
+focus ring, and a lone custom `background` also move the card surface.
+
+| Token | CSS variable | Follows when unset |
+| --- | --- | --- |
+| `card` | `--card`, `--popover` | `background` |
+| `cardForeground` | `--card-foreground`, `--popover-foreground` | `foreground` |
+| `accent` | `--accent` | `muted` |
+| `accentForeground` | `--accent-foreground` | `foreground` |
+| `input` | `--input` | `border` |
+| `ring` | `--ring` | `primary` |
+
+**Other tokens:** `radius` (`--radius`, a CSS length, default `0.5rem`) and `fontFamily`
+(`--font-sans`, a CSS font stack — omitted entirely when unset, leaving the stylesheet's
+own stack in place).
+
+Three behaviors are worth knowing:
+
+- **Brand color is mode-independent.** Set `primary` or `secondary` and leave the dark
+  override unset, and dark mode inherits the light value rather than reverting to the
+  default. Surface and neutral tokens never inherit — a light `background` will not light
+  up dark mode.
+- **Foregrounds auto-contrast.** `primaryForeground` and `secondaryForeground`, when
+  unset, are computed as a readable near-black or white from their background's relative
+  luminance. `foreground` does the same from `background`, but only when the background is
+  a measurable hex value — assuming a dark background would put white text on
+  `background: white`.
+- **The sidebar has no tokens of its own.** It is a recessed surface that reuses `muted`,
+  with `border` as its hover tint and `primary` for the active item and focus ring. Brand
+  those three and the sidebar follows.
+
+#### Legacy keys
+
+
+These keys are built off of the [Tailwind color](https://tailwindcss.com/docs/customizing-colors) formatting, with the lowest color being lightest and the highest being darkest. They are preserved for compatibility and remain readable, but only `primaryColor700` still has an effect on the portal: it is the fallback for the `primary` token when `theme.v2.primary` is not set. The rest are accepted and ignored — see [Precedence](#precedence). Realms that want custom surfaces (background, foreground, muted, dark mode) must set the `theme.v2` tokens above.
+
 | Key | Description | Default |
 |---|---|---|
-| `_providerConfig.assets.portal.primary100` | Primary color - 100 | `[empty]` |
-| `_providerConfig.assets.portal.primary200` | Primary color - 200 | `[empty]` |
-| `_providerConfig.assets.portal.primary400` | Primary color - 400 | `[empty]` |
-| `_providerConfig.assets.portal.primary500` | Primary color - 500 | `[empty]` |
-| `_providerConfig.assets.portal.primary600` | Primary color - 600 | `[empty]` |
-| `_providerConfig.assets.portal.primary700` | Primary color - 700 | `[empty]` |
-| `_providerConfig.assets.portal.primary900` | Primary color - 900 | `[empty]` |
-| `_providerConfig.assets.portal.secondary800` | Secondary color - 800 | `[empty]` |
-| `_providerConfig.assets.portal.secondary900` | Secondary color - 900 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor100` | Primary color - 100 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor200` | Primary color - 200 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor400` | Primary color - 400 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor500` | Primary color - 500 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor600` | Primary color - 600 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor700` | Primary color - 700 | `[empty]` |
+| `_providerConfig.assets.portal.primaryColor900` | Primary color - 900 | `[empty]` |
+| `_providerConfig.assets.portal.secondaryColor800` | Secondary color - 800 | `[empty]` |
+| `_providerConfig.assets.portal.secondaryColor900` | Secondary color - 900 | `[empty]` |
 | `_providerConfig.assets.portal.css` | CSS override | `[empty]` |
 
-If you are looking to generate custom css styles, use the following as a guideline. The UI currently only uses two generated styles from the colors:
+#### Precedence
 
-```
-    .text-primary-100 { color: ${colorValue}; }
-    .bg-primary-100 { background-color: ${colorValue}; }
+Every token resolves independently, in this order:
+
+1. the `v2` attribute, if set;
+2. otherwise, for `primary` only, the matching legacy key `primaryColor700`, if set;
+3. otherwise the built-in default.
+
+`primary` is the only token with a legacy fallback. Every other legacy key — `primaryColor100`, `primaryColor200`, `primaryColor400`, `primaryColor500`, `primaryColor600`, `primaryColor900`, `secondaryColor800`, and `secondaryColor900` — is still read from the realm attributes but no longer affects rendering: in the pre-shadcn portal those keys styled incidental details (a dropdown ring offset, a search icon, a modal tint) rather than surfaces, so promoting them to `--background`/`--foreground` would repaint the whole page with a color that never had that role. `secondaryColor800` and `secondaryColor900` are ignored for a different reason: they were the CTA button's hover shade and face, and the `cta` token has folded into `primary` — a realm that only ever customized `secondaryColor900` should set `theme.v2.primary`. A realm that wants custom surfaces sets the `theme.v2` tokens explicitly.
+
+#### Custom CSS
+
+`_providerConfig.assets.portal.css` is appended last, after the generated variables, so it overrides both the tokens and the built-in defaults. Target the CSS variables or standard selectors:
+
+```css
+:root {
+  --primary: #7c3aed;
+  --radius: 0.25rem;
+}
+.dark {
+  --background: #0b1923;
+}
 ```
 
-where `${colorValue}` is whatever you decide as the value and the suffix can change as needed (i.e. `primary-100` becomes `primary-200` and so on).
+> **Breaking change.** Custom CSS that targeted the old generated utility classes — `.bg-primary-700`, `.text-primary-500`, `.bg-primary-gradient`, and friends — no longer has any effect, because components now use semantic shadcn/ui classes (`bg-primary`, `text-muted-foreground`, …). Migrate that CSS to the variables above. Realms that customized `primaryColor100` or `primaryColor900` will see neutral surfaces after upgrading — their brand primary is preserved via `primaryColor700`, and their CTA button color via `secondaryColor900` — so set the matching `v2` tokens to restore custom surfaces.
 
 ## Developers
 
@@ -90,7 +169,7 @@ yarn
 
 Then, start a Keycloak server (use hosted [Phase Two](https://phasetwo.io/dashboard/) for easy testing), create a public OIDC client with `http://localhost:3000` Root URL, and update the `public/keycloak.json` file with the client config.
 
-Also update the `initialEnvironment` object in [src/config.ts](/Users/pnzr/workspace/phase-two/admin-portal/src/config.ts) to reflect your local configuration. This fallback config is used when a runtime `environment` object is not injected, so values such as `realm`, `authServerUrl`, `baseUrl`, and `supportedLocales` should match your setup.
+Also update the `initialEnvironment` object in [src/config.ts](src/config.ts) to reflect your local configuration. This fallback config is used when a runtime `environment` object is not injected, so values such as `realm`, `authServerUrl`, `baseUrl`, and `supportedLocales` should match your setup.
 
 Finally, run the development server:
 

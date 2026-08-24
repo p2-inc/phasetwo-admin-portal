@@ -3,7 +3,7 @@ import RHFFormTextInputWithLabel from "@/components/elements/forms/inputs/rhf-te
 import RoundedIcon from "@/components/elements/rounded-icon";
 import SectionHeader from "@/components/navs/section-header";
 import P2Toast from "@/components/utils/toast";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { config } from "@/config";
 import {
@@ -53,7 +53,7 @@ const DomainsAdd = () => {
     reset,
   } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FieldValues) => {
     const { domain } = data;
 
     if (org.domains?.includes(domain)) {
@@ -118,13 +118,13 @@ const DomainsAdd = () => {
           <div className="space-x-2">
             <Link
               to={`/organizations/${orgId}/details`}
-              className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
+              className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-muted hover:opacity-100"
             >
               {t("orgDetails")}
             </Link>
             <Link
               to={`/organizations/${orgId}/settings`}
-              className="inline-block rounded-lg px-4 py-2 font-medium capitalize opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
+              className="inline-block rounded-lg px-4 py-2 font-medium capitalize opacity-60 transition hover:bg-muted hover:opacity-100"
             >
               {t("manage")}
             </Link>
@@ -145,18 +145,18 @@ const DomainsAdd = () => {
       />
       <div className="space-y-5 py-10">
         {org.domains && org.domains?.length > 0 && (
-          <div className="divide-y rounded-md border border-gray-200 dark:divide-zinc-600 dark:border-zinc-600">
-            <div className="rounded-t-md bg-gray-50 px-3 py-2 text-sm font-semibold dark:bg-zinc-900 dark:text-zinc-200">
+          <div className="divide-y divide-border rounded-md border border-border">
+            <div className="rounded-t-md bg-muted px-3 py-2 text-sm font-semibold text-foreground">
               {t("currentRegisteredDomains")}{" "}
               <RoundBadge>{registeredDomainCount}</RoundBadge>
             </div>
-            <div className="divide-y dark:divide-zinc-600">
+            <div className="divide-y divide-border">
               {org.domains
                 .filter((domain) => domain.length > 0)
                 .map((domain) => (
                   <div
                     key={domain}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm dark:text-zinc-200"
+                    className="flex items-center space-x-2 px-3 py-2 text-sm text-foreground"
                   >
                     <div>{domain}</div>
                   </div>

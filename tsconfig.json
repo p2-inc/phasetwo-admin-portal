@@ -10,18 +10,18 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "es2015"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": true,
-    "target": "es5"
+    "target": "ES2022"
   },
   "include": ["src", "openapi-config.ts"]
 }

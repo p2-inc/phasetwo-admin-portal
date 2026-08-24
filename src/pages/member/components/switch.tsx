@@ -1,6 +1,7 @@
+import { useId } from "react";
 import RoleBadge from "@/components/elements/badges/role-badge";
 import SquareBadge from "@/components/elements/badges/square-badge";
-import { Switch } from "@headlessui/react";
+import { Switch } from "@/components/ui/switch";
 
 export const SwitchItem = ({
   name,
@@ -11,34 +12,26 @@ export const SwitchItem = ({
 }: {
   name: string;
   isChecked: boolean;
-  onChange: (roleName, checked) => void;
+  onChange: (roleName: string, checked: boolean) => void;
   isDisabled?: boolean;
   roleType: "organization" | "application";
 }) => {
+  const switchId = useId();
+
   return (
-    <Switch.Group>
-      <div className="flex items-center justify-between py-2">
-        <Switch.Label className="mr-4 flex-1">
-          <div className="flex items-center justify-between">
-            <RoleBadge name={name} />
-            <SquareBadge className="ml-2">{roleType.toLowerCase()}</SquareBadge>
-          </div>
-        </Switch.Label>
-        <Switch
-          checked={isChecked}
-          disabled={isDisabled}
-          onChange={(checked) => onChange(name, checked)}
-          className={`${
-            isChecked ? "bg-primary-500" : "bg-gray-200 dark:bg-secondary-900"
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
-        >
-          <span
-            className={`${
-              isChecked ? "translate-x-6" : "translate-x-1"
-            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-          />
-        </Switch>
-      </div>
-    </Switch.Group>
+    <div className="flex items-center justify-between py-2">
+      <label htmlFor={switchId} className="mr-4 flex-1">
+        <div className="flex items-center justify-between">
+          <RoleBadge name={name} />
+          <SquareBadge className="ml-2">{roleType.toLowerCase()}</SquareBadge>
+        </div>
+      </label>
+      <Switch
+        id={switchId}
+        checked={isChecked}
+        disabled={isDisabled}
+        onCheckedChange={(checked: boolean) => onChange(name, checked)}
+      />
+    </div>
   );
 };

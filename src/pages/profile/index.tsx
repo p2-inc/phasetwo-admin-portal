@@ -1,11 +1,11 @@
 import SecondaryMainContentMenuArea from "@/components/layouts/secondary-main-content-menu-area";
 import TopHeader from "@/components/navs/top-header";
 import {
-  KeyIcon,
-  SquaresPlusIcon,
-  UserCircleIcon,
-  DevicePhoneMobileIcon,
-} from "@heroicons/react/24/outline";
+  KeyRound,
+  Grid2x2Plus,
+  CircleUserRound,
+  Smartphone,
+} from "lucide-react";
 import FixedWidthMainContent from "@/components/layouts/fixed-width-main-content-area";
 import PrimaryContentArea from "@/components/layouts/primary-content-area";
 import SecondaryMainContentNav, {
@@ -20,25 +20,25 @@ const navigation: NavigationItem[] = [
   {
     name: "general",
     href: "/profile/general",
-    icon: UserCircleIcon,
+    icon: CircleUserRound,
     isActive: true,
   },
   {
     name: "signingIn",
     href: "/profile/signin",
-    icon: KeyIcon,
+    icon: KeyRound,
     isActive: true,
   },
   {
     name: "deviceActivity",
     href: "/profile/activity",
-    icon: DevicePhoneMobileIcon,
+    icon: Smartphone,
     isActive: featureFlags.deviceActivityEnabled,
   },
   {
     name: "linkedAccounts",
     href: "/profile/linked",
-    icon: SquaresPlusIcon,
+    icon: Grid2x2Plus,
     isActive: featureFlags.linkedAccountsEnabled,
   },
 ];

@@ -2,11 +2,13 @@ import { emptySplitApi as api } from "./empty";
 export const addTagTypes = [
   "Organizations",
   "Organization Memberships",
+  "Organization",
   "Organization Domains",
+  "Users",
   "Organization Invitation",
   "Organization Roles",
   "Identity Providers",
-  "Users",
+  "Organization SCIM",
   "Events",
   "Attributes",
 ] as const;
@@ -48,13 +50,72 @@ const injectedRtkApi = api
       >({
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/count`,
-          params: { search: queryArg.search },
+          params: {
+            search: queryArg.search,
+            q: queryArg.q,
+          },
         }),
         providesTags: ["Organizations"],
       }),
       getMe: build.query<GetMeApiResponse, GetMeApiArg>({
         query: (queryArg) => ({ url: `/${queryArg.realm}/orgs/me` }),
         providesTags: ["Organizations"],
+      }),
+      invitations: build.query<InvitationsApiResponse, InvitationsApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/me/invitations`,
+        }),
+        providesTags: ["Organizations"],
+      }),
+      acceptInvitation: build.mutation<
+        AcceptInvitationApiResponse,
+        AcceptInvitationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/me/invitations/${queryArg.invitationId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
+      rejectInvitation: build.mutation<
+        RejectInvitationApiResponse,
+        RejectInvitationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/me/invitations/${queryArg.invitationId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
+      exportOrganizations: build.query<
+        ExportOrganizationsApiResponse,
+        ExportOrganizationsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/export`,
+          params: {
+            includeMembers: queryArg.includeMembers,
+            includeRoles: queryArg.includeRoles,
+            includeIdps: queryArg.includeIdps,
+            orgIds: queryArg.orgIds,
+          },
+        }),
+        providesTags: ["Organizations"],
+      }),
+      importOrganizations: build.mutation<
+        ImportOrganizationsApiResponse,
+        ImportOrganizationsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/import`,
+          method: "POST",
+          body: queryArg.organizationsImportRepresentation,
+          params: {
+            skipExisting: queryArg.skipExisting,
+            importMembers: queryArg.importMembers,
+          },
+        }),
+        invalidatesTags: ["Organizations"],
       }),
       getOrganizationById: build.query<
         GetOrganizationByIdApiResponse,
@@ -97,6 +158,24 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organizations"],
       }),
+      getOrganizationConfig: build.query<
+        GetOrganizationConfigApiResponse,
+        GetOrganizationConfigApiArg
+      >({
+        query: (queryArg) => ({ url: `/${queryArg.realm}/orgs/config` }),
+        providesTags: ["Organizations"],
+      }),
+      updateOrganizationConfig: build.mutation<
+        UpdateOrganizationConfigApiResponse,
+        UpdateOrganizationConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/config`,
+          method: "PUT",
+          body: queryArg.organizationConfigRepresentation,
+        }),
+        invalidatesTags: ["Organizations"],
+      }),
       getOrganizationMemberships: build.query<
         GetOrganizationMembershipsApiResponse,
         GetOrganizationMembershipsApiArg
@@ -107,6 +186,8 @@ const injectedRtkApi = api
             search: queryArg.search,
             first: queryArg.first,
             max: queryArg.max,
+            excludeAdminAccounts: queryArg.excludeAdminAccounts,
+            includeOrgs: queryArg.includeOrgs,
           },
         }),
         providesTags: ["Organization Memberships"],
@@ -117,6 +198,9 @@ const injectedRtkApi = api
       >({
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/count`,
+          params: {
+            excludeAdminAccounts: queryArg.excludeAdminAccounts,
+          },
         }),
         providesTags: ["Organization Memberships"],
       }),
@@ -127,7 +211,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains`,
         }),
-        providesTags: ["Organization Domains"],
+        providesTags: ["Organization", "Organization Domains"],
       }),
       getOrganizationDomain: build.query<
         GetOrganizationDomainApiResponse,
@@ -136,7 +220,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/domains/${queryArg.domainName}`,
         }),
-        providesTags: ["Organization Domains"],
+        providesTags: ["Organization", "Organization Domains"],
       }),
       verifyDomain: build.mutation<VerifyDomainApiResponse, VerifyDomainApiArg>(
         {
@@ -145,7 +229,7 @@ const injectedRtkApi = api
             method: "POST",
           }),
           invalidatesTags: ["Organization Domains"],
-        }
+        },
       ),
       checkOrganizationMembership: build.query<
         CheckOrganizationMembershipApiResponse,
@@ -154,7 +238,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
         }),
-        providesTags: ["Organization Memberships"],
+        providesTags: ["Organization Memberships", "Users"],
       }),
       addOrganizationMember: build.mutation<
         AddOrganizationMemberApiResponse,
@@ -164,7 +248,7 @@ const injectedRtkApi = api
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
           method: "PUT",
         }),
-        invalidatesTags: ["Organization Memberships"],
+        invalidatesTags: ["Organization Memberships", "Users"],
       }),
       removeOrganizationMember: build.mutation<
         RemoveOrganizationMemberApiResponse,
@@ -173,6 +257,26 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}`,
           method: "DELETE",
+        }),
+        invalidatesTags: ["Organization Memberships"],
+      }),
+      getOrganizationMemberAttributes: build.query<
+        GetOrganizationMemberAttributesApiResponse,
+        GetOrganizationMemberAttributesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}/attributes`,
+        }),
+        providesTags: ["Organization Memberships"],
+      }),
+      addOrganizationMemberAttributes: build.mutation<
+        AddOrganizationMemberAttributesApiResponse,
+        AddOrganizationMemberAttributesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/members/${queryArg.userId}/attributes`,
+          method: "PUT",
+          body: queryArg.organizationMemberAttributeRepresentation,
         }),
         invalidatesTags: ["Organization Memberships"],
       }),
@@ -327,7 +431,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
         }),
-        providesTags: ["Organization Roles"],
+        providesTags: ["Organization Roles", "Users"],
       }),
       grantUserOrganizationRole: build.mutation<
         GrantUserOrganizationRoleApiResponse,
@@ -337,7 +441,7 @@ const injectedRtkApi = api
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
           method: "PUT",
         }),
-        invalidatesTags: ["Organization Roles"],
+        invalidatesTags: ["Organization Roles", "Users"],
       }),
       revokeUserOrganizationRole: build.mutation<
         RevokeUserOrganizationRoleApiResponse,
@@ -347,7 +451,7 @@ const injectedRtkApi = api
           url: `/${queryArg.realm}/orgs/${queryArg.orgId}/roles/${queryArg.name}/users/${queryArg.userId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["Organization Roles"],
+        invalidatesTags: ["Organization Roles", "Users"],
       }),
       importIdpJson: build.mutation<
         ImportIdpJsonApiResponse,
@@ -415,7 +519,7 @@ const injectedRtkApi = api
             url: `/${queryArg.realm}/orgs/${queryArg.orgId}/idps/${queryArg.alias}/mappers`,
           }),
           providesTags: ["Identity Providers"],
-        }
+        },
       ),
       addIdpMapper: build.mutation<AddIdpMapperApiResponse, AddIdpMapperApiArg>(
         {
@@ -425,7 +529,7 @@ const injectedRtkApi = api
             body: queryArg.identityProviderMapperRepresentation,
           }),
           invalidatesTags: ["Identity Providers"],
-        }
+        },
       ),
       getIdpMapper: build.query<GetIdpMapperApiResponse, GetIdpMapperApiArg>({
         query: (queryArg) => ({
@@ -454,6 +558,47 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Identity Providers"],
       }),
+      getOrganizationScimConfig: build.query<
+        GetOrganizationScimConfigApiResponse,
+        GetOrganizationScimConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/scim`,
+        }),
+        providesTags: ["Organization SCIM"],
+      }),
+      createOrganizationScimConfig: build.mutation<
+        CreateOrganizationScimConfigApiResponse,
+        CreateOrganizationScimConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/scim`,
+          method: "POST",
+          body: queryArg.organizationScimRepresentation,
+        }),
+        invalidatesTags: ["Organization SCIM"],
+      }),
+      updateOrganizationScimConfig: build.mutation<
+        UpdateOrganizationScimConfigApiResponse,
+        UpdateOrganizationScimConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/scim`,
+          method: "PUT",
+          body: queryArg.organizationScimRepresentation,
+        }),
+        invalidatesTags: ["Organization SCIM"],
+      }),
+      deleteOrganizationScimConfig: build.mutation<
+        DeleteOrganizationScimConfigApiResponse,
+        DeleteOrganizationScimConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/orgs/${queryArg.orgId}/scim`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization SCIM"],
+      }),
       getByRealmUsersAndUserIdOrgs: build.query<
         GetByRealmUsersAndUserIdOrgsApiResponse,
         GetByRealmUsersAndUserIdOrgsApiArg
@@ -470,7 +615,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/users/${queryArg.userId}/orgs/${queryArg.orgId}/roles`,
         }),
-        providesTags: ["Users"],
+        providesTags: ["Users", "Organization Roles"],
       }),
       putByRealmUsersAndUserIdOrgsOrgIdRoles: build.mutation<
         PutByRealmUsersAndUserIdOrgsOrgIdRolesApiResponse,
@@ -481,7 +626,7 @@ const injectedRtkApi = api
           method: "PUT",
           body: queryArg.body,
         }),
-        invalidatesTags: ["Users"],
+        invalidatesTags: ["Users", "Organization Roles"],
       }),
       patchByRealmUsersAndUserIdOrgsOrgIdRoles: build.mutation<
         PatchByRealmUsersAndUserIdOrgsOrgIdRolesApiResponse,
@@ -492,7 +637,27 @@ const injectedRtkApi = api
           method: "PATCH",
           body: queryArg.body,
         }),
+        invalidatesTags: ["Users", "Organization Roles"],
+      }),
+      switchActiveOrganization: build.mutation<
+        SwitchActiveOrganizationApiResponse,
+        SwitchActiveOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/users/switch-organization`,
+          method: "PUT",
+          body: queryArg.switchOrganizationRepresentation,
+        }),
         invalidatesTags: ["Users"],
+      }),
+      getActiveOrganization: build.query<
+        GetActiveOrganizationApiResponse,
+        GetActiveOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/users/active-organization`,
+        }),
+        providesTags: ["Users"],
       }),
       createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
         query: (queryArg) => ({
@@ -551,7 +716,13 @@ const injectedRtkApi = api
         invalidatesTags: ["Attributes"],
       }),
       getWebhooks: build.query<GetWebhooksApiResponse, GetWebhooksApiArg>({
-        query: (queryArg) => ({ url: `/${queryArg.realm}/webhooks` }),
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks`,
+          params: {
+            first: queryArg.first,
+            max: queryArg.max,
+          },
+        }),
         providesTags: ["Events"],
       }),
       createWebhook: build.mutation<
@@ -564,6 +735,13 @@ const injectedRtkApi = api
           body: queryArg.webhookRepresentation,
         }),
         invalidatesTags: ["Events"],
+      }),
+      getWebhooksCount: build.query<
+        GetWebhooksCountApiResponse,
+        GetWebhooksCountApiArg
+      >({
+        query: (queryArg) => ({ url: `/${queryArg.realm}/webhooks/count` }),
+        providesTags: ["Events"],
       }),
       getWebhookById: build.query<
         GetWebhookByIdApiResponse,
@@ -595,6 +773,65 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Events"],
       }),
+      getWebhookSecretById: build.query<
+        GetWebhookSecretByIdApiResponse,
+        GetWebhookSecretByIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}/secret`,
+        }),
+        providesTags: ["Events"],
+      }),
+      getWebhookSends: build.query<
+        GetWebhookSendsApiResponse,
+        GetWebhookSendsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}/sends`,
+          params: {
+            first: queryArg.first,
+            max: queryArg.max,
+          },
+        }),
+        providesTags: ["Events"],
+      }),
+      getWebhookSendById: build.query<
+        GetWebhookSendByIdApiResponse,
+        GetWebhookSendByIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}/sends/${queryArg.sendId}`,
+        }),
+        providesTags: ["Events"],
+      }),
+      resendWebhookById: build.mutation<
+        ResendWebhookByIdApiResponse,
+        ResendWebhookByIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/${queryArg.webhookId}/sends/${queryArg.sendId}/resend`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Events"],
+      }),
+      getPayloadByKeycloakTypeAndId: build.query<
+        GetPayloadByKeycloakTypeAndIdApiResponse,
+        GetPayloadByKeycloakTypeAndIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/payload/${queryArg["type"]}/${queryArg.kid}`,
+        }),
+        providesTags: ["Events"],
+      }),
+      getWebhookSendsByKeycloakTypeAndId: build.query<
+        GetWebhookSendsByKeycloakTypeAndIdApiResponse,
+        GetWebhookSendsByKeycloakTypeAndIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/${queryArg.realm}/webhooks/sends/${queryArg["type"]}/${queryArg.kid}`,
+        }),
+        providesTags: ["Events"],
+      }),
       createMagicLink: build.mutation<
         CreateMagicLinkApiResponse,
         CreateMagicLinkApiArg
@@ -602,7 +839,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/${queryArg.realm}/magic-link`,
           method: "POST",
-          body: queryArg.magicLinkRepresentation,
+          body: queryArg.magicLinkRequest,
         }),
         invalidatesTags: ["Users"],
       }),
@@ -619,7 +856,7 @@ export type GetOrganizationsApiArg = {
   search?: string;
   first?: number;
   max?: number;
-  /** search by attributes using the format `k1:v1,k2:v2` */
+  /** search by attributes using the format (space separated) `k1:v1 k2:v2` */
   q?: string;
 };
 export type CreateOrganizationApiResponse = unknown;
@@ -633,12 +870,59 @@ export type GetOrganizationsCountApiArg = {
   /** realm name (not id!) */
   realm: string;
   search?: string;
+  /** search by attributes using the format (space separated) `k1:v1 k2:v2` */
+  q?: string;
 };
 export type GetMeApiResponse =
   /** status 200 success */ MyOrganizationsRepresentation;
 export type GetMeApiArg = {
   /** realm name (not id!) */
   realm: string;
+};
+export type InvitationsApiResponse =
+  /** status 200 success */ InvitationRepresentation;
+export type InvitationsApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+};
+export type AcceptInvitationApiResponse = unknown;
+export type AcceptInvitationApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** invitation UUID */
+  invitationId: string;
+};
+export type RejectInvitationApiResponse = unknown;
+export type RejectInvitationApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** invitation UUID */
+  invitationId: string;
+};
+export type ExportOrganizationsApiResponse =
+  /** status 200 success */ OrganizationsExportRepresentation;
+export type ExportOrganizationsApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** Include organization members in the export */
+  includeMembers?: boolean;
+  /** Include organization roles in the export */
+  includeRoles?: boolean;
+  /** Include identity providers in the export */
+  includeIdps?: boolean;
+  /** Specific organization IDs to export (if not provided, exports all) */
+  orgIds?: string[];
+};
+export type ImportOrganizationsApiResponse =
+  /** status 200 success */ OrganizationsImportResultRepresentation;
+export type ImportOrganizationsApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** Skip organizations that already exist instead of updating them */
+  skipExisting?: boolean;
+  /** Import organization members (requires existing users in realm) */
+  importMembers?: boolean;
+  organizationsImportRepresentation: OrganizationsImportRepresentation;
 };
 export type GetOrganizationByIdApiResponse =
   /** status 200 success */ OrganizationRepresentation;
@@ -674,8 +958,20 @@ export type CreatePortalLinkApiArg = {
     userId?: string;
   };
 };
+export type GetOrganizationConfigApiResponse =
+  /** status 200 success */ OrganizationConfigRepresentation;
+export type GetOrganizationConfigApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+};
+export type UpdateOrganizationConfigApiResponse = unknown;
+export type UpdateOrganizationConfigApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  organizationConfigRepresentation: OrganizationConfigRepresentation;
+};
 export type GetOrganizationMembershipsApiResponse =
-  /** status 200 success */ UserRepresentation[];
+  /** status 200 success */ UserWithOrgsBriefRepresentation[];
 export type GetOrganizationMembershipsApiArg = {
   /** realm name (not id!) */
   realm: string;
@@ -684,6 +980,8 @@ export type GetOrganizationMembershipsApiArg = {
   search?: string;
   first?: number;
   max?: number;
+  excludeAdminAccounts?: boolean;
+  includeOrgs?: boolean;
 };
 export type GetOrganizationMembershipsCountApiResponse =
   /** status 200 success */ number;
@@ -692,6 +990,7 @@ export type GetOrganizationMembershipsCountApiArg = {
   realm: string;
   /** organization id */
   orgId: string;
+  excludeAdminAccounts?: boolean;
 };
 export type GetOrganizationDomainsApiResponse =
   /** status 200 success */ OrganizationDomainRepresentation[];
@@ -746,6 +1045,31 @@ export type RemoveOrganizationMemberApiArg = {
   orgId: string;
   /** user id */
   userId: string;
+};
+export type GetOrganizationMemberAttributesApiResponse =
+  /** status 200 success */ {
+    [key: string]: string[];
+  };
+export type GetOrganizationMemberAttributesApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** organization id */
+  orgId: string;
+  /** user id */
+  userId: string;
+};
+export type AddOrganizationMemberAttributesApiResponse =
+  /** status 200 success */ {
+    [key: string]: string[];
+  };
+export type AddOrganizationMemberAttributesApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** organization id */
+  orgId: string;
+  /** user id */
+  userId: string;
+  organizationMemberAttributeRepresentation: OrganizationMemberAttributeRepresentation;
 };
 export type AddOrganizationInvitationApiResponse = unknown;
 export type AddOrganizationInvitationApiArg = {
@@ -1031,6 +1355,39 @@ export type DeleteIdpMapperApiArg = {
   /** Mapper id */
   id: string;
 };
+export type GetOrganizationScimConfigApiResponse =
+  /** status 200 success */ OrganizationScimRepresentation;
+export type GetOrganizationScimConfigApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** organization id */
+  orgId: string;
+};
+export type CreateOrganizationScimConfigApiResponse =
+  /** status 201 SCIM configuration created */ OrganizationScimRepresentation;
+export type CreateOrganizationScimConfigApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** organization id */
+  orgId: string;
+  organizationScimRepresentation: OrganizationScimRepresentation;
+};
+export type UpdateOrganizationScimConfigApiResponse =
+  /** status 200 success */ OrganizationScimRepresentation;
+export type UpdateOrganizationScimConfigApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** organization id */
+  orgId: string;
+  organizationScimRepresentation: OrganizationScimRepresentation;
+};
+export type DeleteOrganizationScimConfigApiResponse = unknown;
+export type DeleteOrganizationScimConfigApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** organization id */
+  orgId: string;
+};
 export type GetByRealmUsersAndUserIdOrgsApiResponse =
   /** status 200 success */ OrganizationRepresentation[];
 export type GetByRealmUsersAndUserIdOrgsApiArg = {
@@ -1070,6 +1427,18 @@ export type PatchByRealmUsersAndUserIdOrgsOrgIdRolesApiArg = {
   /** organization id */
   orgId: string;
   body: OrganizationRoleRepresentation[];
+};
+export type SwitchActiveOrganizationApiResponse = unknown;
+export type SwitchActiveOrganizationApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  switchOrganizationRepresentation: SwitchOrganizationRepresentation;
+};
+export type GetActiveOrganizationApiResponse =
+  /** status 200 success */ ActiveOrganizationRepresentation;
+export type GetActiveOrganizationApiArg = {
+  /** realm name (not id!) */
+  realm: string;
 };
 export type CreateEventApiResponse = unknown;
 export type CreateEventApiArg = {
@@ -1119,6 +1488,8 @@ export type GetWebhooksApiResponse =
 export type GetWebhooksApiArg = {
   /** realm name (not id!) */
   realm: string;
+  first?: number;
+  max?: number;
 };
 export type CreateWebhookApiResponse = unknown;
 export type CreateWebhookApiArg = {
@@ -1126,6 +1497,11 @@ export type CreateWebhookApiArg = {
   realm: string;
   /** JSON body */
   webhookRepresentation: WebhookRepresentation;
+};
+export type GetWebhooksCountApiResponse = /** status 200 success */ number;
+export type GetWebhooksCountApiArg = {
+  /** realm name (not id!) */
+  realm: string;
 };
 export type GetWebhookByIdApiResponse =
   /** status 200 success */ WebhookRepresentation;
@@ -1150,12 +1526,70 @@ export type DeleteWebhookApiArg = {
   /** webhook id */
   webhookId: string;
 };
-export type CreateMagicLinkApiResponse = unknown;
+export type GetWebhookSecretByIdApiResponse =
+  /** status 200 success */ CredentialRepresentation;
+export type GetWebhookSecretByIdApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** webhook id */
+  webhookId: string;
+};
+export type GetWebhookSendsApiResponse =
+  /** status 200 success */ WebhookSendRepresentation[];
+export type GetWebhookSendsApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** webhook id */
+  webhookId: string;
+  first?: number;
+  max?: number;
+};
+export type GetWebhookSendByIdApiResponse =
+  /** status 200 success */ WebhookSendRepresentation;
+export type GetWebhookSendByIdApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** webhook id */
+  webhookId: string;
+  /** send id */
+  sendId: string;
+};
+export type ResendWebhookByIdApiResponse = unknown;
+export type ResendWebhookByIdApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** webhook id */
+  webhookId: string;
+  /** send id */
+  sendId: string;
+};
+export type GetPayloadByKeycloakTypeAndIdApiResponse =
+  /** status 200 success */ EventRepresentation;
+export type GetPayloadByKeycloakTypeAndIdApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** keycloak event type */
+  type: string;
+  /** keycloak event id */
+  kid: string;
+};
+export type GetWebhookSendsByKeycloakTypeAndIdApiResponse =
+  /** status 200 success */ WebhookSendRepresentation[];
+export type GetWebhookSendsByKeycloakTypeAndIdApiArg = {
+  /** realm name (not id!) */
+  realm: string;
+  /** keycloak event type */
+  type: string;
+  /** keycloak event id */
+  kid: string;
+};
+export type CreateMagicLinkApiResponse =
+  /** status 200 Magic Link created */ MagicLinkResponse;
 export type CreateMagicLinkApiArg = {
   /** realm name (not id!) */
   realm: string;
   /** JSON body */
-  magicLinkRepresentation: MagicLinkRepresentation;
+  magicLinkRequest: MagicLinkRequest;
 };
 export type OrganizationRepresentation = {
   id?: string;
@@ -1180,42 +1614,6 @@ export type MyOrganizationRepresentation = {
 export type MyOrganizationsRepresentation = {
   [key: string]: MyOrganizationRepresentation;
 };
-export type PortalLinkRepresentation = {
-  user?: string;
-  link?: string;
-  redirect?: string;
-};
-export type UserRepresentation = {
-  attributes?: {
-    [key: string]: any;
-  };
-  createdTimestamp?: number;
-  email?: string;
-  emailVerified?: boolean;
-  enabled?: boolean;
-  firstName?: string;
-  groups?: string[];
-  id?: string;
-  lastName?: string;
-  username?: string;
-};
-export type OrganizationDomainRepresentation = {
-  domain_name?: string;
-  verified?: boolean;
-  record_key?: string;
-  record_value?: string;
-  type?: string;
-};
-export type InvitationRequestRepresentation = {
-  email?: string;
-  send?: boolean;
-  inviterId?: string;
-  redirectUri?: string;
-  roles?: string[];
-  attributes?: {
-    [key: string]: string[];
-  };
-};
 export type InvitationRepresentation = {
   id?: string;
   createdAt?: string;
@@ -1233,11 +1631,6 @@ export type OrganizationRoleRepresentation = {
   name?: string;
   description?: string;
 };
-export type BulkResponseItem = {
-  status?: number;
-  error?: string;
-  item?: object;
-};
 export type IdentityProviderRepresentation = {
   addReadTokenRoleOnCreate?: boolean;
   alias?: string;
@@ -1254,6 +1647,135 @@ export type IdentityProviderRepresentation = {
   storeToken?: boolean;
   trustEmail?: boolean;
 };
+export type OrganizationExportRepresentation = OrganizationRepresentation & {
+  roles?: OrganizationRoleRepresentation[];
+  identityProviders?: IdentityProviderRepresentation[];
+  members?: {
+    userId?: string;
+    email?: string;
+    roles?: string[];
+  }[];
+};
+export type OrganizationsConfigRepresentation = {
+  /** Whether to create a default admin user for new organizations */
+  createAdminUserEnabled?: boolean;
+  /** Whether identity providers can be shared across organizations */
+  sharedIdpsEnabled?: boolean;
+};
+export type OrganizationsExportRepresentation = {
+  /** Export format version */
+  version?: string;
+  /** Source realm name */
+  realm?: string;
+  /** Export timestamp */
+  exportedAt?: string;
+  organizations?: OrganizationExportRepresentation[];
+  config?: OrganizationsConfigRepresentation;
+};
+export type OrganizationsImportResultRepresentation = {
+  /** Number of organizations successfully imported */
+  imported?: number;
+  /** Number of organizations updated */
+  updated?: number;
+  /** Number of organizations skipped */
+  skipped?: number;
+  errors?: {
+    organizationName?: string;
+    error?: string;
+  }[];
+};
+export type OrganizationsImportRepresentation = {
+  /** Import format version */
+  version?: string;
+  organizations?: OrganizationExportRepresentation[];
+  config?: OrganizationsConfigRepresentation;
+};
+export type PortalLinkRepresentation = {
+  user?: string;
+  link?: string;
+  redirect?: string;
+};
+export type OrganizationConfigRepresentation = {
+  /** Whether to create a default admin user for new organizations */
+  createAdminUser?: boolean;
+  /** Whether identity providers can be shared across organizations */
+  sharedIdps?: boolean;
+  /** Whether admin events are enabled for organization operations */
+  adminEventsEnabled?: boolean;
+  /** Whether user events are enabled for organization operations */
+  eventsEnabled?: boolean;
+  /** Default post broker login flow for organization identity providers */
+  defaultPostBrokerFlow?: string;
+  /** Default sync mode for organization identity providers */
+  defaultSyncMode?: string;
+  /** Additional configuration attributes */
+  attributes?: {
+    [key: string]: string[];
+  };
+  /** Realm-level feature flag that turns on per-organization SCIM 2.0
+    provisioning. When false (the default) the organization SCIM
+    configuration endpoints under `/{realm}/orgs/{orgId}/scim`
+    return 404 and the SCIM tab is hidden in the Admin UI.
+     */
+  scimEnabled?: boolean;
+};
+export type UserBriefRepresentation = {
+  createdTimestamp?: number;
+  email?: string;
+  emailVerified?: boolean;
+  enabled?: boolean;
+  firstName?: string;
+  groups?: string[];
+  id?: string;
+  lastName?: string;
+  username?: string;
+};
+export type OrganizationRoleMapRepresentation = {
+  [key: string]: OrganizationRoleRepresentation[];
+};
+export type UserWithOrgsBriefRepresentation = UserBriefRepresentation & {
+  organizations?: OrganizationRoleMapRepresentation;
+};
+export type OrganizationDomainRepresentation = {
+  domain_name: string;
+  verified: boolean;
+  record_key: string;
+  record_value: string;
+};
+export type OrganizationMemberAttributeRepresentation = {
+  attributes?: {
+    [key: string]: string[];
+  };
+};
+export type InvitationRequestRepresentation = {
+  email?: string;
+  send?: boolean;
+  inviterId?: string;
+  redirectUri?: string;
+  roles?: string[];
+  attributes?: {
+    [key: string]: string[];
+  };
+};
+export type BulkResponseItem = {
+  status?: number;
+  error?: string;
+  item?: object;
+};
+export type UserRepresentation = {
+  attributes?: {
+    [key: string]: any;
+  };
+  createdTimestamp?: number;
+  email?: string;
+  emailVerified?: boolean;
+  enabled?: boolean;
+  firstName?: string;
+  groups?: string[];
+  id?: string;
+  lastName?: string;
+  username?: string;
+};
 export type LinkIdentityProviderRepresentation = {
   alias?: string;
   post_broker_flow?: string;
@@ -1268,6 +1790,81 @@ export type IdentityProviderMapperRepresentation = {
   identityProviderMapper?: string;
   name?: string;
 };
+export type KeycloakScimAuth = {
+  type: "KEYCLOAK";
+};
+export type ExternalJwtScimAuth = {
+  type: "EXTERNAL_JWT";
+  /** Expected `iss` claim. Must exactly match the upstream IdP's issuer URL. */
+  issuer?: string;
+  /** Expected `aud` claim. */
+  audience?: string;
+  /** URL the server fetches to validate the JWT signature. */
+  jwks_uri?: string;
+};
+export type ExternalSecretScimAuth = {
+  type: "EXTERNAL_SECRET";
+  /** Random opaque value. Cleartext on submit; hashed at rest. Omit
+    on update to keep the existing secret.
+     */
+  shared_secret?: string;
+};
+export type ExternalBasicScimAuth = {
+  type: "EXTERNAL_BASIC";
+  /** Username for HTTP Basic auth. Stored in cleartext. */
+  username?: string;
+  /** Password for HTTP Basic auth. Cleartext on submit; hashed at
+    rest. Omit on update to keep the existing password.
+     */
+  password?: string;
+};
+export type OrganizationScimAuth =
+  | ({
+      type: "KEYCLOAK";
+    } & KeycloakScimAuth)
+  | ({
+      type: "EXTERNAL_JWT";
+    } & ExternalJwtScimAuth)
+  | ({
+      type: "EXTERNAL_SECRET";
+    } & ExternalSecretScimAuth)
+  | ({
+      type: "EXTERNAL_BASIC";
+    } & ExternalBasicScimAuth);
+export type OrganizationScimRepresentation = {
+  /** Whether the organization's SCIM endpoint accepts inbound traffic.
+    Turn this off to pause provisioning without losing the
+    configuration.
+     */
+  enabled?: boolean;
+  /** When true, the provisioned user's `username` mirrors their
+    `email`, and subsequent SCIM update operations do not change
+    the username.
+     */
+  email_as_username?: boolean;
+  /** When true, provisioned users are federated with the
+    organization's configured identity provider so they can sign in
+    via the org's SSO immediately after provisioning.
+     */
+  link_idp?: boolean;
+  auth?: OrganizationScimAuth;
+};
+export type SwitchOrganizationRepresentation = {
+  /** The ID of the organization to switch to */
+  id?: string;
+};
+export type ActiveOrganizationRepresentation = {
+  /** The ID of the active organization */
+  organizationId?: string;
+  /** The name of the active organization */
+  organizationName?: string;
+  /** The display name of the active organization */
+  displayName?: string;
+  /** User's roles in the active organization */
+  roles?: string[];
+  /** When the organization was last switched to */
+  switchedAt?: string;
+};
 export type AuthDetailsRepresentation = {
   realmId?: string;
   clientId?: string;
@@ -1277,9 +1874,11 @@ export type AuthDetailsRepresentation = {
   sessionId?: string;
 };
 export type EventRepresentation = {
+  id?: string;
   uid?: string;
   time?: number;
   realmId?: string;
+  realmName?: string;
   organizationId?: string;
   type?: string;
   representation?: string;
@@ -1307,27 +1906,67 @@ export type WebhookRepresentation = {
   url?: string;
   secret?: string;
   createdBy?: string;
-  createdAt?: string;
+  createdAt?: number;
   realm?: string;
   eventTypes?: string[];
 };
-export type MagicLinkRepresentation = {
-  email: string;
+export type CredentialRepresentation = {
+  type?: string;
+  value?: string;
+};
+export type WebhookSendRepresentation = {
+  id?: string;
+  type?: string;
+  status?: number;
+  status_message?: string;
+  retried?: number;
+  sent_at?: string;
+  event_id?: string;
+  keycloak_event_type?: string;
+  keycloak_event_id?: string;
+  webhook?: WebhookRepresentation;
+  payload?: string;
+};
+export type MagicLinkResponse = {
+  user_id?: string;
+  link?: string;
+  sent?: boolean;
+};
+export type MagicLinkRequest = {
+  email?: string;
   client_id: string;
   redirect_uri: string;
+  username?: string;
   expiration_seconds?: number;
   force_create?: boolean;
   send_email?: boolean;
+  update_profile?: boolean;
+  update_password?: boolean;
+  scope?: string;
+  nonce?: string;
+  state?: string;
+  code_challenge?: string;
+  code_challenge_method?: string;
+  remember_me?: boolean;
+  reusable?: boolean;
+  response_mode?: string;
 };
 export const {
   useGetOrganizationsQuery,
   useCreateOrganizationMutation,
   useGetOrganizationsCountQuery,
   useGetMeQuery,
+  useInvitationsQuery,
+  useAcceptInvitationMutation,
+  useRejectInvitationMutation,
+  useExportOrganizationsQuery,
+  useImportOrganizationsMutation,
   useGetOrganizationByIdQuery,
   useUpdateOrganizationMutation,
   useDeleteOrganizationMutation,
   useCreatePortalLinkMutation,
+  useGetOrganizationConfigQuery,
+  useUpdateOrganizationConfigMutation,
   useGetOrganizationMembershipsQuery,
   useGetOrganizationMembershipsCountQuery,
   useGetOrganizationDomainsQuery,
@@ -1336,6 +1975,8 @@ export const {
   useCheckOrganizationMembershipQuery,
   useAddOrganizationMemberMutation,
   useRemoveOrganizationMemberMutation,
+  useGetOrganizationMemberAttributesQuery,
+  useAddOrganizationMemberAttributesMutation,
   useAddOrganizationInvitationMutation,
   useGetOrganizationInvitationsQuery,
   useGetOrganizationInvitationCountQuery,
@@ -1366,10 +2007,16 @@ export const {
   useGetIdpMapperQuery,
   useUpdateIdpMapperMutation,
   useDeleteIdpMapperMutation,
+  useGetOrganizationScimConfigQuery,
+  useCreateOrganizationScimConfigMutation,
+  useUpdateOrganizationScimConfigMutation,
+  useDeleteOrganizationScimConfigMutation,
   useGetByRealmUsersAndUserIdOrgsQuery,
   useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery,
   usePutByRealmUsersAndUserIdOrgsOrgIdRolesMutation,
   usePatchByRealmUsersAndUserIdOrgsOrgIdRolesMutation,
+  useSwitchActiveOrganizationMutation,
+  useGetActiveOrganizationQuery,
   useCreateEventMutation,
   useGetRealmAttributesQuery,
   useCreateRealmAttributeMutation,
@@ -1378,8 +2025,15 @@ export const {
   useDeleteRealmAttributeMutation,
   useGetWebhooksQuery,
   useCreateWebhookMutation,
+  useGetWebhooksCountQuery,
   useGetWebhookByIdQuery,
   useUpdateWebhookMutation,
   useDeleteWebhookMutation,
+  useGetWebhookSecretByIdQuery,
+  useGetWebhookSendsQuery,
+  useGetWebhookSendByIdQuery,
+  useResendWebhookByIdMutation,
+  useGetPayloadByKeycloakTypeAndIdQuery,
+  useGetWebhookSendsByKeycloakTypeAndIdQuery,
   useCreateMagicLinkMutation,
 } = injectedRtkApi;

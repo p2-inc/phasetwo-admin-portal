@@ -1,11 +1,11 @@
 import React from "react";
-import cs from "classnames";
+import { cn } from "@/lib/utils";
 
 const FixedWidthMainContent: React.FC<{
   children: React.ReactElement | React.ReactElement[];
   className?: string;
 }> = ({ children, className }) => (
-  <div className={cs("md:flex", className)}>{children}</div>
+  <div className={cn("md:flex", className)}>{children}</div>
 );
 
 export default FixedWidthMainContent;

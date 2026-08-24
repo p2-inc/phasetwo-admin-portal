@@ -1,4 +1,9 @@
-import { Listbox } from "@headlessui/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Theme as ThemeType, Themes } from "@/components/utils/useTheme";
 import { useTranslation } from "react-i18next";
 
@@ -14,28 +19,25 @@ export default function ThemePicker({
 
   return (
     <>
-      <div className="text-sm dark:text-zinc-200">{t("theme")}</div>
-      <Listbox
-        value={currentTheme}
-        onChange={(themeChoice) => changeTheme(themeChoice.key)}
-      >
-        <Listbox.Button className="flex items-center space-x-2 rounded border px-2 py-1 text-sm hover:border-gray-500 dark:border-zinc-600 dark:text-zinc-200 dark:hover:border-zinc-400">
+      <div className="text-sm text-foreground">{t("theme")}</div>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex items-center space-x-2 rounded-sm border border-border px-2 py-1 text-sm text-foreground hover:border-muted-foreground">
           <div>{currentTheme.icon}</div>
           <div>{t(currentTheme.name)}</div>
-        </Listbox.Button>
-        <Listbox.Options className="absolute bottom-0 right-0 rounded border bg-white shadow-md dark:border-zinc-600 dark:bg-p2dark-900">
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
           {Themes.map((item) => (
-            <Listbox.Option
+            <DropdownMenuItem
               key={item.key}
-              value={item}
-              className="flex cursor-pointer items-center space-x-2 px-2 py-1 text-sm hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-600"
+              onSelect={() => changeTheme(item.key)}
+              className="flex cursor-pointer items-center space-x-2 text-sm"
             >
               <div>{item.icon}</div>
               <div>{t(item.name)}</div>
-            </Listbox.Option>
+            </DropdownMenuItem>
           ))}
-        </Listbox.Options>
-      </Listbox>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </>
   );
 }

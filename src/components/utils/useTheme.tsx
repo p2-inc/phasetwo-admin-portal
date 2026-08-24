@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { JSX } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 
 export type Theme = "system" | "dark" | "light";

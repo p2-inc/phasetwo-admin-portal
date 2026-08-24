@@ -1,4 +1,5 @@
 import { isEmpty } from "lodash";
+import type { PortalThemeTokenName } from "@/lib/tokens";
 
 export interface Environment {
   name: string;
@@ -26,8 +27,15 @@ export interface Environment {
     secondary800?: string;
     secondary900?: string;
     customCSS?: string;
+    v2?: Partial<Record<PortalThemeTokenName, string>>;
   };
 }
+
+export type {
+  PortalColorToken,
+  PortalDarkColorToken,
+  PortalThemeTokenName,
+} from "@/lib/tokens";
 
 export interface Features {
   profileEnabled: boolean;
@@ -53,6 +61,7 @@ export interface Features {
   orgDomainsEnabled: boolean;
   orgSsoEnabled: boolean;
   orgEventsEnabled: boolean;
+  orgAttributesEnabled: boolean;
 }
 
 declare const environment: Environment;
@@ -81,6 +90,7 @@ const initialFeatures: Features = {
   orgDomainsEnabled: true,
   orgSsoEnabled: true,
   orgEventsEnabled: true,
+  orgAttributesEnabled: true,
 };
 
 const initialEnvironment: Environment = {
@@ -120,7 +130,7 @@ export const windowRealm: string = (function (): string {
   return "";
 })();
 
-function getPathname(url) {
+function getPathname(url: string) {
   let pathname = new URL(url).pathname;
   if (pathname.endsWith("/")) {
     pathname = pathname.slice(0, -1);
@@ -130,6 +140,5 @@ function getPathname(url) {
 
 export const config = {
   basename: getPathname(env.baseUrl),
-  realm: "test" ?? windowRealm,
   env: env,
 };

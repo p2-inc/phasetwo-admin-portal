@@ -1,14 +1,16 @@
 import SectionHeader from "@/components/navs/section-header";
 import {
+  UserRepresentation,
   useGetByRealmUsersAndUserIdOrgsOrgIdRolesQuery,
   useGetOrganizationMembershipsQuery,
   useGetOrganizationRolesQuery,
   useGrantUserOrganizationRoleMutation,
   useRevokeUserOrganizationRoleMutation,
 } from "@/store/apis/orgs";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useState } from "react";
 import { config } from "@/config";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import P2Toast from "@/components/utils/toast";
 import fullName from "@/components/utils/fullName";
 import useUser from "@/components/utils/useUser";
@@ -30,11 +32,16 @@ const Roles = () => {
   const { user, hasManageRolesRole: hasManageRolesRoleCheck } = useUser();
   const [updatingRoles, setUpdatingRoles] = useState<string[]>([]);
 
-  const { data: members = [] } = useGetOrganizationMembershipsQuery({
-    orgId: orgId!,
-    realm,
-  });
-  const currentMember = members.find((member) => member.id === memberId) || {};
+
+  const location = useLocation();
+  const memberFromState = (
+    location.state as { member?: UserRepresentation } | null
+  )?.member;
+  const { data: members = [] } = useGetOrganizationMembershipsQuery(
+    memberFromState ? skipToken : { orgId: orgId!, realm }
+  );
+  const currentMember: Partial<UserRepresentation> =
+    memberFromState ?? members.find((member) => member.id === memberId) ?? {};
 
   const {
     data: roles = [],
@@ -53,7 +60,7 @@ const Roles = () => {
 
   const allRoles = union(
     StandardOrgRoles,
-    OrgRoles?.map((or) => or.name)
+    OrgRoles?.map((or) => or.name!)
   );
 
   const [grantUserOrganizationRole] = useGrantUserOrganizationRoleMutation();
@@ -67,7 +74,7 @@ const Roles = () => {
     return {
       name: item,
       isChecked: roles.findIndex((f) => f.name === item) >= 0,
-      isApplicationRole: !StandardOrgRoles.includes(item),
+      isApplicationRole: !StandardOrgRoles.includes(item as StandardRoles),
     };
   });
 
@@ -220,7 +227,8 @@ const Roles = () => {
       });
   };
 
-  const isSameUserAndMember = currentMember.id === user?.id;
+
+  const isSameUserAndMember = memberId === user?.id;
 
   const hasManageRolesRole = hasManageRolesRoleCheck(orgId);
   const hasApplicationRoles = OrgRoles.length > 0;
@@ -234,7 +242,7 @@ const Roles = () => {
         rightContent={
           <Link
             to={`/organizations/${orgId}/details`}
-            className="inline-block rounded-lg px-4 py-2 font-medium opacity-60 transition hover:bg-gray-100 hover:opacity-100 dark:text-zinc-200 dark:hover:bg-p2dark-1000"
+            className="inline-block rounded-lg px-4 py-2 font-medium text-foreground opacity-60 transition hover:bg-muted hover:opacity-100"
           >
             Back
           </Link>
@@ -250,7 +258,7 @@ const Roles = () => {
         </div>
       )}
       <div className="mt-8 flex items-center space-x-2 border-b pb-2">
-        <div className="inline-block text-sm text-gray-600 dark:text-zinc-300">
+        <div className="inline-block text-sm text-muted-foreground">
           {t("role-set")}
         </div>
         <Button
@@ -325,7 +333,7 @@ const Roles = () => {
           />
         </div>
       )}
-      <div className="divide-y dark:divide-zinc-600">
+      <div className="divide-y divide-border">
         {isLoading
           ? allRoles.map((r) => <Loader key={r} />)
           : roleData.map((item) => (
@@ -340,7 +348,9 @@ const Roles = () => {
                 }
                 key={item.name}
                 roleType={
-                  !item.isApplicationRole ? t("organization") : t("application")
+                  (!item.isApplicationRole
+                    ? t("organization")
+                    : t("application")) as "organization" | "application"
                 }
               />
             ))}

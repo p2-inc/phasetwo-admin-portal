@@ -40,7 +40,8 @@ import org.keycloak.services.managers.Auth;
   "orgInvitationsEnabled",
   "orgDomainsEnabled",
   "orgSsoEnabled",
-  "orgEventsEnabled"
+  "orgEventsEnabled",
+  "orgAttributesEnabled"
 })
 public class PortalFeatures {
 
@@ -134,6 +135,8 @@ public class PortalFeatures {
     config.orgSsoEnabled(CONFIG_ENABLED(realm, "org.sso.enabled", true));
     // orgEventsEnabled
     config.orgEventsEnabled(CONFIG_ENABLED(realm, "org.events.enabled", true));
+    // orgAttributesEnabled
+    config.orgAttributesEnabled(CONFIG_ENABLED(realm, "org.attributes.enabled", true));
 
     return config;
   }
@@ -206,6 +209,9 @@ public class PortalFeatures {
 
   @JsonProperty("orgEventsEnabled")
   private Boolean orgEventsEnabled;
+
+  @JsonProperty("orgAttributesEnabled")
+  private Boolean orgAttributesEnabled;
 
   @JsonProperty("profileEnabled")
   public Boolean getProfileEnabled() {
@@ -549,6 +555,21 @@ public class PortalFeatures {
 
   public PortalFeatures orgEventsEnabled(Boolean orgEventsEnabled) {
     this.orgEventsEnabled = orgEventsEnabled;
+    return this;
+  }
+
+  @JsonProperty("orgAttributesEnabled")
+  public Boolean getOrgAttributesEnabled() {
+    return orgAttributesEnabled;
+  }
+
+  @JsonProperty("orgAttributesEnabled")
+  public void setOrgAttributesEnabled(Boolean orgAttributesEnabled) {
+    this.orgAttributesEnabled = orgAttributesEnabled;
+  }
+
+  public PortalFeatures orgAttributesEnabled(Boolean orgAttributesEnabled) {
+    this.orgAttributesEnabled = orgAttributesEnabled;
     return this;
   }
 }

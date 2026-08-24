@@ -64,15 +64,17 @@ const SigninProfile = () => {
       .then(() => {
         P2Toast({
           success: true,
-          title: t(`credentialsSuccessfullyRemoved`, [
-            credential.userLabel ?? "",
-          ]),
+          title: t(`credentialsSuccessfullyRemoved`, {
+            0: credential.userLabel ?? "",
+          }),
         });
       })
       .catch((e) => {
         P2Toast({
           error: true,
-          title: t(`credentialsRemovingError`, [credential.userLabel ?? ""]),
+          title: t(`credentialsRemovingError`, {
+            0: credential.userLabel ?? "",
+          }),
         });
         console.error(e);
       });
@@ -143,7 +145,7 @@ const SigninProfile = () => {
         <div>
           <div className="space-y-5">
             <div className="flex items-center space-x-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary-700 dark:text-zinc-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-foreground">
                 <Lock className="h-5 w-5" />
               </div>
               <SectionHeader
@@ -182,7 +184,7 @@ const SigninProfile = () => {
           <div>
             <div className="space-y-8">
               <div className="flex items-center space-x-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary-700 dark:text-zinc-200">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-foreground">
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <SectionHeader
@@ -287,7 +289,7 @@ const SigninProfile = () => {
           <div>
             <div className="space-y-5">
               <div className="flex items-center space-x-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary-700 dark:text-zinc-200">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-foreground">
                   <Key className="h-5 w-5" />
                 </div>
                 <SectionHeader
