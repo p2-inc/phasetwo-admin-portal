@@ -41,9 +41,13 @@ const SigninProfile = () => {
   });
   const [deleteCredential] = useDeleteCredentialMutation();
 
-  const hasPassword = credentials.find(
+  // Keycloak returns the password type whenever the realm's flows use passwords,
+  // so whether the user has one is the length of its stored credentials.
+  const passwordType = credentials.find(
     (cred) => cred.type === CredentialType.PASSWORD
   );
+  const hasStoredPassword =
+    (passwordType?.userCredentialMetadatas?.length ?? 0) > 0;
   const hasWebAuthN = credentials.find(
     (cred) => cred.type === CredentialType.WEB_AUTH_N
   );
@@ -143,44 +147,46 @@ const SigninProfile = () => {
         />
       </div>
       <div className="space-y-16">
-        <div>
-          <div className="space-y-5">
-            <div className="flex items-center space-x-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-foreground">
-                <Lock className="h-5 w-5" />
+        {(isLoading || passwordType) && (
+          <div>
+            <div className="space-y-5">
+              <div className="flex items-center space-x-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-foreground">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <SectionHeader
+                  title={t("basicAuthentication")}
+                  variant="medium"
+                />
               </div>
               <SectionHeader
-                title={t("basicAuthentication")}
-                variant="medium"
+                title={t("password")}
+                description={t("signInByEnteringYourPassword")}
+                variant="small"
               />
+              {isLoading || hasStoredPassword ? (
+                <Table
+                  columns={cols}
+                  rows={rowsForType(CredentialType.PASSWORD, credentials)}
+                  isLoading={isLoading}
+                />
+              ) : (
+                <div>
+                  {featureFlags.passwordUpdateAllowed ? (
+                    <Button
+                      onClick={() => setUpCredential("UPDATE_PASSWORD")}
+                      isBlackButton
+                    >
+                      {t("setupPassword")}
+                    </Button>
+                  ) : (
+                    t("passwordUpdateNotAllowed")
+                  )}
+                </div>
+              )}
             </div>
-            <SectionHeader
-              title={t("password")}
-              description={t("signInByEnteringYourPassword")}
-              variant="small"
-            />
-            {!hasPassword ? (
-              <Table
-                columns={cols}
-                rows={rowsForType(CredentialType.PASSWORD, credentials)}
-                isLoading={isLoading}
-              />
-            ) : (
-              <div>
-                {featureFlags.passwordUpdateAllowed ? (
-                  <Button
-                    onClick={() => setUpCredential("UPDATE_PASSWORD")}
-                    isBlackButton
-                  >
-                    {t("setupPassword")}
-                  </Button>
-                ) : (
-                  t("passwordUpdateNotAllowed")
-                )}
-              </div>
-            )}
           </div>
-        </div>
+        )}
         {featureFlags.twoFactorUpdateAllowed && (
           <div>
             <div className="space-y-8">
