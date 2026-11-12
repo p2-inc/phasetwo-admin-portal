@@ -17,7 +17,7 @@ type TokenWithResourceAccess = {
 /** Whether the parsed access token grants realm `manage-organizations`. */
 export const tokenHasRealmManageOrganizations = (
   tokenParsed: TokenWithResourceAccess | undefined,
-  realm: string
+  realm: string,
 ): boolean =>
   !!tokenParsed?.resource_access?.[
     realmManagementClientId(realm)
@@ -54,7 +54,7 @@ export const getInviteRoleAccess = ({
 /** Filters org roles down to those the inviter may attach. */
 export const filterAssignableRoles = <T extends { name?: string }>(
   orgRoles: T[],
-  allowedRoles: string[] | undefined
+  allowedRoles: string[] | undefined,
 ): T[] =>
   allowedRoles === undefined
     ? orgRoles

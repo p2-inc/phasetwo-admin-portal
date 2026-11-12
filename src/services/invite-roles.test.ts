@@ -20,14 +20,14 @@ describe("tokenHasRealmManageOrganizations", () => {
     expect(
       tokenHasRealmManageOrganizations(
         { resource_access: { "realm-management": { roles: ["view-users"] } } },
-        "acme"
-      )
+        "acme",
+      ),
     ).toBe(false);
     expect(
       tokenHasRealmManageOrganizations(
         { resource_access: { account: { roles: ["manage-organizations"] } } },
-        "acme"
-      )
+        "acme",
+      ),
     ).toBe(false);
     expect(tokenHasRealmManageOrganizations({}, "acme")).toBe(false);
     expect(tokenHasRealmManageOrganizations(undefined, "acme")).toBe(false);
@@ -48,7 +48,7 @@ describe("tokenHasRealmManageOrganizations", () => {
 describe("getInviteRoleAccess", () => {
   it("lets realm admins attach every role", () => {
     expect(
-      getInviteRoleAccess({ isRealmOrgAdmin: true, heldOrgRoles: [] })
+      getInviteRoleAccess({ isRealmOrgAdmin: true, heldOrgRoles: [] }),
     ).toEqual({ canAssignRoles: true, allowedRoles: undefined });
   });
 
@@ -57,10 +57,10 @@ describe("getInviteRoleAccess", () => {
       getInviteRoleAccess({
         isRealmOrgAdmin: false,
         heldOrgRoles: ["manage-invitations", "view-organization"],
-      })
+      }),
     ).toEqual({ canAssignRoles: false, allowedRoles: [] });
     expect(
-      getInviteRoleAccess({ isRealmOrgAdmin: false, heldOrgRoles: undefined })
+      getInviteRoleAccess({ isRealmOrgAdmin: false, heldOrgRoles: undefined }),
     ).toEqual({ canAssignRoles: false, allowedRoles: [] });
   });
 
@@ -69,7 +69,7 @@ describe("getInviteRoleAccess", () => {
       getInviteRoleAccess({
         isRealmOrgAdmin: false,
         heldOrgRoles: ["manage-roles", "manage-invitations", "billing"],
-      })
+      }),
     ).toEqual({
       canAssignRoles: true,
       allowedRoles: ["manage-roles", "manage-invitations", "billing"],
@@ -90,7 +90,7 @@ describe("filterAssignableRoles", () => {
 
   it("keeps only allowed roles", () => {
     expect(
-      filterAssignableRoles(orgRoles, ["manage-roles", "billing"])
+      filterAssignableRoles(orgRoles, ["manage-roles", "billing"]),
     ).toEqual([{ name: "manage-roles" }, { name: "billing" }]);
     expect(filterAssignableRoles(orgRoles, [])).toEqual([]);
   });
