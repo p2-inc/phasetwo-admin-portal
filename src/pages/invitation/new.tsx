@@ -17,6 +17,7 @@ import Alert from "@/components/elements/alerts/alert";
 import { useTranslation } from "react-i18next";
 import { DecoratedRole, RolesList } from "@/pages/member/components";
 import useOrgDisplayName from "@/components/utils/org-display-name";
+import { getInviteRoleAccess } from "@/services/invite-roles";
 
 const { realm } = config.env;
 
@@ -36,7 +37,17 @@ const NewInvitation = () => {
   let { orgId } = useParams();
   const { t } = useTranslation();
 
-  const { hasManageInvitationsRole: hasManageInvitationsRoleCheck } = useUser();
+  const {
+    hasManageInvitationsRole: hasManageInvitationsRoleCheck,
+    hasRealmManageOrganizations,
+    getOrgRoles,
+    isLoadingUserOrgs,
+  } = useUser();
+
+  const roleAccess = getInviteRoleAccess({
+    isRealmOrgAdmin: hasRealmManageOrganizations(),
+    heldOrgRoles: getOrgRoles(orgId),
+  });
 
   const { data: org } = useGetOrganizationByIdQuery({
     orgId: orgId!,
@@ -57,6 +68,9 @@ const NewInvitation = () => {
 
   const onSubmit = async (data: FieldValues) => {
     if (data.email) {
+      const roles = roleAccess.canAssignRoles
+        ? selectedRoles?.filter((r) => r.isChecked).map((r) => r.name)
+        : undefined;
       P2Toast({
         title: t("invitation-toast-submit", { data }),
         information: true,
@@ -67,7 +81,7 @@ const NewInvitation = () => {
         invitationRequestRepresentation: {
           email: data.email,
           inviterId: keycloak.tokenParsed?.sub,
-          roles: selectedRoles?.filter((r) => r.isChecked).map((r) => r.name),
+          roles,
           send: true,
         },
       })
@@ -81,11 +95,14 @@ const NewInvitation = () => {
           return navigate(`/organizations/${orgId}/invitation/pending`);
         })
         .catch((e) => {
-          return P2Toast({
-            error: true,
-            title:
-              e.status === 401 ? t("insufficient-permissions") : e.data.error,
-          });
+          let title = e.data?.error;
+          if (e.status === 401) {
+            title =
+              roles && roles.length > 0
+                ? t("invitation-roles-not-allowed")
+                : t("insufficient-permissions");
+          }
+          return P2Toast({ error: true, title });
         });
     }
   };
@@ -118,7 +135,23 @@ const NewInvitation = () => {
           />
         </div>
       )}
-      <RolesList orgId={orgId!} setSelectedRoles={setSelectedRoles} />
+      {!isLoadingUserOrgs &&
+        hasManageInvitationsRole &&
+        (roleAccess.canAssignRoles ? (
+          <RolesList
+            orgId={orgId!}
+            setSelectedRoles={setSelectedRoles}
+            allowedRoles={roleAccess.allowedRoles}
+          />
+        ) : (
+          <div className="mt-8">
+            <Alert
+              title={t("invitation-roles-not-assignable-title")}
+              body={t("invitation-roles-not-assignable-body")}
+              type="info"
+            />
+          </div>
+        ))}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-8 space-y-4">
           <RHFFormTextInputWithLabel

@@ -10,6 +10,7 @@ import { SwitchItem } from "./switch";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Button } from "./button";
+import { filterAssignableRoles } from "@/services/invite-roles";
 
 const { realm } = config.env;
 
@@ -22,9 +23,12 @@ export type DecoratedRole = {
 export const RolesList = ({
   orgId,
   setSelectedRoles,
+  allowedRoles,
 }: {
   orgId: string;
   setSelectedRoles: (roles: DecoratedRole[]) => void;
+  /** Role names that may be offered. Undefined offers every org role. */
+  allowedRoles?: string[];
 }) => {
   const { t } = useTranslation();
   const [roles, setRoles] = useState<DecoratedRole[]>([]);
@@ -34,22 +38,25 @@ export const RolesList = ({
     realm,
   });
 
+  const allowedRolesKey = allowedRoles?.join("\n");
+
   useEffect(() => {
     const decoratedRoles = sortBy(
-      OrgRoles.map((r) => {
+      filterAssignableRoles(OrgRoles, allowedRoles).map((r) => {
         const isStandardRole = StandardOrgRoles.includes(
           r.name as StandardRoles
         );
         return {
           name: r.name!,
-          isChecked: isStandardRole,
+          // Nothing is pre-selected so invitees don't get admin roles by default.
+          isChecked: false,
           isApplicationRole: !isStandardRole,
         };
       }),
       ["isApplicationRole", "name"]
     );
     setRoles([...decoratedRoles]);
-  }, [isLoading]);
+  }, [isLoading, allowedRolesKey]);
 
   useEffect(() => {
     setSelectedRoles(roles);
