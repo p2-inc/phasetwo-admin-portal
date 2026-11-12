@@ -3,14 +3,18 @@ import { config } from "@/config";
 import { get } from "lodash";
 import { Roles } from "@/services/role";
 import { useGetAccountQuery } from "@/store/apis/profile";
+import { keycloak } from "@/keycloak";
+import { tokenHasRealmManageOrganizations } from "@/services/invite-roles";
 
 export default function useUser() {
   const { realm } = config.env;
   const { data: user = {} } = useGetAccountQuery({ realm });
 
-  const { data: userOrgs = {}, isFetching: isFetchingUserOrgs } = useGetMeQuery(
-    { realm }
-  );
+  const {
+    data: userOrgs = {},
+    isFetching: isFetchingUserOrgs,
+    isLoading: isLoadingUserOrgs,
+  } = useGetMeQuery({ realm });
 
   function fullName() {
     if (!user) return "member";
@@ -25,6 +29,15 @@ export default function useUser() {
       | undefined;
     return getRoles ? getRoles.includes(role) : false;
   };
+
+  const getOrgRoles = (orgId: string | undefined) =>
+    get(userOrgs, [orgId as string, "roles"]) as string[] | undefined;
+
+  // Realm-level `manage-organizations` (realm-management client role), read from
+  // the access token. The admin-portal client has full scope, so client roles
+  // are included in its tokens.
+  const hasRealmManageOrganizations = () =>
+    tokenHasRealmManageOrganizations(keycloak.tokenParsed, realm);
 
   const hasViewOrganizationRole = (orgId: OrganizationRepresentation["id"]) =>
     checkOrgForRole(orgId, Roles.ViewOrganization);
@@ -54,7 +67,10 @@ export default function useUser() {
     fullName,
     userOrgs,
     isFetchingUserOrgs,
+    isLoadingUserOrgs,
     checkOrgForRole,
+    getOrgRoles,
+    hasRealmManageOrganizations,
     hasViewOrganizationRole,
     hasViewMembersRole,
     hasViewInvitationsRole,

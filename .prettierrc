@@ -1,5 +1,4 @@
 {
   "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./src/index.css",
-  "organizeImportsSkipDestructiveCodeActions": true
+  "tailwindStylesheet": "./src/index.css"
 }
