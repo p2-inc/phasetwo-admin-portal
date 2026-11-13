@@ -32,6 +32,63 @@ describe("resolveClientName", () => {
     ).toBe("Account Console");
   });
 
+  it("prefers the realm's localization text over the static translation", () => {
+    expect(
+      resolveClientName(
+        {
+          clientId: "account-console",
+          clientName: "${client_account-console}",
+        },
+        t,
+        { "client_account-console": "Self Service" },
+      ),
+    ).toBe("Self Service");
+  });
+
+  it("uses the realm's localization text for a custom client", () => {
+    expect(
+      resolveClientName({ clientId: "my-app", clientName: "${my_client}" }, t, {
+        my_client: "My Client",
+      }),
+    ).toBe("My Client");
+  });
+
+  it("ignores realm texts for other keys and blank realm texts", () => {
+    const realmMessages = { other: "Other", my_client: "  " };
+    expect(
+      resolveClientName(
+        {
+          clientId: "account-console",
+          clientName: "${client_account-console}",
+        },
+        t,
+        realmMessages,
+      ),
+    ).toBe("Account Console");
+    expect(
+      resolveClientName(
+        { clientId: "my-app", clientName: "${my_client}" },
+        t,
+        realmMessages,
+      ),
+    ).toBe("my-app");
+    expect(
+      resolveClientName(
+        { clientId: "my-app", clientName: "${toString}" },
+        t,
+        realmMessages,
+      ),
+    ).toBe("my-app");
+  });
+
+  it("does not apply realm texts to a plain-text name", () => {
+    expect(
+      resolveClientName({ clientId: "my-app", clientName: "my_client" }, t, {
+        my_client: "My Client",
+      }),
+    ).toBe("my_client");
+  });
+
   it("falls back to clientId for an unknown bundle reference", () => {
     expect(
       resolveClientName(
