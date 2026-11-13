@@ -17,8 +17,7 @@ import TimeUtil from "@/services/time-util";
 import Button from "@/components/elements/forms/buttons/button";
 import { Smartphone, Monitor } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-type TFuncKey = string;
+import { resolveClientName } from "@/lib/client-name";
 
 type SignOutSessionState = {
   device: DeviceRepresentation;
@@ -96,24 +95,8 @@ const ActivityProfile = () => {
     return device.osVersion ?? "";
   };
 
-  const makeClientsString = (clients: ClientRepresentation[]): string => {
-    let clientsString = "";
-    clients.forEach((client: ClientRepresentation, index: number) => {
-      let clientName: string;
-      if (
-        client.hasOwnProperty("clientName") &&
-        client.clientName !== undefined &&
-        client.clientName !== ""
-      ) {
-        clientName = t(client.clientName as TFuncKey);
-      } else {
-        clientName = client.clientId ?? "";
-      }
-      clientsString += clientName;
-      if (clients.length > index + 1) clientsString += ", ";
-    });
-    return clientsString;
-  };
+  const makeClientsString = (clients: ClientRepresentation[]): string =>
+    clients.map((client) => resolveClientName(client, t)).join(", ");
 
   const isShowSignOutAll = (devices: DeviceRepresentation[]): boolean => {
     if (devices.length === 0) return false;
