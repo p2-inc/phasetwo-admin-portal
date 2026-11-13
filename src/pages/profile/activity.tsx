@@ -18,6 +18,7 @@ import Button from "@/components/elements/forms/buttons/button";
 import { Smartphone, Monitor } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { resolveClientName } from "@/lib/client-name";
+import { useRealmMessages } from "@/hooks/use-realm-messages";
 
 type SignOutSessionState = {
   device: DeviceRepresentation;
@@ -26,6 +27,7 @@ type SignOutSessionState = {
 
 const ActivityProfile = () => {
   const { t } = useTranslation();
+  const realmMessages = useRealmMessages();
   const [showSignOutAllConfModal, setShowSignOutAllConfModal] = useState(false);
   const [showSignOutSession, setShowSignOutSession] = useState<boolean>(false);
   const [signOutSessionData, setSignOutSessionData] =
@@ -96,7 +98,7 @@ const ActivityProfile = () => {
   };
 
   const makeClientsString = (clients: ClientRepresentation[]): string =>
-    clients.map((client) => resolveClientName(client, t)).join(", ");
+    clients.map((client) => resolveClientName(client, t, realmMessages)).join(", ");
 
   const isShowSignOutAll = (devices: DeviceRepresentation[]): boolean => {
     if (devices.length === 0) return false;
